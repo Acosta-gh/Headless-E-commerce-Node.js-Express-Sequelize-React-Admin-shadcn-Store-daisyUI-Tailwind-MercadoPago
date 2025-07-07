@@ -11,6 +11,7 @@ yarn-error.log*
 # Variables de entorno
 .env
 .env.*
+!.env.example
 
 # Archivos de base de datos
 *.sqlite
