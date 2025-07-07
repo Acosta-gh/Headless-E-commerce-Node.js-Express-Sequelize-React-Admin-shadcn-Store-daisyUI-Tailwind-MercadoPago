@@ -1,5 +1,7 @@
 module.exports = (req, res, next) => {
-    if (!req.user) {
+    // Verificar si el usuario está autenticado
+    if (!req.usuario) {
         return res.status(401).json({ message: 'No autenticado' });
-    }  
-}
+    }
+    next();
+};

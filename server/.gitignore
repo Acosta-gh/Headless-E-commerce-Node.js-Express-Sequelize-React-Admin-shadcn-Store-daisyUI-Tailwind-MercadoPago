@@ -1,37 +1,38 @@
-# Node modules
+# Módulos de Node
 node_modules/
 
-# Logs
+# Registros (logs)
 logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Environment variable
+# Variables de entorno
 .env
+.env.*
 
-# Database files
+# Archivos de base de datos
 *.sqlite
 *.sqlite3
 *.db
 
-# OS files
+# Archivos del sistema operativo
 .DS_Store
 Thumbs.db
 
-# Build output
+# Salida de compilación
 dist/
 build/
 
-# Coverage
+# Cobertura de pruebas
 coverage/
 
-# Sequelize migrations and seeders logs
+# Registros de migraciones y seeders de Sequelize
 .sequelize-meta
 .sequelize-data
 
-# Misc
+# Misceláneo
 *.tgz
 .idea/
 .vscode/

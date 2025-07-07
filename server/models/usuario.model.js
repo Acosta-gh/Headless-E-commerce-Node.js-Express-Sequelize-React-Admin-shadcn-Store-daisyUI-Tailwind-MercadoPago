@@ -1,8 +1,8 @@
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define('User', {
+    return sequelize.define('Usuario', {
         nombre: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         email: {
             type: DataTypes.STRING,
@@ -16,12 +16,27 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        telefono: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            validate: {
+                is: /^[0-9]+$/i 
+            }
+        },
+        direccion: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         admin: {
             type: DataTypes.BOOLEAN,
             defaultValue: false
-        }
+        },
+        repartidor: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
     }, {
-        tableName: 'users',
+        tableName: 'usuarios',
         timestamps: true
     });
 };

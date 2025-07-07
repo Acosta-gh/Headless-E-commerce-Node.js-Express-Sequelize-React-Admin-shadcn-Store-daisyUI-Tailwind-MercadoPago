@@ -31,6 +31,10 @@ module.exports = (sequelize, DataTypes) => {
         unidad: {
             type: DataTypes.STRING,
             allowNull: true
+        },
+        destacado: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true
         }
     }, {
         tableName: 'items',
