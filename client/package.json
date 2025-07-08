@@ -7,15 +7,23 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "./node_modules/.bin/dotenvx run -- node index.js"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
     "@tailwindcss/vite": "^4.1.11",
+    "axios": "^1.10.0",
+    "hamburger-react": "^2.5.2",
+    "lucide-react": "^0.525.0",
     "react": "^19.1.0",
+    "react-awesome-reveal": "^4.3.1",
     "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.3",
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
+    "@dotenvx/dotenvx": "^0.5.0",
     "@eslint/js": "^9.29.0",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
