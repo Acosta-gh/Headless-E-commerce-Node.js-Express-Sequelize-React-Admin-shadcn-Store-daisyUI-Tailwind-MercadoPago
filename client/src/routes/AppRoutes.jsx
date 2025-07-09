@@ -5,8 +5,9 @@ import Layout from "../components/Layout";
 import Carrito from "../pages/Carrito"
 import Perfil from "../pages/Perfil"
 import Logout from "../pages/Logout"
-import SignUp from "../pages/SignUp"
-import Login from "../pages/Login";
+import AdminPanel from "../pages/AdminPanel";
+import Item from "../pages/Item";
+import NotFound from "../pages/NotFound";
 
 export default function AppRoutes() {
   return (
@@ -15,9 +16,10 @@ export default function AppRoutes() {
         <Route index element={<App />} />
         <Route path="carrito" element={<Carrito />} />
         <Route path="perfil" element={<Perfil/>}/>
-        <Route path="login" element={<Login/>}/>
-        <Route path="signup" element={<SignUp/>}/>
-        <Route path="logout" element={<Logout/>}/>
+        <Route path="logout" element={<Logout/>}/>  
+        <Route path="admin" element={<AdminPanel/>}/>
+        <Route path="item/:id" element={<Item />} />
+        <Route path="*" element={<NotFound />} /> 
       </Route>
     </Routes>
   );

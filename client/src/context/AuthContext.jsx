@@ -52,7 +52,8 @@ export const AuthProvider = ({ children }) => {
                 return;
             }
 
-            setIsAdmin(payload.role === "admin");
+            setIsAdmin(payload.admin);
+            console.log("Token válido, rol de administrador:", payload.admin);
         } else {
             setIsAdmin(false);
         }

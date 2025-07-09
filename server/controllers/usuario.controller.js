@@ -32,7 +32,7 @@ exports.createUsuario = async (req, res) => {
         const newUsuario = await Usuario.create(usuarioData);
 
         const token = jwt.sign(
-            { id: newUsuario.id, email: newUsuario.email, admin: false, repartidor: newUsuario.repartidor },
+            { id: newUsuario.id, nombre: newUsuario.nombre, admin: false, repartidor: newUsuario.repartidor },
             SECRET,
             { expiresIn: EXP }
         );
@@ -67,7 +67,7 @@ exports.loginUsuario = async (req, res) => {
         const isPasswordValid = await bcrypt.compare(password, usuario.password);
         if (!isPasswordValid) return res.status(401).json({ message: 'Contraseña incorrecta' });
 
-        const token = jwt.sign({ id: usuario.id, email: usuario.email, admin: usuario.admin, repartidor: usuario.repartidor }, SECRET, { expiresIn: EXP });
+        const token = jwt.sign({ id: usuario.id,  nombre: usuario.nombre , admin: usuario.admin, repartidor: usuario.repartidor }, SECRET, { expiresIn: EXP });
         res.json({
             message: 'Login exitoso',
             usuario: {

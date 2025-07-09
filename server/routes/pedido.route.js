@@ -7,6 +7,7 @@ const isUsuario = require('../middleware/isUsuario.middleware');
 const isAdmin = require('../middleware/isAdmin.middleware');
 
 router.get('/', verificarToken, isAdmin, pedidoController.getAllPedidos);
+router.get('/usuario', verificarToken, isUsuario, pedidoController.getPedidosByUsuario);
 router.get('/:id', verificarToken, isUsuario, pedidoController.getPedidoById);
 router.post('/', pedidoController.createPedido);
 router.put('/:id', verificarToken, isUsuario, pedidoController.updatePedido);

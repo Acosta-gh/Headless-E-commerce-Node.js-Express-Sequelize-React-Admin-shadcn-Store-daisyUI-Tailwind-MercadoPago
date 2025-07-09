@@ -15,6 +15,23 @@ exports.getAllPedidos = async (req, res) => {
     }
 };
 
+// Obtener pedidos por usuario
+exports.getPedidosByUsuario = async (req, res) => {
+    try {
+        const pedidos = await Pedido.findAll({
+            where: { usuarioId: req.usuario.id },
+            include: [
+                { model: Usuario, attributes: ['id', 'nombre', 'email'] },
+                { model: Item, through: { attributes: ['cantidad'] } }
+            ]
+        });
+        if (pedidos.length === 0) return res.status(404).json({ message: 'No se encontraron pedidos para este usuario' });
+        res.json(pedidos);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // Obtener un pedido por ID
 exports.getPedidoById = async (req, res) => {
     try {
