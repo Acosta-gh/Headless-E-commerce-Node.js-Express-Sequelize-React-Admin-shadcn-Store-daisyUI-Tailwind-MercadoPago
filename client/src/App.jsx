@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { getAllItems } from "./services/itemService.js";
+import CategoryFilter from "./components/App/CategoryFilter";
+import SearchBar from "./components/App/SearchBar";
+import ItemGrid from "./components/App/ItemGrid";
+import Loading from "./components/Ui/Loading.jsx";
 
 function App() {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
-  const navigate = useNavigate();
+  const [selectedCategoria, setSelectedCategoria] = useState(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -21,42 +25,38 @@ function App() {
     fetchItems();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+  // Sacar los nombres únicos de categoría
+  const categoriasUnicas = [
+    ...new Set(
+      items
+        .map(item => item.categoria?.nombre)
+        .filter(nombre => nombre)
+    )
+  ];
+
+  // Filtrar items según búsqueda y categoría
+  const itemsFiltrados = items.filter(item => {
+    const coincideCategoria = selectedCategoria ? item.categoria?.nombre === selectedCategoria : true;
+    const coincideBusqueda =
+      item.nombre.toLowerCase().includes(search.toLowerCase()) ||
+      (item.descripcion && item.descripcion.toLowerCase().includes(search.toLowerCase()));
+    return coincideCategoria && coincideBusqueda;
+  });
+
+  if (loading) return <Loading />
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-8">Items del Futuro 🚀</h1>
-      {items.length === 0 ? (
-        <p>No hay items disponibles.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {items.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white shadow-lg rounded-lg p-6 cursor-pointer hover:scale-105 hover:shadow-2xl transition-all"
-              onClick={() => navigate(`/item/${item.id}`)}
-            >
-              <img
-                src={item.imagenUrl}
-                alt={item.nombre}
-                className="w-full h-40 object-cover rounded-md mb-4"
-              />
-              <h2 className="text-xl font-semibold mb-1">{item.nombre}</h2>
-              <p className="text-gray-500 mb-1">{item.descripcion}</p>
-              <span className="text-lg font-bold text-blue-600">${item.precio}</span>
-              <div className="mt-2 text-sm text-gray-400">
-                {item.categoria} | Stock: {item.stock}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="mx-auto">
+      <h1 className="text-2xl text-gray-900 font-semibold p-4 pb-0">Elige tu comida <span className="text-red-900">favorita</span></h1>
+      <SearchBar search={search} setSearch={setSearch}/>
+      <div className="mb-8">
+        <CategoryFilter
+          categorias={categoriasUnicas}
+          selectedCategoria={selectedCategoria}
+          setSelectedCategoria={setSelectedCategoria}
+        />
+      </div>
+      <ItemGrid items={itemsFiltrados} />
     </div>
   );
 }

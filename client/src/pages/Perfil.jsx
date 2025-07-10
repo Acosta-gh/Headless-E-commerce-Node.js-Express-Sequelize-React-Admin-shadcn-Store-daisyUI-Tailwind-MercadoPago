@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { jwtDecode } from "jwt-decode";
 import { Link } from "react-router-dom";
+import Loading from "../components/Ui/Loading.jsx";
 
 import Login from "../components/Perfil/Login.jsx";
 import SignUp from "../components/Perfil/SignUp.jsx";
-
 import { getPedidosByUsuario } from "../services/pedidoService.js"
 
 function Perfil() {
@@ -14,41 +14,49 @@ function Perfil() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [decodedInfo, setDecodedInfo] = useState({});
     const [pedidos, setPedidos] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        setLoading(true); 
         setIsLoggedIn(!!token);
         if (token) {
             try {
-                // Decodificar el token JWT para obtener la información del usuario y saludarlo
                 const decoded = jwtDecode(token);
                 setDecodedInfo(decoded);
-                console.log("Información decodificada del token:", decoded);
-                // Obtener los pedidos del usuario
                 getPedidosByUsuario(token)
                     .then(response => {
                         setPedidos(response.data);
-                        console.log("Pedidos del usuario:", response.data);
+                        setLoading(false); 
                     })
                     .catch(error => {
                         console.error("Error fetching user orders:", error);
+                        setLoading(false);
                     });
             } catch (error) {
                 console.error("Error decoding token:", error);
                 setDecodedInfo({});
+                setLoading(false);
             }
         } else {
             setDecodedInfo({});
+            setLoading(false);
         }
     }, [token]);
-
-
 
     const handleLogout = () => {
         localStorage.removeItem("token");
         setIsLoggedIn(false);
         setDecodedInfo({});
         refreshAuth();
+        setPedidos([]);
+        setLoading(false);
     };
+
+    if (loading) {
+        return (
+            <Loading />
+        );
+    }
 
     if (!isLoggedIn && !isSigningUp) {
         return <Login setIsSigningUp={setIsSigningUp} setIsLoggedIn={setIsLoggedIn} />;

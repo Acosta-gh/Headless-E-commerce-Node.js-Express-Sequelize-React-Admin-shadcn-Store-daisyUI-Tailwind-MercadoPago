@@ -1,19 +1,23 @@
-const { Item } = require('../models');
+const { Item, Categoria } = require('../models');
 
-// Obtener todos los items
+// Obtener todos los items (incluyendo su categoría)
 exports.getAllItems = async (req, res) => {
     try {
-        const items = await Item.findAll();
+        const items = await Item.findAll({
+            include: [{ model: Categoria, as: 'categoria', attributes: ['id', 'nombre'] }]
+        });
         res.json(items);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener los items', error });
     }
 };
 
-// Obtener un item por ID
+// Obtener un item por ID (incluyendo su categoría)
 exports.getItemById = async (req, res) => {
     try {
-        const item = await Item.findByPk(req.params.id);
+        const item = await Item.findByPk(req.params.id, {
+            include: [{ model: Categoria, as: 'categoria', attributes: ['id', 'nombre'] }]
+        });
         if (!item) return res.status(404).json({ message: 'Item no encontrado' });
         res.json(item);
     } catch (error) {
@@ -21,9 +25,14 @@ exports.getItemById = async (req, res) => {
     }
 };
 
-// Crear un nuevo item
+// Crear un nuevo item, validando la existencia de la categoría
 exports.createItem = async (req, res) => {
     try {
+        // Verifica que la categoría exista
+        const categoria = await Categoria.findByPk(req.body.categoriaId);
+        if (!categoria) {
+            return res.status(400).json({ message: 'La categoría especificada no existe' });
+        }
         const newItem = await Item.create(req.body);
         res.status(201).json(newItem);
     } catch (error) {
@@ -31,11 +40,20 @@ exports.createItem = async (req, res) => {
     }
 };
 
-// Actualizar un item
+// Actualizar un item (puedes actualizar la categoría)
 exports.updateItem = async (req, res) => {
     try {
         const item = await Item.findByPk(req.params.id);
         if (!item) return res.status(404).json({ message: 'Item no encontrado' });
+
+        // Si se incluye categoriaId en la actualización, valida que exista
+        if (req.body.categoriaId) {
+            const categoria = await Categoria.findByPk(req.body.categoriaId);
+            if (!categoria) {
+                return res.status(400).json({ message: 'La categoría especificada no existe' });
+            }
+        }
+
         await item.update(req.body);
         res.json(item);
     } catch (error) {

@@ -12,9 +12,15 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DECIMAL(10, 2),
             allowNull: false
         },
-        categoria: {
-            type: DataTypes.STRING,
-            allowNull: true
+         categoriaId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'categorias',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'RESTRICT'
         },
         disponible: {
             type: DataTypes.BOOLEAN,

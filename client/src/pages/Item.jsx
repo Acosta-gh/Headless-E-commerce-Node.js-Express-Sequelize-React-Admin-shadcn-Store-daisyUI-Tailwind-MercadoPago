@@ -66,7 +66,7 @@ function Item() {
             <h2>{item.nombre}</h2>
             <p>{item.descripcion}</p>
             <p><b>Precio:</b> ${item.precio}</p>
-            <p><b>Categoría:</b> {item.categoria}</p>
+            <p><b>Categoría:</b> {item.categoria?.nombre || "Sin categoría"}</p>
             <img src={item.imagenUrl} alt={item.nombre} style={{maxWidth: 300}} />
             <div style={{margin: "20px 0"}}>
                 <button 
@@ -86,8 +86,8 @@ function Item() {
             <div style={{marginBottom: 16}}>
                 <button 
                     onClick={handleAgregarAlCarrito}
-                    disabled={cantidad === 0}
-                    style={{background: "#2563eb", color: "#fff", padding: '8px 16px', borderRadius: 4, border: 0, cursor: cantidad === 0 ? "not-allowed" : "pointer"}}
+                    disabled={cantidad === 0 || item.disponible === false || item.stock <= 0}
+                    style={{background: "#2563eb", color: "#fff", padding: '8px 16px', borderRadius: 4, border: 0, cursor: cantidad === 0 ? "not-allowed" : "pointer", opacity: item.stock <= 0 || item.disponible === false ? 0.5 : 1}}
                 >
                     Agregar al carrito
                 </button>
