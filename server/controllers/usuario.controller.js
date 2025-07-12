@@ -17,7 +17,13 @@ exports.getAllUsuarios = async (req, res) => {
 
 // Obtener un usuario por ID
 exports.getUsuarioById = async (req, res) => {
-   return res.status(501).json({ message: 'Funcionalidad no implementada' });
+    try {
+        const usuario = await Usuario.findByPk(req.params.id, { attributes: { exclude: ['password']} });
+        if (!usuario) return res.status(404).json({ message: 'Usuario no encontrado' });
+        res.json(usuario);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 };
 
 // Crear un nuevo usuario
@@ -49,7 +55,33 @@ exports.createUsuario = async (req, res) => {
 
 // Actualizar un usuario
 exports.updateUsuario = async (req, res) => {
-   return res.status(501).json({ message: 'Funcionalidad no implementada' });
+    try {
+        const { id } = req.params;
+        const usuario = await Usuario.findByPk(id);
+        if (!usuario) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        // Si se envía una nueva contraseña, hashearla
+        if (req.body.password) {
+            req.body.password = await bcrypt.hash(req.body.password, 10);
+        }
+
+        // No permitir cambiar el campo 'admin' desde aquí
+        if ('admin' in req.body) {
+            delete req.body.admin;
+        }
+
+        await usuario.update(req.body);
+
+        const { password, ...usuarioSinPassword } = usuario.get({ plain: true });
+        res.json({
+            message: 'Usuario actualizado exitosamente',
+            usuario: usuarioSinPassword
+        });
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
 };
 
 // Eliminar un usuario

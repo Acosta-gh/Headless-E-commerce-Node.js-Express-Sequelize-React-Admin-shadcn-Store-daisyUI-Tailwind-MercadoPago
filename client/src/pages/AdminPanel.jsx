@@ -2,31 +2,31 @@ import React, { useEffect, useState } from 'react';
 import { createItem, deleteItem, updateItem, getAllItems } from '../services/itemService.js';
 import { createCategoria, deleteCategoria, updateCategoria, getAllCategorias } from '../services/categoriaService.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import { uploadImage, deleteImage } from '../services/uploadService.js';
 
 function AdminPanel() {
-  const { token } = useAuth();
+  const { token, isAdmin } = useAuth();
 
-  // Estados para items y categorías
   const [items, setItems] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
 
-  // Formulario de items
   const [form, setForm] = useState({
     nombre: '', descripcion: '', precio: '', categoriaId: '', imagenUrl: '', stock: '', unidad: '', destacado: false, disponible: true
   });
 
-  // Formulario de categorías
   const [catForm, setCatForm] = useState({ nombre: '' });
-
-  // Edición de categoría
   const [editingCategoria, setEditingCategoria] = useState(null);
   const [catEditForm, setCatEditForm] = useState({ nombre: '' });
+
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetchItems();
     fetchCategorias();
-  }, []);
+  }, [isAdmin]);
 
   const fetchItems = () => {
     getAllItems()
@@ -40,7 +40,6 @@ function AdminPanel() {
       .catch(() => setCategorias([]));
   };
 
-  // Para input en el formulario de items
   const handleInputChange = e => {
     const { name, value, type, checked } = e.target;
     setForm(f => ({
@@ -49,36 +48,73 @@ function AdminPanel() {
     }));
   };
 
-  // Para input en el formulario de categorías
   const handleCatInputChange = e => {
     setCatForm({ ...catForm, [e.target.name]: e.target.value });
   };
 
-  // Para input en la edición de categoría
   const handleCatEditInputChange = e => {
     setCatEditForm({ ...catEditForm, [e.target.name]: e.target.value });
   };
 
-  // Crear o actualizar item
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setSelectedImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
+    setUploading(true);
+
+    let imagenUrl = form.imagenUrl;
+    let imagenAnterior = null;
+
+    if (selectedImageFile) {
+      if (editingItem && editingItem.imagenUrl) {
+        imagenAnterior = editingItem.imagenUrl;
+      }
+      const formData = new FormData();
+      formData.append('image', selectedImageFile);
+
+      try {
+        const res = await uploadImage(formData, token);
+        imagenUrl = res.data.url;
+      } catch (error) {
+        alert("Error al subir la imagen");
+        setUploading(false);
+        return;
+      }
+    }
+
     try {
+      const itemData = {
+        ...form,
+        imagenUrl
+      };
       if (editingItem) {
-        await updateItem(editingItem.id, form, token);
+        await updateItem(editingItem.id, itemData, token);
+        if (imagenAnterior && imagenAnterior !== imagenUrl) {
+          await deleteImage(imagenAnterior, token);
+        }
       } else {
-        await createItem(form, token);
+        await createItem(itemData, token);
       }
     } catch (error) {
       alert("Error en la operación. ¿Tienes permisos?");
+      console.error("Error al crear/actualizar item:", error);
     }
+
     setForm({
       nombre: '', descripcion: '', precio: '', categoriaId: '', imagenUrl: '', stock: '', unidad: '', destacado: false, disponible: true
     });
+    setImagePreview('');
+    setSelectedImageFile(null);
+    setUploading(false);
     setEditingItem(null);
     fetchItems();
   };
 
-  // Crear categoría
   const handleCatSubmit = async e => {
     e.preventDefault();
     try {
@@ -90,13 +126,11 @@ function AdminPanel() {
     fetchCategorias();
   };
 
-  // Editar categoría: muestra el form de edición inline
   const handleEditCategoria = (cat) => {
     setEditingCategoria(cat);
     setCatEditForm({ nombre: cat.nombre });
   };
 
-  // Guardar edición de categoría
   const handleCatEditSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -109,13 +143,11 @@ function AdminPanel() {
     fetchCategorias();
   };
 
-  // Cancelar edición de categoría
   const handleCancelEditCategoria = () => {
     setEditingCategoria(null);
     setCatEditForm({ nombre: '' });
   };
 
-  // Eliminar categoría
   const handleDeleteCategoria = async (id) => {
     if (window.confirm('¿Eliminar esta categoría?')) {
       try {
@@ -124,7 +156,7 @@ function AdminPanel() {
         alert("Error al eliminar la categoría. Puede que tenga items asociados o no tengas permisos.");
       }
       fetchCategorias();
-      fetchItems(); // refresca items por si alguno quedó sin categoría
+      fetchItems();
     }
   };
 
@@ -141,14 +173,21 @@ function AdminPanel() {
       destacado: item.destacado,
       disponible: item.disponible
     });
+    setImagePreview('');
+    setSelectedImageFile(null);
   };
 
   const handleDelete = async id => {
+    const item = items.find(i => i.id === id);
     if (window.confirm('¿Eliminar este item?')) {
       try {
         await deleteItem(id, token);
+        if (item && item.imagenUrl) {
+          await deleteImage(item.imagenUrl, token);
+        }
       } catch (error) {
         alert("Error al eliminar. ¿Tienes permisos?");
+        console.error("Error al eliminar item:", error);
       }
       fetchItems();
     }
@@ -159,132 +198,157 @@ function AdminPanel() {
     setForm({
       nombre: '', descripcion: '', precio: '', categoriaId: '', imagenUrl: '', stock: '', unidad: '', destacado: false, disponible: true
     });
+    setImagePreview('');
+    setSelectedImageFile(null);
   };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="p-2 sm:p-6 max-w-2xl mx-auto rounded-2xl shadow-xl bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
       {/* Formulario para categorías */}
-      <h2 className="text-xl font-bold mb-2">Crear Categoría</h2>
-      <form onSubmit={handleCatSubmit} className="mb-6 flex gap-2">
+      <h2 className="text-xl font-bold mb-2 text-gray-800">Crear Categoría</h2>
+      <form onSubmit={handleCatSubmit} className="mb-6 flex flex-col sm:flex-row gap-2">
         <input
           name="nombre"
           value={catForm.nombre}
           onChange={handleCatInputChange}
           placeholder="Nombre categoría"
           required
-          className="border p-2 rounded"
+          className="border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-blue-200 flex-1"
         />
-        <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">
+        <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700 transition">
           Crear
         </button>
       </form>
-
-      <h2 className="text-xl font-bold mb-2">Categorías Existentes</h2>
-      <table className="min-w-full table-auto mb-6 border">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {categorias.map(cat => (
-            <tr key={cat.id} className="border-t">
-              <td>
-                {editingCategoria && editingCategoria.id === cat.id ? (
-                  <form onSubmit={handleCatEditSubmit} className="flex gap-2">
-                    <input
-                      name="nombre"
-                      value={catEditForm.nombre}
-                      onChange={handleCatEditInputChange}
-                      required
-                      className="border p-1 rounded"
-                    />
-                    <button type="submit" className="text-green-600 font-bold">Guardar</button>
-                    <button type="button" onClick={handleCancelEditCategoria} className="text-gray-600 font-bold">Cancelar</button>
-                  </form>
-                ) : (
-                  cat.nombre
-                )}
-              </td>
-              <td>
-                {!editingCategoria || editingCategoria.id !== cat.id ? (
-                  <>
-                    <button onClick={() => handleEditCategoria(cat)} className="text-blue-600 mr-2">Editar</button>
-                    <button onClick={() => handleDeleteCategoria(cat.id)} className="text-red-600">Eliminar</button>
-                  </>
-                ) : null}
-              </td>
+      <h2 className="text-xl font-bold mb-2 text-gray-800">Categorías Existentes</h2>
+      <div className="overflow-auto mb-6 rounded-lg border border-gray-200">
+        <table className="min-w-full table-auto">
+          <thead>
+            <tr className="bg-gray-200 text-gray-700">
+              <th className="px-2 py-2">Nombre</th>
+              <th className="px-2 py-2">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
+          </thead>
+          <tbody>
+            {categorias.map(cat => (
+              <tr key={cat.id} className="border-t border-gray-200">
+                <td className="px-2 py-1">
+                  {editingCategoria && editingCategoria.id === cat.id ? (
+                    <form onSubmit={handleCatEditSubmit} className="flex gap-2 flex-col sm:flex-row">
+                      <input
+                        name="nombre"
+                        value={catEditForm.nombre}
+                        onChange={handleCatEditInputChange}
+                        required
+                        className="border border-gray-300 p-1 rounded focus:outline-none focus:ring focus:ring-blue-200 flex-1"
+                      />
+                      <div className="flex gap-1 mt-2 sm:mt-0">
+                        <button type="submit" className="text-green-600 font-bold">Guardar</button>
+                        <button type="button" onClick={handleCancelEditCategoria} className="text-gray-600 font-bold">Cancelar</button>
+                      </div>
+                    </form>
+                  ) : (
+                    cat.nombre
+                  )}
+                </td>
+                <td className="px-2 py-1">
+                  {!editingCategoria || editingCategoria.id !== cat.id ? (
+                    <div className="flex gap-1 flex-col sm:flex-row">
+                      <button onClick={() => handleEditCategoria(cat)} className="text-blue-600 hover:underline">Editar</button>
+                      <button onClick={() => handleDeleteCategoria(cat.id)} className="text-red-600 hover:underline">Eliminar</button>
+                    </div>
+                  ) : null}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {/* Formulario para items */}
-      <h2 className="text-2xl font-bold mb-4">{editingItem ? 'Editar' : 'Crear'} Item</h2>
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">{editingItem ? 'Editar' : 'Crear'} Item</h2>
       <form onSubmit={handleSubmit} className="mb-8 grid gap-2">
-        <input name="nombre" value={form.nombre} onChange={handleInputChange} placeholder="Nombre" required className="border p-2 rounded"/>
-        <input name="descripcion" value={form.descripcion} onChange={handleInputChange} placeholder="Descripción" className="border p-2 rounded"/>
-        <input name="precio" value={form.precio} onChange={handleInputChange} placeholder="Precio" type="number" required className="border p-2 rounded"/>
+        <input name="nombre" value={form.nombre} onChange={handleInputChange} placeholder="Nombre" required className="border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-blue-200" />
+        <input name="descripcion" value={form.descripcion} onChange={handleInputChange} placeholder="Descripción" className="border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-blue-200" />
+        <input name="precio" value={form.precio} onChange={handleInputChange} placeholder="Precio" type="number" required className="border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-blue-200" />
         <select
           name="categoriaId"
           value={form.categoriaId}
           onChange={handleInputChange}
           required
-          className="border p-2 rounded"
+          className="border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-blue-200"
         >
           <option value="">Selecciona una categoría</option>
           {categorias.map(cat => (
             <option key={cat.id} value={cat.id}>{cat.nombre}</option>
           ))}
         </select>
-        <input name="imagenUrl" value={form.imagenUrl} onChange={handleInputChange} placeholder="URL Imagen" className="border p-2 rounded"/>
-        <input name="stock" value={form.stock} onChange={handleInputChange} placeholder="Stock" type="number" required className="border p-2 rounded"/>
-        <input name="unidad" value={form.unidad} onChange={handleInputChange} placeholder="Unidad" className="border p-2 rounded"/>
-        <label>
-          <input name="destacado" type="checkbox" checked={form.destacado} onChange={handleInputChange}/> Destacado
-        </label>
-        <label>
-          <input name="disponible" type="checkbox" checked={form.disponible} onChange={handleInputChange}/> Disponible
-        </label>
         <div>
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded mr-2">
+          <label className="block mb-1 text-gray-700">Subir Imagen</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            disabled={uploading}
+            className="border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-blue-200"
+          />
+          {uploading && <span className="text-gray-500 ml-2">Subiendo...</span>}
+          {imagePreview && (
+            <img src={imagePreview} alt="preview" className="mt-2 max-h-24 rounded shadow-lg" />
+          )}
+          {form.imagenUrl && !imagePreview && (
+            <img src={form.imagenUrl} alt="actual" className="mt-2 max-h-24 rounded shadow-lg" />
+          )}
+        </div>
+        <input name="stock" value={form.stock} onChange={handleInputChange} placeholder="Stock" type="number" required className="border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-blue-200" />
+        <input name="unidad" value={form.unidad} onChange={handleInputChange} placeholder="Unidad" className="border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-blue-200" />
+        <label className="flex items-center gap-2">
+          <input name="destacado" type="checkbox" checked={form.destacado} onChange={handleInputChange} className="accent-blue-600" /> 
+          <span className="text-gray-700">Destacado</span>
+        </label>
+        <label className="flex items-center gap-2">
+          <input name="disponible" type="checkbox" checked={form.disponible} onChange={handleInputChange} className="accent-blue-600" /> 
+          <span className="text-gray-700">Disponible</span>
+        </label>
+        <div className="flex gap-2 mt-2 flex-col sm:flex-row">
+          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition w-full sm:w-auto">
             {editingItem ? 'Actualizar' : 'Crear'}
           </button>
           {editingItem && (
-            <button type="button" onClick={handleCancel} className="bg-gray-400 text-white px-4 py-2 rounded">
+            <button type="button" onClick={handleCancel} className="bg-gray-400 text-white px-4 py-2 rounded shadow hover:bg-gray-500 transition w-full sm:w-auto">
               Cancelar
             </button>
           )}
         </div>
       </form>
-
-      <h2 className="text-xl font-bold mb-2">Items Existentes</h2>
-      <table className="min-w-full table-auto mb-4 border">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Categoría</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map(it => (
-            <tr key={it.id} className="border-t">
-              <td>{it.nombre}</td>
-              <td>${it.precio}</td>
-              <td>{it.stock}</td>
-              <td>{it.categoria?.nombre || 'Sin categoría'}</td>
-              <td>
-                <button onClick={() => handleEdit(it)} className="text-blue-600 mr-2">Editar</button>
-                <button onClick={() => handleDelete(it.id)} className="text-red-600">Eliminar</button>
-              </td>
+      <h2 className="text-xl font-bold mb-2 text-gray-800">Items Existentes</h2>
+      <div className="overflow-auto rounded-lg border border-gray-200 mb-4">
+        <table className="min-w-full table-auto">
+          <thead>
+            <tr className="bg-gray-200 text-gray-700">
+              <th className="px-2 py-2">Nombre</th>
+              <th className="px-2 py-2">Precio</th>
+              <th className="px-2 py-2">Stock</th>
+              <th className="px-2 py-2">Categoría</th>
+              <th className="px-2 py-2">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {items.map(it => (
+              <tr key={it.id} className="border-t border-gray-200">
+                <td className="px-2 py-1">{it.nombre}</td>
+                <td className="px-2 py-1">${it.precio}</td>
+                <td className="px-2 py-1">{it.stock}</td>
+                <td className="px-2 py-1">{it.categoria?.nombre || 'Sin categoría'}</td>
+                <td className="px-2 py-1">
+                  <div className="flex gap-1 flex-col sm:flex-row">
+                    <button onClick={() => handleEdit(it)} className="text-blue-600 hover:underline">Editar</button>
+                    <button onClick={() => handleDelete(it.id)} className="text-red-600 hover:underline">Eliminar</button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

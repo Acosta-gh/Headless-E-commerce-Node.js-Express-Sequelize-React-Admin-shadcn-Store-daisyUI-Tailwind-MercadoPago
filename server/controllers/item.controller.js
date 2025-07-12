@@ -64,11 +64,17 @@ exports.updateItem = async (req, res) => {
 // Eliminar un item
 exports.deleteItem = async (req, res) => {
     try {
+        console.debug('Intentando eliminar item con ID:', req.params.id);
         const item = await Item.findByPk(req.params.id);
-        if (!item) return res.status(404).json({ message: 'Item no encontrado' });
+        if (!item) {
+            console.warn('Item no encontrado para eliminar:', req.params.id);
+            return res.status(404).json({ message: 'Item no encontrado' });
+        }
         await item.destroy();
+        console.info('Item eliminado correctamente:', req.params.id);
         res.json({ message: 'Item eliminado correctamente' });
     } catch (error) {
+        console.error('Error al eliminar el item:', error);
         res.status(500).json({ message: 'Error al eliminar el item', error });
     }
 };

@@ -8,6 +8,8 @@ import Logout from "../pages/Logout"
 import AdminPanel from "../pages/AdminPanel";
 import Item from "../pages/Item";
 import NotFound from "../pages/NotFound";
+import PedidoDetails from "../pages/PedidoDetails";
+
 
 export default function AppRoutes() {
   return (
@@ -19,6 +21,7 @@ export default function AppRoutes() {
         <Route path="logout" element={<Logout/>}/>  
         <Route path="admin" element={<AdminPanel/>}/>
         <Route path="item/:id" element={<Item />} />
+        <Route path="pedido/:id" element={<PedidoDetails />} />
         <Route path="*" element={<NotFound />} /> 
       </Route>
     </Routes>
