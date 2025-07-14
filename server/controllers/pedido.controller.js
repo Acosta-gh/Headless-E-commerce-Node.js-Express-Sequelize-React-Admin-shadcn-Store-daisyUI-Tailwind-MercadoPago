@@ -37,7 +37,7 @@ exports.getPedidoById = async (req, res) => {
     try {
         const pedido = await Pedido.findByPk(req.params.id, {
             include: [
-                { model: Usuario, attributes: ['id', 'nombre', 'email'] },
+                { model: Usuario, attributes: ['id', 'nombre', 'email', 'telefono'] },
                 { model: Item, through: { attributes: ['cantidad'] } }
             ]
         });

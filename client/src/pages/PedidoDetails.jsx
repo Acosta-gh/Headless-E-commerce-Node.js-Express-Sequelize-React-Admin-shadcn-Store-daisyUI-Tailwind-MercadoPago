@@ -42,6 +42,7 @@ function PedidoDetails() {
         setLoading(true);
         getPedidoById(id, token)
             .then(res => {
+                console.log("Pedido recibido:", res.data);
                 setPedido(res.data);
                 setNuevoEstado(res.data.estado);
             })
