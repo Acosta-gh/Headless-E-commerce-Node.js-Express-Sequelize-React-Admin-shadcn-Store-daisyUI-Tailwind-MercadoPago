@@ -2,7 +2,7 @@ import { LayoutGrid } from 'lucide-react';
 
 export default function CategoryFilter({ categorias, selectedCategoria, setSelectedCategoria }) {
   if (categorias.length === 0) {
-    return <p className="mb-4">No hay categorías disponibles.</p>
+    return <p className="mb-4 p-4">No hay categorías disponibles.</p>
   }
   return (
     <ul className="flex flex-row gap-2 whitespace-nowrap overflow-x-auto scrollbar-hide py-2 p-4">
@@ -14,7 +14,7 @@ export default function CategoryFilter({ categorias, selectedCategoria, setSelec
         }`}
         onClick={() => setSelectedCategoria(null)}
       >
-        <span className="leading-none relative top-[1px]">Todas</span>
+        <span className="leading-none ">Todas</span>
       </li>
       {categorias.map((categoria, idx) => (
         <li
@@ -26,7 +26,7 @@ export default function CategoryFilter({ categorias, selectedCategoria, setSelec
             }`}
           onClick={() => setSelectedCategoria(categoria)}
         >
-          <span className="leading-none relative top-[1px] ">{categoria}</span>
+          <span className="leading-none  ">{categoria}</span>
         </li>
       ))}
     </ul>

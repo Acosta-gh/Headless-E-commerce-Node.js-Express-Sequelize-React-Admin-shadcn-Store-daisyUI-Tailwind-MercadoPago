@@ -5,7 +5,7 @@ exports.getAllPedidos = async (req, res) => {
     try {
         const pedidos = await Pedido.findAll({
             include: [
-                { model: Usuario, attributes: ['id', 'nombre', 'email'] },
+                { model: Usuario, attributes: ['id', 'nombre', 'email', 'telefono'] },
                 { model: Item, through: { attributes: ['cantidad'] } }
             ]
         });

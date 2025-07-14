@@ -22,6 +22,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(() => localStorage.getItem("token"));
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isRepartidor, setIsRepartidor] = useState(false);
 
     // Verifica el token al montar y cuando cambia
     useEffect(() => {
@@ -36,8 +37,10 @@ export const AuthProvider = ({ children }) => {
             }
 
             setIsAdmin(payload.admin);
+            setIsRepartidor(payload.repartidor);
         } else {
             setIsAdmin(false);
+            setIsRepartidor(false);
         }
     }, [token]);
 
@@ -63,7 +66,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ token, isAdmin, refreshAuth }}>
+        <AuthContext.Provider value={{ token, isAdmin, isRepartidor, refreshAuth }}>
             {children}
         </AuthContext.Provider>
     );

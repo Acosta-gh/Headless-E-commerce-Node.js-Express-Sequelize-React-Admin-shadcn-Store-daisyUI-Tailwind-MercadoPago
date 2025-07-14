@@ -3,21 +3,23 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getItemById } from '../services/itemService.js';
 import { useCart } from "../context/CartContext";
 import Loading from '../components/Ui/Loading.jsx';
-import { ChevronLeft, CupSoda } from 'lucide-react';
+import { ChevronLeft, Plus, Minus } from 'lucide-react';
 import { Fade } from 'react-awesome-reveal';
+
 function Item() {
     const { id } = useParams();
     const [item, setItem] = useState(null);
     const [loading, setLoading] = useState(true);
     const [cantidad, setCantidad] = useState(1);
     const [agregado, setAgregado] = useState(false);
-    const [mostrarSinStock, setMostrarSinStock] = useState(false); // <-- NUEVO
+    const [mostrarSinStock, setMostrarSinStock] = useState(false);
     const navigate = useNavigate();
     const { agregarAlCarrito, cart } = useCart();
     const [error, setError] = useState("");
 
     useEffect(() => {
-        setLoading(true); setError("");
+        setLoading(true); 
+        setError("");
         getItemById(id)
             .then(response => setItem(response.data))
             .catch(error => {
@@ -28,9 +30,10 @@ function Item() {
     }, [id]);
 
     const enCarrito = useMemo(() =>
-        cart.find(ci => ci.id === item?.id)?.cantidad || 0,
-        [cart, item]
+        cart.find(ci => ci.id === parseInt(id))?.cantidad || 0,
+        [cart, id]
     );
+    
     const stockDisponible = useMemo(() =>
         item ? Math.max(item.stock - enCarrito, 0) : 0,
         [item, enCarrito]
@@ -41,7 +44,29 @@ function Item() {
         if (stockDisponible > 0) setMostrarSinStock(false);
     }, [stockDisponible]);
 
+    // Prevent cantidad from exceeding stockDisponible
+    useEffect(() => {
+        if (cantidad > stockDisponible) {
+            setCantidad(Math.max(stockDisponible, 1));
+        }
+    }, [stockDisponible]);
+
+    const incrementCantidad = () => {
+        console.log("Incrementando cantidad:", cantidad, "Stock disponible:", stockDisponible);
+        if (cantidad < stockDisponible) {
+            setCantidad(prevCantidad => prevCantidad + 1);
+        }
+    };
+
+    const decrementCantidad = () => {
+        console.log("Decrementando cantidad:", cantidad , "Stock disponible:", stockDisponible);
+        if (cantidad > 1) {
+            setCantidad(prevCantidad => prevCantidad - 1);
+        }
+    };
+
     const handleAgregarAlCarrito = () => {
+        console.log("Intentando agregar al carrito:", cantidad, "Stock disponible:", stockDisponible);
         if (cantidad > 0 && stockDisponible > 0) {
             agregarAlCarrito({
                 id: item.id,
@@ -50,6 +75,7 @@ function Item() {
                 imagenUrl: item.imagenUrl,
                 stock: item.stock
             }, cantidad);
+            
             setCantidad(1);
             setAgregado(true);
 
@@ -57,7 +83,7 @@ function Item() {
             if (stockDisponible - cantidad <= 0) {
                 setTimeout(() => {
                     setAgregado(false);
-                    setMostrarSinStock(true); // <-- Ahora sí muestra Sin stock
+                    setMostrarSinStock(true);
                 }, 1800);
             } else {
                 setTimeout(() => setAgregado(false), 1800);
@@ -80,7 +106,7 @@ function Item() {
     const notAvailable = item.stock <= 0 || item.disponible === false;
 
     return (
-        <article className="max-w-xl mx-auto  rounded-xl p-6 flex flex-col gap-4">
+        <article className="max-w-xl mx-auto rounded-xl p-6 flex flex-col gap-4">
             <div className="flex items-center mb-4">
                 <button
                     onClick={() => navigate(-1)}
@@ -94,7 +120,7 @@ function Item() {
                 </div>
             </div>
             <Fade duration={500} triggerOnce>
-                <div className="flex flex-col items-center ">
+                <div className="flex flex-col items-center">
                     <img
                         src={item.imagenUrl}
                         alt={item.nombre}
@@ -113,16 +139,16 @@ function Item() {
                         <div className="flex items-center">
                             <button
                                 aria-label="Quitar cantidad"
-                                onClick={() => setCantidad(Math.max(cantidad - 1, 1))}
+                                onClick={decrementCantidad}
                                 disabled={cantidad <= 1}
-                                className={`bg-gray-200 px-3 py-1 rounded-l-md text-lg font-bold text-gray-700 transition ${cantidad <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'}`}
+                                className={`relative bottom-[1px] bg-red-900 px-3.5 py-1 rounded-full text-lg font-bold text-white transition ${cantidad <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'}`}
                             >-</button>
                             <span className="px-4 py-1 bg-gray-100 text-lg">{cantidad}</span>
                             <button
                                 aria-label="Agregar cantidad"
-                                onClick={() => setCantidad(Math.min(cantidad + 1, stockDisponible))}
+                                onClick={incrementCantidad}
                                 disabled={cantidad >= stockDisponible}
-                                className={`bg-gray-200 px-3 py-1 rounded-r-md text-lg font-bold text-gray-700 transition ${cantidad >= stockDisponible ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'}`}
+                                className={`relative bottom-[1px] bg-red-900 px-3 py-1 rounded-full text-lg font-bold text-white transition ${cantidad >= stockDisponible ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'}`}
                             >+</button>
                             <span className="ml-4 text-gray-500 text-sm">{`Stock disponible: ${stockDisponible}`}</span>
                         </div>
@@ -134,30 +160,30 @@ function Item() {
                 <div>
                     <button
                         onClick={handleAgregarAlCarrito}
-                        disabled={cantidad <= 0 || notAvailable}
-                        className={`w-full h-full sm:w-auto bg-blue-600 text-white px-6 py-5 rounded-md font-semibold shadow transition
-    ${cantidad <= 0 || notAvailable ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'} relative overflow-hidden`}
+                        disabled={cantidad <= 0 || notAvailable || stockDisponible <= 0}
+                        className={`w-full h-full sm:w-auto bg-red-900 text-white px-6 py-5 rounded-full font-semibold shadow transition
+                        ${(cantidad <= 0 || notAvailable || stockDisponible <= 0) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-700'} relative overflow-hidden`}
                     >
                         {/* Sin stock permanente */}
                         <span
                             className={`
-      absolute left-0 top-0 w-full h-full flex items-center justify-center transition-opacity duration-300
-      ${stockDisponible <= 0 && !agregado ? 'opacity-100 bg-red-200 text-red-700 font-bold tracking-wide text-lg cursor-not-allowed rounded-md' : 'opacity-0'}
-    `}
+                            absolute left-0 top-0 w-full h-full flex items-center justify-center transition-opacity duration-300
+                            ${stockDisponible <= 0 && !agregado ? 'opacity-100 bg-red-200 text-red-700 font-bold tracking-wide text-lg cursor-not-allowed rounded-full' : 'opacity-0'}
+                            `}
                         >
                             Sin stock
                         </span>
                         {/* Agregar al carrito */}
                         <span
                             className={`absolute left-0 top-0 w-full h-full flex items-center justify-center transition-opacity duration-300
-      ${stockDisponible > 0 && !agregado ? 'opacity-100' : 'opacity-0'}`}
+                            ${stockDisponible > 0 && !agregado ? 'opacity-100' : 'opacity-0'}`}
                         >
                             Agregar al carrito
                         </span>
                         {/* Agregado al carrito */}
                         <span
                             className={`absolute left-0 top-0 w-full h-full flex items-center justify-center transition-opacity duration-300
-      ${agregado ? 'opacity-100' : 'opacity-0'}`}
+                            ${agregado ? 'opacity-100' : 'opacity-0'}`}
                         >
                             ¡Agregado al carrito!
                         </span>

@@ -1,13 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { createPedido } from "../services/pedidoService";
-import { useAuth } from '../context/AuthContext.jsx';
-import { jwtDecode } from 'jwt-decode';
+import { useAuth } from "../context/AuthContext.jsx";
+import { jwtDecode } from "jwt-decode";
+import { Fade } from "react-awesome-reveal";
+import { ShoppingCart } from "lucide-react";
 
 function Carrito() {
-  const { cart, agregarAlCarrito, quitarDelCarrito, eliminarDelCarrito, vaciarCarrito, totalPrecio } = useCart();
+  const {
+    cart,
+    agregarAlCarrito,
+    quitarDelCarrito,
+    eliminarDelCarrito,
+    vaciarCarrito,
+    totalPrecio,
+  } = useCart();
   const { token } = useAuth();
-  const [direccion, setDireccion] = useState("");
+  const userData = JSON.parse(sessionStorage.getItem("userData"));
+
+  const [direccion, setDireccion] = useState(
+    userData ? userData.direccion : ""
+  );
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pedidoExitoso, setPedidoExitoso] = useState(false);
 
   const handleCreateOrder = async () => {
     if (cart.length === 0) {
@@ -31,153 +47,318 @@ function Carrito() {
       return;
     }
 
+    setIsSubmitting(true);
+
     const pedidoData = {
       direccionEntrega: direccion,
       usuarioId,
       total: totalPrecio,
       fechaPedido: new Date().toISOString(),
       estado: "pendiente",
-      items: cart.map(item => ({
+      items: cart.map((item) => ({
         itemId: item.id,
         cantidad: item.cantidad,
-        precio: item.precio
-      }))
+        precio: item.precio,
+      })),
     };
 
     try {
       await createPedido(pedidoData, token);
-      alert("Pedido creado exitosamente.");
-      vaciarCarrito();
-      setDireccion("");
+      setPedidoExitoso(true);
+      setTimeout(() => {
+        vaciarCarrito();
+        setPedidoExitoso(false);
+      }, 2000);
     } catch (error) {
       console.error("Error al crear el pedido:", error.response?.data || error);
       alert("Hubo un error al crear el pedido. Inténtalo de nuevo más tarde.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   if (cart.length === 0) {
     return (
-      <div className="p-8 flex flex-col items-center text-center">
-        <h2 className="text-3xl font-bold mb-4">Carrito</h2>
-        <p className="text-gray-500 text-lg">Tu carrito está vacío.</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] p-8">
+        <ShoppingCart
+          className="h-24 w-24 text-gray-300 mb-4"
+          strokeWidth={1.5}
+        />
+        <h2 className="text-2xl font-bold mb-2 text-gray-800">
+          Tu carrito está vacío
+        </h2>
+        <p className="text-gray-500 text-center text-lg mb-6">
+          Agrega algunos productos para comenzar
+        </p>
+        <a
+          href="/"
+          className="bg-red-900 text-white px-6 py-3 rounded-full font-semibold shadow hover:bg-red-800 transition-colors duration-300"
+        >
+          Ver productos
+        </a>
       </div>
     );
   }
 
   return (
-    <div className="p-6 sm:p-10 max-w-4xl mx-auto  rounded-xl">
-      <h2 className="text-3xl font-bold mb-8 text-center">Carrito de compras</h2>
-      <div className="overflow-x-auto mb-6">
-        <table className="min-w-full table-auto mb-4 hidden sm:table">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-3 py-2 font-semibold text-gray-700">Producto</th>
-              <th className="px-3 py-2 font-semibold text-gray-700">Cantidad</th>
-              <th className="px-3 py-2 font-semibold text-gray-700">Precio unitario</th>
-              <th className="px-3 py-2 font-semibold text-gray-700">Subtotal</th>
-              <th className="px-3 py-2"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {cart.map(item => (
-              <tr key={item.id} className="border-b hover:bg-gray-50 transition">
-                <td className="py-2 flex items-center">
-                  <img src={item.imagenUrl} alt={item.nombre} className="w-12 h-12 object-cover mr-3 rounded " />
-                  <span className="font-semibold">{item.nombre}</span>
-                </td>
-                <td>
+    <div className="max-w-4xl mx-auto p-4 sm:p-6">
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">
+        Carrito de compras
+      </h2>
+      <Fade duration={500} triggerOnce>
+        <div className="overflow-x-auto mb-6">
+          {/* Desktop view */}
+          <table className="min-w-full table-auto mb-4 hidden sm:table">
+            <thead>
+              <tr className="bg-gray-100 text-left">
+                <th className="px-4 py-3 font-semibold text-gray-700 rounded-tl-md">
+                  Producto
+                </th>
+                <th className="px-4 py-3 font-semibold text-gray-700">
+                  Cantidad
+                </th>
+                <th className="px-4 py-3 font-semibold text-gray-700">
+                  Precio unitario
+                </th>
+                <th className="px-4 py-3 font-semibold text-gray-700">
+                  Subtotal
+                </th>
+                <th className="px-4 py-3 rounded-tr-md"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {cart.map((item, index) => (
+                <tr
+                  key={item.id}
+                  className={`${
+                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                  } hover:bg-gray-100 transition`}
+                >
+                  <td className="px-4 py-3 flex items-center">
+                    <img
+                      src={item.imagenUrl}
+                      alt={item.nombre}
+                      className="w-14 h-14 object-cover mr-3 rounded-md shadow-sm border border-gray-100"
+                    />
+                    <span className="font-medium text-gray-800">
+                      {item.nombre}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center">
+                      <button
+                        onClick={() => quitarDelCarrito(item.id)}
+                        disabled={item.cantidad === 1}
+                        className={`bg-red-900 px-3 py-1 rounded-full text-white font-bold transition ${
+                          item.cantidad === 1
+                            ? "opacity-50 cursor-not-allowed"
+                            : "hover:bg-red-800"
+                        }`}
+                      >
+                        -
+                      </button>
+                      <span className="px-4 py-1 bg-gray-100 font-medium mx-2">
+                        {item.cantidad}
+                      </span>
+                      <button
+                        onClick={() => agregarAlCarrito(item)}
+                        disabled={item.cantidad === item.stock}
+                        className={`bg-red-900 px-3 py-1 rounded-full text-white font-bold transition ${
+                          item.cantidad === item.stock
+                            ? "opacity-50 cursor-not-allowed"
+                            : "hover:bg-red-800"
+                        }`}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="text-green-700 bg-green-100 px-3 py-1 rounded-full font-medium">
+                      ${item.precio}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-green-800 font-bold">
+                    ${item.precio * item.cantidad}
+                  </td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => eliminarDelCarrito(item.id)}
+                      className="text-red-800 cursor-pointer hover:underline font-medium"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Mobile cards */}
+          <div className="sm:hidden flex flex-col gap-4">
+            {cart.map((item) => (
+              <div
+                key={item.id}
+                className="rounded-lg p-4 flex flex-col gap-3 border border-gray-200 shadow-sm"
+              >
+                <div className="flex items-start gap-3">
+                  <img
+                    src={item.imagenUrl}
+                    alt={item.nombre}
+                    className="w-20 h-20 object-cover rounded-md shadow-sm border border-gray-100"
+                  />
+                  <div className="flex-1">
+                    <div className="font-medium text-lg text-gray-800">
+                      {item.nombre}
+                    </div>
+                    <div className="my-1">
+                      <span className="text-green-700 bg-green-100 px-2 py-0.5 rounded-full font-medium">
+                        ${item.precio}
+                      </span>
+                    </div>
+                    <div className="text-gray-500 text-sm mt-1">
+                      Subtotal:{" "}
+                      <span className="text-green-800 font-semibold">
+                        ${item.precio * item.cantidad}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mt-1">
                   <div className="flex items-center">
                     <button
                       onClick={() => quitarDelCarrito(item.id)}
                       disabled={item.cantidad === 1}
-                      className={`px-2 py-1 rounded-l bg-gray-200 text-gray-600 font-bold transition ${item.cantidad === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'}`}
-                    >-</button>
-                    <span className="px-3 py-1 bg-gray-100 font-semibold">{item.cantidad}</span>
+                      className={`bg-red-900  px-[.8rem] py-1 rounded-full text-white font-bold transition ${
+                        item.cantidad === 1
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-red-800"
+                      }`}
+                    >
+                      <span className="relative bottom-[1px]">-</span>
+                    </button>
+                    <span className="px-4 py-1 bg-gray-100 font-medium mx-2">
+                      {item.cantidad}
+                    </span>
                     <button
                       onClick={() => agregarAlCarrito(item)}
                       disabled={item.cantidad === item.stock}
-                      className={`px-2 py-1 rounded-r bg-gray-200 text-gray-600 font-bold transition ${item.cantidad === item.stock ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'}`}
-                    >+</button>
+                      className={`bg-red-900 px-[.7rem] py-1 rounded-full text-white font-bold transition ${
+                        item.cantidad === item.stock
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-red-800"
+                      }`}
+                    >
+                      <span className="relative bottom-[1px]">+</span>
+                    </button>
                   </div>
-                </td>
-                <td className="text-green-700 font-semibold">${item.precio}</td>
-                <td className="text-green-800">${item.precio * item.cantidad}</td>
-                <td>
                   <button
                     onClick={() => eliminarDelCarrito(item.id)}
-                    className="text-red-600 hover:underline font-semibold"
-                  >Eliminar</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {/* Mobile cards */}
-        <div className="sm:hidden flex flex-col gap-4">
-          {cart.map(item => (
-            <div key={item.id} className="rounded-lg p-4 flex flex-col gap-2  bg-white">
-              <div className="flex items-center gap-3">
-                <img src={item.imagenUrl} alt={item.nombre} className="w-16 h-16 object-cover rounded " />
-                <div>
-                  <div className="font-semibold text-lg">{item.nombre}</div>
-                  <div className="text-green-700 font-bold text-base">Precio: ${item.precio}</div>
-                  <div className="text-gray-500 text-sm">Subtotal: ${item.precio * item.cantidad}</div>
+                    className="text-red-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-red-50 border border-red-200 transition"
+                  >
+                    Eliminar
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center gap-2 mt-2">
-                <button
-                  onClick={() => quitarDelCarrito(item.id)}
-                  disabled={item.cantidad === 1}
-                  className={`px-3 py-1 rounded-l bg-gray-200 text-gray-600 font-bold transition ${item.cantidad === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'}`}
-                >-</button>
-                <span className="px-4 py-1 bg-gray-100 font-semibold">{item.cantidad}</span>
-                <button
-                  onClick={() => agregarAlCarrito(item)}
-                  disabled={item.cantidad === item.stock}
-                  className={`px-3 py-1 rounded-r bg-gray-200 text-gray-600 font-bold transition ${item.cantidad === item.stock ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-300'}`}
-                >+</button>
-                <button
-                  onClick={() => eliminarDelCarrito(item.id)}
-                  className="ml-auto text-red-600 text-sm underline font-semibold"
-                >Eliminar</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <div className="text-2xl font-bold text-green-800">
-            <span>Total:</span> ${totalPrecio}
+            ))}
           </div>
-          <button
-            onClick={vaciarCarrito}
-            className="bg-red-600 text-white px-5 py-2 rounded-md font-semibold hover:bg-red-700 transition"
+        </div>
+
+        {/* Order summary */}
+        <div className="mb-6 bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex flex-row items-center gap-3 text-xl font-semibold text-gray-800">
+              Total:
+              <span className="text-xl font-semibold text-green-700 bg-green-100 px-4 py-1 rounded-full">
+                ${totalPrecio}
+              </span>
+            </div>
+
+            <button
+              onClick={vaciarCarrito}
+              className="text-red-900 border border-red-200 px-5 py-2 rounded-full font-medium hover:bg-red-50 transition w-full sm:w-auto"
+            >
+              Vaciar carrito
+            </button>
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <label
+            htmlFor="direccion"
+            className="block text-gray-700 font-medium mb-2"
           >
-            Vaciar carrito
+            Dirección de entrega:
+          </label>
+          <input
+            id="direccion"
+            value={direccion}
+            readOnly
+            disabled
+            placeholder="Dirección de entrega"
+            className="border border-gray-300 px-4 py-3 rounded-md w-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-transparent transition"
+          />
+        </div>
+
+        <div className="flex justify-center">
+          <button
+            onClick={handleCreateOrder}
+            disabled={isSubmitting || pedidoExitoso}
+            className={`bg-red-900 text-white px-8 py-6 rounded-full font-semibold text-lg shadow-md hover:bg-red-800 transition w-full sm:w-auto relative overflow-hidden ${
+              isSubmitting || pedidoExitoso
+                ? "opacity-80 cursor-not-allowed"
+                : ""
+            }`}
+          >
+            {/* Estado normal */}
+            <span
+              className={`absolute left-0 top-0 w-full h-full flex items-center justify-center transition-opacity duration-300 ${
+                !isSubmitting && !pedidoExitoso ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              Crear pedido
+            </span>
+
+            {/* Estado de carga */}
+            <span
+              className={`absolute left-0 top-0 w-full h-full flex items-center justify-center transition-opacity duration-300 ${
+                isSubmitting ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <svg
+                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Procesando...
+            </span>
+
+            {/* Estado de éxito */}
+            <span
+              className={`absolute left-0 top-0 w-full h-full flex items-center justify-center transition-opacity duration-300 ${
+                pedidoExitoso ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              ¡Pedido creado exitosamente!
+            </span>
           </button>
         </div>
-      </div>
-      <div className="mb-8">
-        <label htmlFor="direccion" className="block text-gray-700 font-semibold mb-1">
-          Dirección de entrega:
-        </label>
-        <input
-          id="direccion"
-          value={direccion}
-          onChange={e => setDireccion(e.target.value)}
-          placeholder="Dirección de entrega"
-          className="border border-gray-300 px-3 py-2 rounded-md w-full focus:outline-none focus:border-blue-500 transition"
-        />
-      </div>
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <button
-          onClick={handleCreateOrder}
-          className="bg-green-600 text-white px-8 py-3 rounded-md font-bold text-lg  hover:bg-green-700 transition"
-        >
-          Crear pedido
-        </button>
-      </div>
+      </Fade>
     </div>
   );
 }

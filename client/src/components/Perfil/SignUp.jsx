@@ -33,22 +33,22 @@ function SignUp({ setIsSigningUp, setIsLoggedIn }) {
         <h2 className="text-2xl font-bold mb-6 text-center">Registrate</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700 mb-2">Nombre:</label>
+            <label htmlFor="nombre" className="block text-gray-700 mb-2">Nombre:</label>
             <input
               type="text"
-              id="name"
-              name="name"
+              id="nombre"
+              name="nombre"
               required
               className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               onChange={(e) => setForm({ ...form, [e.target.name]: e.target.value })}
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="phone" className="block text-gray-700 mb-2">Teléfono:</label>
+            <label htmlFor="telefono" className="block text-gray-700 mb-2">Teléfono:</label>
             <input
               type="text"
-              id="phone"
-              name="phone"
+              id="telefono"
+              name="telefono"
               required
               className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               onChange={(e) => setForm({ ...form, [e.target.name]: e.target.value })}

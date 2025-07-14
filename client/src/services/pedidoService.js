@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api/pedido';
+const API_URL = 'http://localhost:3000/api/pedido';
 
 export const getAllPedidos = (token) => {
   return axios.get(API_URL, {

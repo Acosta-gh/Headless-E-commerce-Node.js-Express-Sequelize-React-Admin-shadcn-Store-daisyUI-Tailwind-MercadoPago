@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api/upload';
+const API_URL = 'http://localhost:3000/api/upload';
 
 export function uploadImage(formData, token) {
   return axios.post(API_URL, formData, {

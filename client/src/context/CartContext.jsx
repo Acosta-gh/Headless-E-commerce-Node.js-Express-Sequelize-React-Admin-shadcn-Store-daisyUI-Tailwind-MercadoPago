@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useReducer } from "react";
+import React, { createContext, useContext, useReducer, useEffect } from "react";
 
 // El estado inicial es un array de items en el carrito
-const initialState = [];
+const initialState = JSON.parse(localStorage.getItem("cart")) || [];
 
 /**
  * Reducer para manejar acciones del carrito.
@@ -10,25 +10,38 @@ const initialState = [];
 function cartReducer(state, action) {
   switch (action.type) {
     case "AGREGAR_ITEM": {
-      const existe = state.find(item => item.id === action.payload.id);
+      const { item, cantidad = 1 } = action.payload;
+      const cantidadToAdd = Number(cantidad);
+      
+      // Ensure cantidad is valid
+      if (isNaN(cantidadToAdd) || cantidadToAdd <= 0) {
+        console.error("Cantidad inválida:", cantidad);
+        return state;
+      }
+      
+      const existe = state.find(cartItem => cartItem.id === item.id);
+      
       if (existe) {
-        // Si ya está, solo suma cantidad si no supera el stock
-        return state.map(item =>
-          item.id === action.payload.id
+        // Si ya está, suma la cantidad especificada sin exceder el stock
+        return state.map(cartItem =>
+          cartItem.id === item.id
             ? {
-                ...item,
-                cantidad:
-                  item.cantidad < item.stock
-                    ? item.cantidad + 1
-                    : item.cantidad,
+                ...cartItem,
+                cantidad: Math.min(
+                  cartItem.cantidad + cantidadToAdd, 
+                  cartItem.stock
+                ),
               }
-            : item
+            : cartItem
         );
       } else {
-        // Nuevo item, inicia en cantidad 1
+        // Nuevo item con la cantidad especificada (sin exceder el stock)
         return [
           ...state,
-          { ...action.payload, cantidad: 1 },
+          { 
+            ...item, 
+            cantidad: Math.min(cantidadToAdd, item.stock) 
+          },
         ];
       }
     }
@@ -61,14 +74,29 @@ export const useCart = () => useContext(CartContext);
 export function CartProvider({ children }) {
   const [cart, dispatch] = useReducer(cartReducer, initialState);
 
+  // Save to localStorage when cart changes
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
   // Lógica de acciones
-  const agregarAlCarrito = item => dispatch({ type: "AGREGAR_ITEM", payload: item });
+  const agregarAlCarrito = (item, cantidad = 1) => {
+    console.log(`Agregando ${cantidad} unidades de ${item.nombre} al carrito`);
+    dispatch({ 
+      type: "AGREGAR_ITEM", 
+      payload: { item, cantidad } 
+    });
+  };
+  
   const quitarDelCarrito = id => dispatch({ type: "QUITAR_ITEM", payload: id });
   const eliminarDelCarrito = id => dispatch({ type: "ELIMINAR_ITEM", payload: id });
   const vaciarCarrito = () => dispatch({ type: "VACIAR_CARRITO" });
 
-  // Suma total de items
-  const totalItems = cart.reduce((acc, item) => acc + item.cantidad, 0);
+  // Número total de items únicos (por ID)
+  const totalUniqueItems = cart.length;
+
+  // Suma total de cantidad de todos los items
+  const totalItemQuantity = cart.reduce((acc, item) => acc + item.cantidad, 0);
 
   // Total precio
   const totalPrecio = cart.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
@@ -81,7 +109,8 @@ export function CartProvider({ children }) {
         quitarDelCarrito,
         eliminarDelCarrito,
         vaciarCarrito,
-        totalItems,
+        totalItems: totalUniqueItems, // Changed to represent unique items
+        totalItemQuantity, // New property for total quantity
         totalPrecio,
       }}
     >
