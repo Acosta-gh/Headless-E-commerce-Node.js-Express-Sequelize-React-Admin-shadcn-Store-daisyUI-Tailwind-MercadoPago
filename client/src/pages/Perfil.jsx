@@ -389,14 +389,14 @@ function Perfil() {
               <motion.div className="ml-auto mt-4 " variants={itemAnimation}>
                 <Link
                   to="/admin"
-                  className="px-4 w-32  py-2 bg-[var(--color-dark-gray)] text-white rounded-lg transition-all block"
+                  className="px-4 w-50  py-2 bg-[var(--color-dark-gray)] text-white rounded-lg transition-all block"
                 >
                   <motion.span
                     className="inline-block w-full text-center"
                     whileHover={buttonHover}
                     whileTap={buttonTap}
                   >
-                    Panel Admin
+                    Gestionar Productos
                   </motion.span>
                 </Link>
               </motion.div>
