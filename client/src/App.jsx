@@ -13,7 +13,7 @@ function App() {
   const [items, setItems] = useState([]);
   const [selectedCategoria, setSelectedCategoria] = useState(null);
   const [search, setSearch] = useState("");
-  
+
   // PAGINATION STATES
   const itemsPerPage = 3;
   const [currentPage, setCurrentPage] = useState(0);
@@ -74,36 +74,36 @@ function App() {
   // Variantes de animación para Framer Motion
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { 
+    visible: {
       opacity: 1,
-      transition: { 
+      transition: {
         staggerChildren: 0.1,
-        duration: 0.3
-      }
+        duration: 0.3,
+      },
     },
-    exit: { 
+    exit: {
       opacity: 0,
-      transition: { duration: 0.2 }
-    }
+      transition: { duration: 0.2 },
+    },
   };
 
   const titleVariants = {
     hidden: { y: -20, opacity: 0 },
-    visible: { 
-      y: 0, 
+    visible: {
+      y: 0,
       opacity: 1,
-      transition: { duration: 0.5 }
-    }
+      transition: { duration: 0.5 },
+    },
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="mx-auto max-w-7xl  sm:px-6 sm:pt-3 lg:px-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <motion.h1 
+      <motion.h1
         className="text-2xl text-gray-900 font-semibold p-4 pb-0"
         variants={titleVariants}
         initial="hidden"
@@ -111,10 +111,10 @@ function App() {
       >
         Elige tu comida <span className="text-red-900">favorita</span>
       </motion.h1>
-      
+
       <SearchBar search={search} setSearch={setSearch} />
-      
-      <motion.div 
+
+      <motion.div
         className="mb-8"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -126,10 +126,10 @@ function App() {
           setSelectedCategoria={setSelectedCategoria}
         />
       </motion.div>
-      
+
       <AnimatePresence mode="wait">
         {itemsDestacados.length > 0 && (
-          <motion.div 
+          <motion.div
             key="destacados"
             className="mb-4"
             variants={containerVariants}
@@ -138,13 +138,18 @@ function App() {
             exit="exit"
           >
             <div className="pr-4 flex flex-row items-center justify-between sm:justify-start">
-              <motion.h3 
+              <motion.h3
                 className="flex items-center gap-2 p-4 text-lg"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <Star color="#9b0808" fill="#9b0808" size={20} className="inline-block align-middle relative bottom-[1.5px] left-[3px]" />
+                <Star
+                  color="#9b0808"
+                  fill="#9b0808"
+                  size={20}
+                  className="inline-block align-middle relative bottom-[1.5px] left-[3px]"
+                />
                 <span className="font-medium">Destacados</span>
               </motion.h3>
               <motion.div
@@ -152,6 +157,7 @@ function App() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
               >
+                {/* 
                 <Link
                   to="/destacados"
                   className="text-red-800 font-medium sm:text-sm sm:items-center sm:justify-center flex gap-1 hover:text-red-900 transition-all duration-300"
@@ -161,9 +167,10 @@ function App() {
                     <SquareArrowOutUpRight size={16} className="hidden sm:block" />
                   </motion.div>
                 </Link>
+                */}
               </motion.div>
             </div>
-            
+
             <AnimatePresence mode="wait">
               <motion.div
                 key={`destacados-${selectedCategoria}-${search}`}
@@ -179,13 +186,13 @@ function App() {
         )}
       </AnimatePresence>
 
-      <motion.div 
+      <motion.div
         className="p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}
       >
-        <motion.h3 
+        <motion.h3
           className="flex items-center gap-2 text-lg mb-4"
           variants={titleVariants}
           initial="hidden"
@@ -193,7 +200,7 @@ function App() {
         >
           <span className="font-medium">Nuestro Menú</span>
         </motion.h3>
-        
+
         <AnimatePresence mode="wait">
           <motion.div
             key={`menu-${selectedCategoria}-${search}-${currentPage}`}
@@ -205,7 +212,7 @@ function App() {
             <ItemContainer items={currentItems} />
           </motion.div>
         </AnimatePresence>
-        
+
         {itemsFiltrados.length > itemsPerPage && (
           <motion.div
             className="flex gap-2 justify-center my-6"
@@ -217,7 +224,9 @@ function App() {
             <motion.button
               whileHover={{ scale: currentPage === 0 ? 1 : 1.05 }}
               whileTap={{ scale: currentPage === 0 ? 1 : 0.95 }}
-              onClick={() => currentPage > 0 && handlePageClick(currentPage - 1)}
+              onClick={() =>
+                currentPage > 0 && handlePageClick(currentPage - 1)
+              }
               className={`px-3 py-1.5 rounded-lg font-medium ${
                 currentPage === 0
                   ? "bg-gray-200 text-gray-400 cursor-not-allowed"
@@ -253,7 +262,7 @@ function App() {
             <motion.button
               whileHover={{ scale: currentPage >= pageCount - 1 ? 1 : 1.05 }}
               whileTap={{ scale: currentPage >= pageCount - 1 ? 1 : 0.95 }}
-              onClick={() => 
+              onClick={() =>
                 currentPage < pageCount - 1 && handlePageClick(currentPage + 1)
               }
               className={`px-3 py-1.5 rounded-lg font-medium ${

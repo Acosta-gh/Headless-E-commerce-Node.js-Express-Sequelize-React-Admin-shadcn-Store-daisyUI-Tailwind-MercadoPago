@@ -3,7 +3,6 @@ import { useCart } from "../../context/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
-// Reusable component for mobile nav items with consistent animations
 const MobileNavItem = ({ to, activeIcon, inactiveIcon, label, badge = null }) => {
   const [isPressed, setIsPressed] = useState(false);
   
@@ -28,7 +27,6 @@ const MobileNavItem = ({ to, activeIcon, inactiveIcon, label, badge = null }) =>
             }}
             transition={{ duration: 0.2 }}
           >
-            {/* Icon with active/inactive transition */}
             <motion.div
               initial={false}
               animate={{ 
@@ -57,18 +55,6 @@ const MobileNavItem = ({ to, activeIcon, inactiveIcon, label, badge = null }) =>
               {label}
             </motion.span>
             
-            {/* Animated dot indicator for active state */}
-            <motion.div 
-              className="absolute -bottom-4 w-1.5 h-1.5 bg-white rounded-full"
-              initial={false}
-              animate={{ 
-                scale: isActive ? 1 : 0,
-                opacity: isActive ? 1 : 0 
-              }}
-              transition={{ duration: 0.3 }}
-            />
-            
-            {/* Badge if applicable */}
             {badge}
           </motion.div>
         )}
