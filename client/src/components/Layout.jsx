@@ -7,7 +7,7 @@ export default function Layout() {
   return (
     <div>
       <Header />
-      <main className="md:pt-26 md:pb-0 pb-16 min-h-screen bg-[var(--color-background)]"> 
+      <main className="sm:pt-26 sm:pb-10 pb-16 min-h-screen bg-[var(--color-background)]"> 
         <Outlet />
       </main>
       <Footer />

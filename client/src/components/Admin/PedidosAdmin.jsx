@@ -182,7 +182,7 @@ export default function PedidosAdmin({ token }) {
                             value={pedido.estado}
                             onChange={(e) => handleEstadoChange(pedido.id, e.target.value)}
                             disabled={updatingPedido === pedido.id}
-                            className={`appearance-none pl-8 pr-10 py-2 border rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-300 ${
+                            className={`appearance-none relative bottom-[1px] pl-8 pr-4 py-2 flex items-center justify-center border rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-300 ${
                               ESTADO_COLORS[pedido.estado]?.bg || 'bg-gray-100'
                             } ${ESTADO_COLORS[pedido.estado]?.text || 'text-gray-800'} border-transparent`}
                           >
