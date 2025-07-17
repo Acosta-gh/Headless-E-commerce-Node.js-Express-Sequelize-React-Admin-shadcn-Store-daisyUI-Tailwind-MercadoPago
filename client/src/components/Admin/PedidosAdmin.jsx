@@ -93,14 +93,14 @@ export default function PedidosAdmin({ token }) {
   return (
     <Fade duration={500} triggerOnce>
       <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
-        <div className="bg-red-100 p-4 border-b border-red-200 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-red-900 flex items-center gap-2">
+        <div className="bg-gray-100 p-4 border-b border-gray-200 flex justify-between items-center">
+          <h2 className="text-xl  text-gray-900 flex items-center gap-2">
             <Package size={20} />
             Gestión de Pedidos
           </h2>
           <button 
             onClick={fetchPedidos}
-            className="text-red-900 hover:bg-red-200 p-2 rounded-full flex items-center justify-center transition-colors"
+            className="text-gray-900 hover:bg-gray-200 p-2 rounded-full flex items-center justify-center transition-colors"
             title="Actualizar pedidos"
           >
             <RefreshCw size={18} />
@@ -111,56 +111,56 @@ export default function PedidosAdmin({ token }) {
           {loadingPedidos ? (
             <div className="py-20 flex items-center justify-center">
               <div className="flex flex-col items-center">
-                <svg className="animate-spin h-12 w-12 text-red-700 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin h-12 w-12 text-gray-700 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <p className="text-red-700 text-lg font-medium">Cargando pedidos...</p>
+                <p className="text-gray-700 text-lg font-medium">Cargando pedidos...</p>
               </div>
             </div>
           ) : pedidos.length === 0 ? (
             <div className="py-20 text-center">
-              <Package className="mx-auto h-16 w-16 text-red-300 mb-4" strokeWidth={1.5} />
-              <h3 className="text-xl font-medium text-red-800 mb-2">No hay pedidos registrados</h3>
-              <p className="text-red-600">Aún no hay pedidos en el sistema.</p>
+              <Package className="mx-auto h-16 w-16 text-gray-300 mb-4" strokeWidth={1.5} />
+              <h3 className="text-xl font-medium text-gray-800 mb-2">No hay pedidos registrados</h3>
+              <p className="text-gray-600">Aún no hay pedidos en el sistema.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-red-200 rounded-lg">
-                <thead className="bg-red-50">
+              <table className="min-w-full divide-y divide-gray-200 rounded-lg">
+                <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-red-900 uppercase tracking-wider">
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                       Pedido
                     </th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-red-900 uppercase tracking-wider">
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                       Cliente
                     </th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-red-900 uppercase tracking-wider">
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                       Fecha
                     </th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-red-900 uppercase tracking-wider">
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                       Total
                     </th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-red-900 uppercase tracking-wider">
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                       Estado
                     </th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-red-900 uppercase tracking-wider">
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                       Items
                     </th>
-                    <th scope="col" className="px-4 py-3 text-center text-xs font-medium text-red-900 uppercase tracking-wider">
+                    <th scope="col" className="px-4 py-3 text-center text-xs font-medium text-gray-900 uppercase tracking-wider">
                       Acciones
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-red-100">
+                <tbody className="bg-white divide-y divide-gray-100">
                   {pedidosOrdenados.map((pedido, index) => (
                     <tr 
                       key={pedido.id}
-                      className={`${index % 2 === 0 ? "bg-white" : "bg-red-50"} hover:bg-red-100 transition-colors`}
+                      className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 transition-colors`}
                     >
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="text-lg font-bold text-red-900">#{pedido.id}</div>
+                          <div className="text-lg font-bold text-gray-900">#{pedido.id}</div>
                         </div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
@@ -182,7 +182,7 @@ export default function PedidosAdmin({ token }) {
                             value={pedido.estado}
                             onChange={(e) => handleEstadoChange(pedido.id, e.target.value)}
                             disabled={updatingPedido === pedido.id}
-                            className={`appearance-none relative bottom-[1px] pl-8 pr-4 py-2 flex items-center justify-center border rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-300 ${
+                            className={`appearance-none relative bottom-[1px] pl-8 pr-4 py-2 flex items-center justify-center border rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-300 ${
                               ESTADO_COLORS[pedido.estado]?.bg || 'bg-gray-100'
                             } ${ESTADO_COLORS[pedido.estado]?.text || 'text-gray-800'} border-transparent`}
                           >
@@ -207,7 +207,7 @@ export default function PedidosAdmin({ token }) {
                             {pedido.Items?.map(item => (
                               <li key={item.id} className="flex items-center justify-between">
                                 <span className="truncate max-w-[150px]">{item.nombre}</span>
-                                <span className="ml-2 bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-xs">
+                                <span className="ml-2 bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full text-xs">
                                   x{item.PedidoItem?.cantidad}
                                 </span>
                               </li>
@@ -218,7 +218,7 @@ export default function PedidosAdmin({ token }) {
                       <td className="px-4 py-4 whitespace-nowrap text-center">
                         <Link
                           to={`/pedido/${pedido.id}`}
-                          className="inline-flex items-center px-4 py-2 bg-red-900 text-white rounded-full hover:bg-red-800 transition-colors"
+                          className="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-colors"
                         >
                           <Info size={16} className="mr-1" />
                           Ver detalles

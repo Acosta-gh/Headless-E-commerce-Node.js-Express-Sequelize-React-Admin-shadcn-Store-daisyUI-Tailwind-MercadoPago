@@ -388,7 +388,7 @@ function Carrito() {
         <motion.button
           onClick={handleCreateOrder}
           disabled={isSubmitting || pedidoExitoso}
-          className="bg-red-900 text-white px-8 py-6 rounded-full font-semibold text-lg shadow-md w-full sm:w-auto relative overflow-hidden"
+          className="bg-red-900 text-white px-13 py-6 rounded-full font-semibold text-lg shadow-md w-full sm:w-auto relative overflow-hidden"
           whileHover={
             isSubmitting || pedidoExitoso ? {} : { scale: 1.03, y: -2 }
           }
