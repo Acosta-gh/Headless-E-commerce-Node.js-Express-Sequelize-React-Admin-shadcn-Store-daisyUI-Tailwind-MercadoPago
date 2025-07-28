@@ -9,7 +9,7 @@ export default function CategoryFilter({ categorias, selectedCategoria, setSelec
       <li
         className={`cursor-pointer flex gap-1 items-center px-6 py-2 ml-1 rounded-full shadow-md transition-all duration-300
           ${selectedCategoria === null
-            ? "bg-red-900 text-white scale-105"
+            ? "bg-[var(--color-accent)] text-white scale-105"
             : "bg-white text-black"
         }`}
         onClick={() => setSelectedCategoria(null)}
@@ -21,7 +21,7 @@ export default function CategoryFilter({ categorias, selectedCategoria, setSelec
           key={idx}
           className={`cursor-pointer px-6 py-2 rounded-full shadow-md transition-all duration-300
             ${selectedCategoria === categoria
-              ? "bg-red-900 text-white scale-105"
+              ? "bg-[var(--color-accent)] text-white scale-105"
               : "bg-white text-black"
             }`}
           onClick={() => setSelectedCategoria(categoria)}

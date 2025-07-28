@@ -123,13 +123,14 @@ const HeaderNavDesktop = () => {
                 />
               </svg>
             }
+            // Icono con badge para mostrar el número de artículos en el carrito
             badge={
               totalItems > 0 && (
                 <motion.span
                   key={totalItems}
                   initial={{ scale: 0.6, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow-md"
+                  className="absolute -top-2 -right-2 bg-[var(--color-accent)] text-white text-xs font-bold rounded-full px-2 py-0.5 shadow-md"
                 >
                   {totalItems}
                 </motion.span>

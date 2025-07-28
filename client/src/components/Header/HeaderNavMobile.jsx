@@ -68,7 +68,7 @@ const HeaderNavMobile = () => {
 
   return (
     <motion.nav 
-      className="md:hidden fixed bottom-0 left-0 w-full bg-[var(--color-secondary)] text-white z-50"
+      className="md:hidden fixed bottom-0 left-0 w-full bg-[var(--color-primary)] text-white z-50"
       initial={{ y: 100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -150,7 +150,7 @@ const HeaderNavMobile = () => {
                   times: [0, 0.6, 1],
                   ease: "easeOut"
                 }}
-                className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center"
+                className="absolute -top-2 -right-2 bg-[var(--color-primary)] text-white text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center"
               >
                 <motion.span
                   key={totalItems}

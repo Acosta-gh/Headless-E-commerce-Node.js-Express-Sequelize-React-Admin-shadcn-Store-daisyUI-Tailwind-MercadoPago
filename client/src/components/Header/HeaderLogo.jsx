@@ -4,7 +4,7 @@ const HeaderLogo = () => (
   <NavLink to="/" className="flex items-center">
                     <svg
                     viewBox="0 0 120.32985 120.32985"
-                    className="fill-current text-[var(--color-secondary)] md:text-white w-16 h-16"
+                    className="fill-current text-[var(--color-primary)] md:text-white w-16 h-16"
                     version="1.1"
                     id="svg5"
                     inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"

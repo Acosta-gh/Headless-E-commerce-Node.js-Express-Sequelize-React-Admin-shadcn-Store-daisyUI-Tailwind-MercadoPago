@@ -119,7 +119,7 @@ function SignUp({ setIsSigningUp, setIsLoggedIn }) {
           </div>
           <motion.button
             type="submit"
-            className="w-full bg-[var(--color-secondary)] text-white py-2 rounded cursor-pointer transition-colors"
+            className="w-full bg-[var(--color-primary)] text-white py-2 rounded cursor-pointer transition-colors"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >

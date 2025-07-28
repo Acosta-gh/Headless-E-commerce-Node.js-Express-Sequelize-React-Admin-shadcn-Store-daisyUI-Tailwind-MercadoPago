@@ -48,7 +48,7 @@ export function AlertProvider({ children }) {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-[var(--color-secondary)] text-white px-4 py-2 rounded cursor-pointer"
+                  className="bg-[var(--color-primary)] text-white px-4 py-2 rounded cursor-pointer"
                   onClick={hideAlert}
                 >
                   Aceptar

@@ -9,7 +9,7 @@ export default function SearchBar({ search, setSearch }) {
                 </span>
                 <input
                     type="text"
-                    placeholder="Busca tu comida favorita..."
+                    placeholder="Busca aquí..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                     className="pl-10 p-3 pt-3.5 rounded-full bg-white w-full focus:outline-none focus:ring-2 focus:ring-red-900 transition-all duration-300 shadow-md"

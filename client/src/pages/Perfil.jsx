@@ -274,7 +274,7 @@ function Perfil() {
   if (!isLoggedIn && !isSigningUp) {
     return (
       <motion.div
-        className="flex items-center justify-center min-h-[60vh] bg-slate-50"
+        className="flex items-center justify-center min-h-[60vh]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -294,7 +294,7 @@ function Perfil() {
   if (!isLoggedIn && isSigningUp) {
     return (
       <motion.div
-        className="flex items-center justify-center min-h-[60vh] bg-slate-50"
+        className="flex items-center justify-center min-h-[60vh]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -328,11 +328,11 @@ function Perfil() {
         transition={{ duration: 0.4 }}
         className="absolute top-9 right-6 z-10 cursor-pointer flex items-center gap-2 text-sm text-slate-500 hover:text-red-600 transition-colors duration-200"
       >
-        <LogOut size={25} strokeWidth={2} color="var(--color-secondary)" />
+        <LogOut size={25} strokeWidth={2} color="var(--color-primary)" />
       </motion.button>
 
       <motion.div
-        className="bg-slate-50 min-h-screen"
+        className=" min-h-screen"
         key="profile-page"
         initial="hidden"
         animate="visible"
