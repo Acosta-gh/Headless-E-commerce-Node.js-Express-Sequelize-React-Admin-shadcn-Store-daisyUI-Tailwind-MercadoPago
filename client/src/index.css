@@ -1,22 +1,28 @@
-@import "tailwindcss";
 @import 'tailwind-scrollbar-hide/v4';
-@import url('https://fonts.googleapis.com/css2?family=Italiana&family=Petrona:ital,wght@0,100..900;1,100..900&display=swap');
+
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+    font-family: "Playfair Display";
+    src: url("./assets/PlayfairDisplay-VariableFont_wght.ttf");
+}
+
+@import "tailwindcss";
+
 @theme {
-    --font-display: "Italiana", sans-serif;
+    --font-playfair: "Playfair Display", serif;
 }
 
 :root {
-    --font-italiana: font-family: "Italiana", sans-serif;
 
     --color-background: #ffff;
     --color-background-gray: #f5f5f5;
     --color-primary: #0C220B;
     --color-accent: #EA751C;
+    --color-accent-soft: #7FA159;
     --color-red-light: #B91C1C;
     --color-red-vibrant: #DC2626;
     --color-terracotta: #C2410C;

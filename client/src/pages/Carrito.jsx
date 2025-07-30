@@ -58,8 +58,6 @@ function Carrito() {
       })),
     };
 
-    console.log("Items del pedido, pedidoData.items:", pedidoData.items);
-
     try {
       await createPedido(pedidoData, token);
       setPedidoExitoso(true);
@@ -68,7 +66,6 @@ function Carrito() {
         setPedidoExitoso(false);
       }, 2000);
     } catch (error) {
-      console.error("Error al crear el pedido:", error.response?.data || error);
       alert("Error al crear el pedido.");
     } finally {
       setIsSubmitting(false);
@@ -99,12 +96,6 @@ function Carrito() {
     },
   };
 
-  const buttonVariants = {
-    hover: { scale: 1.05, transition: { type: "spring", stiffness: 400 } },
-    tap: { scale: 0.95 },
-    disabled: { scale: 1, opacity: 0.6 },
-  };
-
   if (cart.length === 0) {
     return (
       <motion.div
@@ -123,15 +114,13 @@ function Carrito() {
         <p className="text-gray-500 text-center text-lg mb-6">
           Agrega algunos productos para comenzar
         </p>
-        <motion.a
+        <a
           href="/"
-          className="bg-red-900 text-white px-6 py-3 rounded-full font-semibold shadow hover:bg-red-800 transition-colors duration-300 flex items-center gap-2"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          className="bg-[var(--color-primary)] text-white px-6 py-3 rounded-full font-semibold shadow hover:bg-red-800 transition-colors duration-300 flex items-center gap-2"
         >
           <ShoppingBag size={18} />
           Ver productos
-        </motion.a>
+        </a>
       </motion.div>
     );
   }
@@ -180,16 +169,14 @@ function Carrito() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className={`${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  } hover:bg-gray-100 transition-colors`}
+                  className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100 transition-colors`}
                 >
                   <td className="px-4 py-3 flex items-center">
                     <motion.img
                       src={item.imagenUrl}
                       alt={item.nombre}
                       className="w-14 h-14 object-cover mr-3 rounded-md shadow-sm border border-gray-100"
-                      whileHover={{ scale: 1.05 }}
                     />
                     <span className="font-medium text-gray-800">
                       {item.nombre}
@@ -197,38 +184,27 @@ function Carrito() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center">
-                      <motion.button
+                      <button
                         onClick={() => quitarDelCarrito(item.id)}
                         disabled={item.cantidad <= 1}
-                        className="bg-red-900 px-3 py-1 rounded-full text-white font-bold transition flex items-center justify-center"
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                        animate={item.cantidad <= 1 ? "disabled" : "visible"}
+                        className={`bg-[var(--color-primary)] px-3 py-1 rounded-full text-white font-bold transition flex items-center justify-center
+                          ${item.cantidad <= 1 ? 'opacity-60 cursor-not-allowed bg-gray-400' : ''}`}
                       >
                         <Minus size={14} />
-                      </motion.button>
-                      <motion.span
-                        key={item.cantidad}
+                      </button>
+                      <span
                         className="px-4 py-1 bg-gray-100 font-medium mx-2"
-                        animate={{ scale: [1, 1.1, 1] }}
-                        transition={{ duration: 0.2 }}
                       >
                         {item.cantidad}
-                      </motion.span>
-                      <motion.button
+                      </span>
+                      <button
                         onClick={() => agregarAlCarrito(item)}
                         disabled={item.cantidad >= item.stock}
-                        className="bg-red-900 px-3 py-1 rounded-full text-white font-bold transition flex items-center justify-center"
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                        animate={
-                          item.cantidad >= item.stock ? "disabled" : "visible"
-                        }
+                        className={`bg-[var(--color-primary)] px-3 py-1 rounded-full text-white font-bold transition flex items-center justify-center
+                          ${item.cantidad >= item.stock ? 'opacity-60 cursor-not-allowed bg-gray-400' : ''}`}
                       >
                         <Plus size={14} />
-                      </motion.button>
+                      </button>
                     </div>
                   </td>
                   <td className="px-4 py-3">
@@ -240,14 +216,12 @@ function Carrito() {
                     ${item.precio * item.cantidad}
                   </td>
                   <td className="px-4 py-3">
-                    <motion.button
+                    <button
                       onClick={() => eliminarDelCarrito(item.id)}
                       className="text-red-800 cursor-pointer flex items-center gap-1 font-medium p-1 rounded-md hover:bg-red-50"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
                     >
                       <Trash2 size={16} /> Eliminar
-                    </motion.button>
+                    </button>
                   </td>
                 </motion.tr>
               ))}
@@ -273,7 +247,6 @@ function Carrito() {
                     src={item.imagenUrl}
                     alt={item.nombre}
                     className="w-20 h-20 object-cover rounded-md shadow-sm border border-gray-100"
-                    whileHover={{ scale: 1.05 }}
                   />
                   <div className="flex-1">
                     <div className="font-medium text-lg text-gray-800">
@@ -294,47 +267,34 @@ function Carrito() {
                 </div>
                 <div className="flex items-center justify-between mt-1">
                   <div className="flex items-center">
-                    <motion.button
+                    <button
                       onClick={() => quitarDelCarrito(item.id)}
                       disabled={item.cantidad <= 1}
-                      className="bg-red-900 px-3 py-1 rounded-full text-white font-bold transition flex items-center justify-center"
-                      variants={buttonVariants}
-                      whileHover="hover"
-                      whileTap="tap"
-                      animate={item.cantidad <= 1 ? "disabled" : "visible"}
+                      className={`bg-[var(--color-primary)] px-3 py-1 rounded-full text-white font-bold transition flex items-center justify-center
+                        ${item.cantidad <= 1 ? 'opacity-60 cursor-not-allowed bg-gray-400' : ''}`}
                     >
                       <Minus size={14} />
-                    </motion.button>
-                    <motion.span
-                      key={item.cantidad}
+                    </button>
+                    <span
                       className="px-4 py-1 bg-gray-100 font-medium mx-2"
-                      animate={{ scale: [1, 1.1, 1] }}
-                      transition={{ duration: 0.2 }}
                     >
                       {item.cantidad}
-                    </motion.span>
-                    <motion.button
+                    </span>
+                    <button
                       onClick={() => agregarAlCarrito(item)}
                       disabled={item.cantidad >= item.stock}
-                      className="bg-red-900 px-3 py-1 rounded-full text-white font-bold transition flex items-center justify-center"
-                      variants={buttonVariants}
-                      whileHover="hover"
-                      whileTap="tap"
-                      animate={
-                        item.cantidad >= item.stock ? "disabled" : "visible"
-                      }
+                      className={`bg-[var(--color-primary)] px-3 py-1 rounded-full text-white font-bold transition flex items-center justify-center
+                        ${item.cantidad >= item.stock ? 'opacity-60 cursor-not-allowed bg-gray-400' : ''}`}
                     >
                       <Plus size={14} />
-                    </motion.button>
+                    </button>
                   </div>
-                  <motion.button
+                  <button
                     onClick={() => eliminarDelCarrito(item.id)}
                     className="text-red-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-red-50 border border-red-200 transition flex items-center gap-1"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
                   >
                     <Trash2 size={14} /> Eliminar
-                  </motion.button>
+                  </button>
                 </div>
               </motion.div>
             ))}
@@ -352,21 +312,17 @@ function Carrito() {
             <motion.span
               key={totalKey}
               className="text-xl font-semibold text-green-700 bg-green-100 px-4 py-1 rounded-full"
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 0.3 }}
             >
               ${totalPrecio}
             </motion.span>
           </div>
-          <motion.button
+          <button
             onClick={vaciarCarrito}
             className=" cursor-pointer text-red-900 border border-red-200 px-5 py-2 rounded-full font-medium hover:bg-red-50 transition w-full sm:w-auto flex items-center justify-center gap-2"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
           >
             <Trash2 size={16} />
             Vaciar carrito
-          </motion.button>
+          </button>
         </div>
       </motion.div>
 
@@ -388,10 +344,11 @@ function Carrito() {
       </motion.div>
 
       <motion.div className="flex justify-center" variants={itemVariants}>
+        {/* Mantener animaciones SOLO en el botón de comprar */}
         <motion.button
           onClick={handleCreateOrder}
           disabled={isSubmitting || pedidoExitoso}
-          className="bg-red-900 text-white px-13 py-6 rounded-full font-semibold text-lg shadow-md w-full sm:w-auto relative overflow-hidden"
+          className="cursor-pointer bg-[var(--color-primary)] text-white px-13 py-6 rounded-full font-semibold text-lg shadow-md w-full sm:w-auto relative overflow-hidden"
           whileHover={
             isSubmitting || pedidoExitoso ? {} : { scale: 1.03, y: -2 }
           }
