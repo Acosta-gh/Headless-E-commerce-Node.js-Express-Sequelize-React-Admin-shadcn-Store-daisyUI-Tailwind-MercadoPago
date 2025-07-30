@@ -19,8 +19,9 @@
 :root {
 
     --color-background: #ffff;
-    --color-background-gray: #f5f5f5;
+    --color-background-secondary: #f5f5f5;
     --color-primary: #0C220B;
+    --color-primary-hover: #0A1B08;
     --color-accent: #EA751C;
     --color-accent-soft: #7FA159;
     --color-red-light: #B91C1C;

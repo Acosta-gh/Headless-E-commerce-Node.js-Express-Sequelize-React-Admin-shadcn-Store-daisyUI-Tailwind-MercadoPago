@@ -273,7 +273,7 @@ function Item() {
               aria-label="Quitar cantidad"
               onClick={decrementCantidad}
               disabled={cantidad <= 1}
-              className={`relative bottom-[1px] bg-red-900 px-3.5 py-1 rounded-full text-lg font-bold text-white transition`}
+              className={`relative bottom-[1px] bg-[var(--color-primary)] px-3.5 py-1 rounded-full text-lg font-bold text-white transition`}
               variants={buttonVariants}
               whileHover={cantidad <= 1 ? "disabled" : "hover"}
               whileTap={cantidad <= 1 ? "disabled" : "tap"}
@@ -283,7 +283,7 @@ function Item() {
             </motion.button>
 
             <motion.span
-              className="px-4 py-1 bg-gray-100 text-lg"
+              className="px-4 py-1  text-lg"
               key={cantidad}
               animate={animacionCantidad}
               variants={counterVariants}
@@ -296,7 +296,7 @@ function Item() {
               aria-label="Agregar cantidad"
               onClick={incrementCantidad}
               disabled={cantidad >= stockDisponible}
-              className={`relative bottom-[1px] bg-red-900 px-3 py-1 rounded-full text-lg font-bold text-white transition`}
+              className={`relative bottom-[1px] bg-[var(--color-primary)] px-3 py-1 rounded-full text-lg font-bold text-white transition`}
               variants={buttonVariants}
               whileHover={cantidad >= stockDisponible ? "disabled" : "hover"}
               whileTap={cantidad >= stockDisponible ? "disabled" : "tap"}
@@ -332,11 +332,11 @@ function Item() {
         <motion.button
           onClick={handleAgregarAlCarrito}
           disabled={cantidad <= 0 || notAvailable || stockDisponible <= 0}
-          className={`w-full h-full w-auto bg-red-900 text-white px-6 py-5 rounded-full font-semibold shadow transition relative overflow-hidden`}
+          className={`cursor-pointer w-full h-full w-auto bg-[var(--color-primary)] text-white px-6 py-5 rounded-full font-semibold shadow transition relative overflow-hidden`}
           whileHover={
             cantidad <= 0 || notAvailable || stockDisponible <= 0
               ? {}
-              : { scale: 1.03, backgroundColor: "#881337" }
+              : { scale: 1.03, backgroundColor: "var(--color-primary-hover)" }
           }
           whileTap={
             cantidad <= 0 || notAvailable || stockDisponible <= 0

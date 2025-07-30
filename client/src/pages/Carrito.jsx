@@ -116,7 +116,7 @@ function Carrito() {
         </p>
         <a
           href="/"
-          className="bg-[var(--color-primary)] text-white px-6 py-3 rounded-full font-semibold shadow hover:bg-red-800 transition-colors duration-300 flex items-center gap-2"
+          className="bg-[var(--color-primary)] text-white px-6 py-3 rounded-full font-semibold shadow hover:bg-[var(--color-primary-hover)] transition-colors duration-300 flex items-center gap-2"
         >
           <ShoppingBag size={18} />
           Ver productos

@@ -44,7 +44,7 @@ function Banner() {
         className="absolute right-[15rem] top-[1.5rem] z-10 w-full max-w-4xl px-4
           md:right-12 md:top-[2rem] md:max-w-md 
           lg:right-[10rem] lg:top-4 lg:max-w-2xl lg:top-[1.8rem]
-          2xl:right-[15rem] 2xl:top-[1.5rem] 2xl:max-w-4xl"
+          2xl:right-[15rem] 2xl:top-[1rem] 2xl:max-w-4xl"
       >
         <p className="text-end text-white font-playfair text-7xl font-medium drop-shadow-lg
           md:text-4xl md:text-end 
