@@ -2,7 +2,7 @@ import React from 'react';
 
 function Footer() {
     return (
-        <footer className="hidden md:block bg-gray-900 text-white py-8 text-center">
+        <footer className="hidden md:block bg-[var(--color-secondary)] text-white py-8 text-center">
             <div>
                 <p>&copy; {new Date().getFullYear()} Restaurante. Todos los derechos reservados.</p>
                 <p>
