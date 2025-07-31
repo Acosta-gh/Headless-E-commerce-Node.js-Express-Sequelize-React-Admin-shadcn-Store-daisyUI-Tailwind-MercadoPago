@@ -12,6 +12,17 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendEmail = async (to, subject, html) => {
+  console.log(`Enviando correo a: ${to}`);
+  console.log(`Asunto: ${subject}`);
+  console.log(`Contenido HTML: ${html}`);
+  if (!to || !subject || !html) {
+    console.error("Faltan parámetros para enviar el correo.");
+    return;
+  }
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.error("Credenciales de correo electrónico no configuradas.");
+    return;
+  }
   try {
     await transporter.sendMail({
       from: `"Restaurante ${process.env.EMAIL_USER}`,

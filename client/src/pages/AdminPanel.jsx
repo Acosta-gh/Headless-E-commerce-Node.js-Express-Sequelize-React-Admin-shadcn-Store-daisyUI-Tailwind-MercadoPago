@@ -212,12 +212,12 @@ function AdminPanel() {
 
   return (
     <div className="p-4 sm:p-8 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-red-900 text-center">Panel de Administración</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-900 text-center">Panel de Administración</h1>
 
       <Fade duration={500} triggerOnce>
         <div className="mb-10 bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="bg-red-100 p-4 border-b border-red-200">
-            <h2 className="text-xl font-bold text-red-900 flex items-center gap-2">
+          <div className="bg-gray-100 p-4 border-b border-gray-200">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
               <Tag size={20} />
               Gestión de Categorías
             </h2>
@@ -230,24 +230,24 @@ function AdminPanel() {
                   value={catForm.nombre}
                   onChange={handleCatInputChange}
                   placeholder="Nombre de la categoría"
-                  required
-                  className="w-full border border-red-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-red-300 pl-4"
+                  requigray
+                  className="w-full border border-gray-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300 pl-4"
                 />
               </div>
               <button 
                 type="submit" 
-                className="bg-red-900 text-white px-6 py-3 rounded-full hover:bg-red-800 transition flex items-center justify-center gap-2"
+                className="bg-gray-900 text-white px-6 py-3 rounded-full hover:bg-gray-800 transition flex items-center justify-center gap-2"
               >
                 <PlusCircle size={18} />
                 Crear Categoría
               </button>
             </form>
 
-            <h3 className="text-lg font-semibold mb-3 text-red-800">Categorías Existentes</h3>
-            <div className="overflow-auto rounded-xl border border-red-200 mb-4">
+            <h3 className="text-lg font-semibold mb-3 text-gray-800">Categorías Existentes</h3>
+            <div className="overflow-auto rounded-xl border border-gray-200 mb-4">
               <table className="min-w-full table-auto">
                 <thead>
-                  <tr className="bg-red-100 text-red-900">
+                  <tr className="bg-gray-100 text-gray-900">
                     <th className="px-4 py-3 text-left font-semibold">Nombre</th>
                     <th className="px-4 py-3 text-right font-semibold">Acciones</th>
                   </tr>
@@ -255,11 +255,11 @@ function AdminPanel() {
                 <tbody>
                   {categorias.length === 0 ? (
                     <tr>
-                      <td colSpan="2" className="px-4 py-3 text-center text-red-700">No hay categorías</td>
+                      <td colSpan="2" className="px-4 py-3 text-center text-gray-700">No hay categorías</td>
                     </tr>
                   ) : (
                     categorias.map(cat => (
-                      <tr key={cat.id} className="border-t border-red-100 hover:bg-red-50 transition-colors">
+                      <tr key={cat.id} className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
                         <td className="px-4 py-3">
                           {editingCategoria && editingCategoria.id === cat.id ? (
                             <form onSubmit={handleCatEditSubmit} className="flex gap-2 flex-col sm:flex-row items-center">
@@ -268,8 +268,8 @@ function AdminPanel() {
                                   name="nombre"
                                   value={catEditForm.nombre}
                                   onChange={handleCatEditInputChange}
-                                  required
-                                  className="w-full border border-red-200 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-red-300 pl-4"
+                                  requigray
+                                  className="w-full border border-gray-200 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300 pl-4"
                                 />
                               </div>
                               <div className="flex gap-2">
@@ -291,7 +291,7 @@ function AdminPanel() {
                               </div>
                             </form>
                           ) : (
-                            <span className="font-medium text-red-900">{cat.nombre}</span>
+                            <span className="font-medium text-gray-900">{cat.nombre}</span>
                           )}
                         </td>
                         <td className="px-4 py-3 text-right">
@@ -306,7 +306,7 @@ function AdminPanel() {
                               </button>
                               <button 
                                 onClick={() => handleDeleteCategoria(cat.id)} 
-                                className="text-red-700 hover:bg-red-50 px-3 py-1 rounded-full border border-red-200 flex items-center gap-1"
+                                className="text-gray-700 hover:bg-gray-50 px-3 py-1 rounded-full border border-gray-200 flex items-center gap-1"
                               >
                                 <Trash2 size={16} />
                                 Eliminar
@@ -324,8 +324,8 @@ function AdminPanel() {
         </div>
 
         <div className="mb-10 bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="bg-red-100 p-4 border-b border-red-200">
-            <h2 className="text-xl font-bold text-red-900 flex items-center gap-2">
+          <div className="bg-gray-100 p-4 border-b border-gray-200">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
               <ShoppingBag size={20} />
               {editingItem ? 'Editar Producto' : 'Crear Nuevo Producto'}
             </h2>
@@ -333,31 +333,31 @@ function AdminPanel() {
           <div className="p-6">
             <form onSubmit={handleSubmit} className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-red-800 mb-1">Nombre del producto</label>
+                <label className="block text-sm font-medium text-gray-800 mb-1">Nombre del producto</label>
                 <input 
                   name="nombre" 
                   value={form.nombre} 
                   onChange={handleInputChange} 
                   placeholder="Nombre del producto" 
-                  required 
-                  className="w-full border border-red-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-red-300"
+                  requigray 
+                  className="w-full border border-gray-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
               </div>
               
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-red-800 mb-1">Descripción</label>
+                <label className="block text-sm font-medium text-gray-800 mb-1">Descripción</label>
                 <textarea 
                   name="descripcion" 
                   value={form.descripcion} 
                   onChange={handleInputChange} 
                   placeholder="Descripción del producto" 
                   rows="3"
-                  className="w-full border border-red-200 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-300"
+                  className="w-full border border-gray-200 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
                 ></textarea>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-red-800 mb-1">Precio</label>
+                <label className="block text-sm font-medium text-gray-800 mb-1">Precio</label>
                 <input 
                   name="precio" 
                   value={form.precio} 
@@ -365,19 +365,19 @@ function AdminPanel() {
                   placeholder="Precio" 
                   type="number" 
                   step="0.01"
-                  required 
-                  className="w-full border border-red-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-red-300"
+                  requigray 
+                  className="w-full border border-gray-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-red-800 mb-1">Categoría</label>
+                <label className="block text-sm font-medium text-gray-800 mb-1">Categoría</label>
                 <select
                   name="categoriaId"
                   value={form.categoriaId}
                   onChange={handleInputChange}
-                  required
-                  className="w-full border border-red-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                  requigray
+                  className="w-full border border-gray-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white"
                 >
                   <option value="">Selecciona una categoría</option>
                   {categorias.map(cat => (
@@ -387,31 +387,31 @@ function AdminPanel() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-red-800 mb-1">Stock</label>
+                <label className="block text-sm font-medium text-gray-800 mb-1">Stock</label>
                 <input 
                   name="stock" 
                   value={form.stock} 
                   onChange={handleInputChange} 
                   placeholder="Cantidad disponible" 
                   type="number" 
-                  required 
-                  className="w-full border border-red-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-red-300"
+                  requigray 
+                  className="w-full border border-gray-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-red-800 mb-1">Unidad</label>
+                <label className="block text-sm font-medium text-gray-800 mb-1">Unidad</label>
                 <input 
                   name="unidad" 
                   value={form.unidad} 
                   onChange={handleInputChange} 
                   placeholder="Unidad (ej: kg, unidad)" 
-                  className="w-full border border-red-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-red-300"
+                  className="w-full border border-gray-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
               </div>
               
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-red-800 mb-1">Imagen del producto</label>
+                <label className="block text-sm font-medium text-gray-800 mb-1">Imagen del producto</label>
                 <div className="flex flex-col sm:flex-row gap-4 items-start">
                   <div className="relative flex-1 w-full">
                     <input
@@ -419,11 +419,11 @@ function AdminPanel() {
                       accept="image/*"
                       onChange={handleImageUpload}
                       disabled={uploading}
-                      className="w-full border border-red-200 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 file:cursor-pointer"
+                      className="w-full border border-gray-200 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 file:cursor-pointer"
                     />
                     {uploading && (
-                      <div className="mt-2 flex items-center text-red-700">
-                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-red-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <div className="mt-2 flex items-center text-gray-700">
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
@@ -433,7 +433,7 @@ function AdminPanel() {
                   </div>
                   
                   {(imagePreview || form.imagenUrl) && (
-                    <div className="w-32 h-32 border border-red-200 rounded-lg overflow-hidden flex items-center justify-center bg-white">
+                    <div className="w-32 h-32 border border-gray-200 rounded-lg overflow-hidden flex items-center justify-center bg-white">
                       <img 
                         src={imagePreview || form.imagenUrl} 
                         alt="Vista previa" 
@@ -451,9 +451,9 @@ function AdminPanel() {
                     type="checkbox" 
                     checked={form.destacado} 
                     onChange={handleInputChange} 
-                    className="w-4 h-4 accent-red-700"
+                    className="w-4 h-4 accent-gray-700"
                   />
-                  <span className="text-red-800 flex items-center gap-1">
+                  <span className="text-gray-800 flex items-center gap-1">
                     <Star size={16} className="text-amber-500" />
                     Destacado
                   </span>
@@ -467,9 +467,9 @@ function AdminPanel() {
                     type="checkbox" 
                     checked={form.disponible} 
                     onChange={handleInputChange} 
-                    className="w-4 h-4 accent-red-700"
+                    className="w-4 h-4 accent-gray-700"
                   />
-                  <span className="text-red-800 flex items-center gap-1">
+                  <span className="text-gray-800 flex items-center gap-1">
                     <CheckCircle size={16} className="text-green-500" />
                     Disponible
                   </span>
@@ -480,7 +480,7 @@ function AdminPanel() {
                 <button 
                   type="submit" 
                   disabled={uploading} 
-                  className={`bg-red-900 text-white px-6 py-3 rounded-full hover:bg-red-800 transition flex items-center gap-2 ${uploading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  className={`bg-gray-900 text-white px-6 py-3 rounded-full hover:bg-gray-800 transition flex items-center gap-2 ${uploading ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
                   {editingItem ? (
                     <>
@@ -510,17 +510,17 @@ function AdminPanel() {
         </div>
         
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="bg-red-100 p-4 border-b border-red-200">
-            <h2 className="text-xl font-bold text-red-900 flex items-center gap-2">
+          <div className="bg-gray-100 p-4 border-b border-gray-200">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
               <Package size={20} />
               Productos Existentes
             </h2>
           </div>
           <div className="p-6">
-            <div className="overflow-x-auto rounded-xl border border-red-200">
+            <div className="overflow-x-auto rounded-xl border border-gray-200">
               <table className="min-w-full table-auto">
                 <thead>
-                  <tr className="bg-red-100 text-red-900">
+                  <tr className="bg-gray-100 text-gray-900">
                     <th className="px-4 py-3 text-left font-semibold">Producto</th>
                     <th className="px-4 py-3 text-left font-semibold">Precio</th>
                     <th className="px-4 py-3 text-center font-semibold">Stock</th>
@@ -532,13 +532,13 @@ function AdminPanel() {
                 <tbody>
                   {items.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="px-4 py-3 text-center text-red-700">No hay productos</td>
+                      <td colSpan="6" className="px-4 py-3 text-center text-gray-700">No hay productos</td>
                     </tr>
                   ) : (
                     items.map((item, index) => (
                       <tr 
                         key={item.id} 
-                        className={`${index % 2 === 0 ? "bg-white" : "bg-red-50"} hover:bg-red-100 transition-colors border-t border-red-100`}
+                        className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 transition-colors border-t border-gray-100`}
                       >
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
@@ -546,11 +546,11 @@ function AdminPanel() {
                               <img 
                                 src={item.imagenUrl} 
                                 alt={item.nombre} 
-                                className="w-10 h-10 object-cover rounded-md border border-red-100"
+                                className="w-10 h-10 object-cover rounded-md border border-gray-100"
                               />
                             )}
                             <div className="flex items-center gap-2">
-                              <span className="font-medium text-red-900">{item.nombre}</span>
+                              <span className="font-medium text-gray-900">{item.nombre}</span>
                               {item.destacado && (
                                 <Star size={16} className="text-amber-500" fill="currentColor" />
                               )}
@@ -562,9 +562,9 @@ function AdminPanel() {
                             ${parseFloat(item.precio).toFixed(2)}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-center font-medium text-red-800">{item.stock}</td>
+                        <td className="px-4 py-3 text-center font-medium text-gray-800">{item.stock}</td>
                         <td className="px-4 py-3">
-                          <span className="bg-red-100 text-red-900 px-2 py-1 rounded-lg text-sm">
+                          <span className="bg-gray-100 text-gray-900 px-2 py-1 rounded-lg text-sm">
                             {item.categoria?.nombre || 'Sin categoría'}
                           </span>
                         </td>
@@ -575,7 +575,7 @@ function AdminPanel() {
                               Disponible
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">
+                            <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">
                               <X size={14} />
                               No disponible
                             </span>
@@ -592,7 +592,7 @@ function AdminPanel() {
                             </button>
                             <button 
                               onClick={() => handleDelete(item.id)} 
-                              className="text-red-700 hover:bg-red-50 px-3 py-1 rounded-full border border-red-200 flex items-center gap-1"
+                              className="text-gray-700 hover:bg-gray-50 px-3 py-1 rounded-full border border-gray-200 flex items-center gap-1"
                             >
                               <Trash2 size={16} />
                               Eliminar

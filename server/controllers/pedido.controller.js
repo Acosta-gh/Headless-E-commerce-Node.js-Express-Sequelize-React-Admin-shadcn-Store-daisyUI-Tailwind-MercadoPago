@@ -1,4 +1,5 @@
 const { Pedido, PedidoItem, Item, Usuario } = require('../models');
+const { sendEmail } = require('../services/email.service');
 
 // Obtener todos los pedidos
 exports.getAllPedidos = async (req, res) => {
@@ -98,6 +99,20 @@ exports.createPedido = async (req, res) => {
                 { model: Item, through: { attributes: ['cantidad'] } }
             ]
         });
+
+        try {
+            const usuario = await Usuario.findByPk(usuarioId);
+
+            const subject = "¡Pedido creado exitosamente!";
+            const html = `<p>Hola <b>${usuario.nombre}</b>, tu pedido <b>#${nuevoPedido.id}</b> ha sido creado con éxito.<br>
+            Estado: ${nuevoPedido.estado}<br>
+            Total: $${nuevoPedido.total}</p>`;
+
+            await sendEmail(usuario.email, subject, html);
+        } catch (err) {
+            console.error("Error enviando correo de creación de pedido:", err);
+        }
+
         res.status(201).json(pedidoCompleto);
     } catch (error) {
         await t.rollback();
@@ -114,6 +129,19 @@ exports.updatePedido = async (req, res) => {
         if (rows === 0) return res.status(404).json({ message: 'Pedido no encontrado' });
         const pedidoActualizado = await Pedido.findByPk(req.params.id);
         res.json(pedidoActualizado);
+
+        try {
+            const usuario = await Usuario.findByPk(pedidoActualizado.usuarioId);
+
+            const subject = "¡Tu pedido ha sido actualizado!";
+            const html = `<p>Hola <b>${usuario.nombre}</b>, tu pedido <b>#${pedidoActualizado.id}</b> ha sido actualizado.<br>
+            Estado actual: ${pedidoActualizado.estado}<br>
+            Total: $${pedidoActualizado.total}</p>`;
+
+            await sendEmail(usuario.email, subject, html);
+        } catch (err) {
+            console.error("Error enviando correo de actualización de pedido:", err);
+        }
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
