@@ -101,7 +101,7 @@ function App() {
   return (
     <div>
       {/* Banner con animación de entrada */}
-      <Banner/>
+      <Banner />
 
       {/* Contenedor principal con animación de entrada */}
       <motion.div
@@ -195,7 +195,7 @@ function App() {
         </AnimatePresence>
 
         <motion.div
-          className="p-4"
+          className="p-4 pb-12"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
@@ -236,8 +236,8 @@ function App() {
                   currentPage > 0 && handlePageClick(currentPage - 1)
                 }
                 className={`px-3 py-1.5 rounded-lg font-medium ${currentPage === 0
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                 disabled={currentPage === 0}
               >
@@ -253,8 +253,8 @@ function App() {
                     whileTap={{ scale: 0.9 }}
                     onClick={() => handlePageClick(i)}
                     className={`w-9 h-9 rounded-lg font-medium flex items-center justify-center ${currentPage === i
-                        ? "bg-[var(--color-primary)] text-white"
-                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      ? "bg-[var(--color-primary)] text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                       }`}
                     animate={currentPage === i ? { scale: [1, 1.15, 1] } : {}}
                     transition={{ duration: 0.3 }}
@@ -272,8 +272,8 @@ function App() {
                   currentPage < pageCount - 1 && handlePageClick(currentPage + 1)
                 }
                 className={`px-3 py-1.5 rounded-lg font-medium ${currentPage >= pageCount - 1
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                 disabled={currentPage >= pageCount - 1}
               >

@@ -54,7 +54,7 @@ function Banner() {
           md:text-4xl md:text-end 
           lg:text-5xl
           2xl:text-7xl
-          flex-2
+          flex-2  
           "
         >
           <span className="font-bold ">"Vive Sano"</span>: Platos Sabrosos y Saludables
@@ -150,7 +150,7 @@ function Banner() {
         className="absolute top-1/8 right-32 max-w-2xl z-10
           md:right-20 md:max-w-sm md:top-1/5 
           lg:right-8 lg:max-w-md lg:top-25 lg:right-25
-          2xl:right-1/5 2xl:max-w-2xl 2xl:top-1/7"
+          2xl:right-1/7 2xl:max-w-3xl 2xl:top-1/7"
       >
         <img src="plato.png" alt="Plato" className="w-full h-auto" />
       </motion.div>
@@ -160,9 +160,7 @@ function Banner() {
         {/* Esto es con el unico proposito de agregar espacio antes del wave */}
         <div className="bg-[var(--color-primary)] h-50 w-full">
         </div>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#0C220B" fill-opacity="10" d="M0,288L80,272C160,256,320,224,480,176C640,128,800,64,960,74.7C1120,85,1280,171,1360,213.3L1440,256L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z"></path></svg>
-      </div>
-
+        <svg id="visual" viewBox="0 0 960 300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"><path d="M0 181L40 179.3C80 177.7 160 174.3 240 168C320 161.7 400 152.3 480 143.8C560 135.3 640 127.7 720 134.2C800 140.7 880 161.3 920 171.7L960 182L960 0L920 0C880 0 800 0 720 0C640 0 560 0 480 0C400 0 320 0 240 0C160 0 80 0 40 0L0 0Z" fill="#283f0f"></path><path d="M0 149L40 136.7C80 124.3 160 99.7 240 93C320 86.3 400 97.7 480 99.7C560 101.7 640 94.3 720 91.7C800 89 880 91 920 92L960 93L960 0L920 0C880 0 800 0 720 0C640 0 560 0 480 0C400 0 320 0 240 0C160 0 80 0 40 0L0 0Z" fill="#1d350f"></path><path d="M0 62L40 69.3C80 76.7 160 91.3 240 89.7C320 88 400 70 480 69.2C560 68.3 640 84.7 720 93.8C800 103 880 105 920 106L960 107L960 0L920 0C880 0 800 0 720 0C640 0 560 0 480 0C400 0 320 0 240 0C160 0 80 0 40 0L0 0Z" fill="#132b0e"></path><path d="M0 39L40 38C80 37 160 35 240 39.2C320 43.3 400 53.7 480 55.8C560 58 640 52 720 51.8C800 51.7 880 57.3 920 60.2L960 63L960 0L920 0C880 0 800 0 720 0C640 0 560 0 480 0C400 0 320 0 240 0C160 0 80 0 40 0L0 0Z" fill="#0c220b"></path></svg>        </div>
     </motion.div>
   );
 }
