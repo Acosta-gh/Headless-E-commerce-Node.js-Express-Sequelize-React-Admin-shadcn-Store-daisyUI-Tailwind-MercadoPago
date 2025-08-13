@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { jwtDecode } from "jwt-decode";
 import { Link } from "react-router-dom";
@@ -23,82 +23,58 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-// Animation variants
+// Animations
 const pageTransition = {
   hidden: { opacity: 0, y: 20 },
   visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      when: "beforeChildren",
-      staggerChildren: 0.1,
-    },
+    opacity: 1, y: 0,
+    transition: { duration: 0.5, when: "beforeChildren", staggerChildren: 0.1 }
   },
-  exit: {
-    opacity: 0,
-    y: -20,
-    transition: { duration: 0.3 },
-  },
+  exit: { opacity: 0, y: -20, transition: { duration: 0.3 } }
 };
 
 const itemAnimation = {
   hidden: { opacity: 0, y: 10 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4 },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
 };
 
 const cardAnimation = {
   hidden: { opacity: 0, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { type: "spring", stiffness: 300, damping: 25 },
-  },
+  visible: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 300, damping: 25 } }
 };
 
 const listItemAnimation = {
   hidden: { opacity: 0, x: -10 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { type: "spring", stiffness: 400, damping: 30 },
-  },
+  visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 400, damping: 30 } }
 };
 
-const buttonHover = {
-  scale: 1.03,
-  boxShadow: "0 3px 10px rgba(0, 0, 0, 0.15)",
-  transition: { duration: 0.2 },
-};
+const buttonHover = { scale: 1.03, boxShadow: "0 3px 10px rgba(0,0,0,0.15)", transition: { duration: 0.2 } };
+const buttonTap = { scale: 0.97, transition: { duration: 0.1 } };
 
-const buttonTap = {
-  scale: 0.97,
-  transition: { duration: 0.1 },
-};
-
-// Function to get user data from sessionStorage
 const getUserDataFromSession = () => {
-  const userData = sessionStorage.getItem("userData");
-  return userData ? JSON.parse(userData) : null;
+  try {
+    const userData = sessionStorage.getItem("userData");
+    return userData ? JSON.parse(userData) : null;
+  } catch {
+    return null;
+  }
 };
 
 function Perfil() {
   const { token, isAdmin, isRepartidor, refreshAuth } = useAuth();
+
+  // Auth / UI states
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [decodedInfo, setDecodedInfo] = useState({});
-  const [pedidos, setPedidos] = useState([]);
+
+  // Pedidos
+  const [pedidos, setPedidos] = useState([]);      // SIEMPRE un array
   const [loading, setLoading] = useState(true);
-  const [contentReady, setContentReady] = useState(false); // New state to ensure content is ready
+  const [contentReady, setContentReady] = useState(false);
 
-  // Initialize state directly from sessionStorage
+  // Perfil (inicializar desde sessionStorage si existe)
   const sessionData = getUserDataFromSession();
-
-  // estados para editar perfil - initialize with sessionStorage data if available
   const [telefono, setTelefono] = useState(sessionData?.telefono || "");
   const [direccion, setDireccion] = useState(sessionData?.direccion || "");
   const [email, setEmail] = useState(sessionData?.email || "");
@@ -108,16 +84,17 @@ function Perfil() {
   const [msg, setMsg] = useState("");
   const [showMsg, setShowMsg] = useState(false);
 
-  // PAGINATION STATES
+  // Paginación
   const pedidosPorPagina = 5;
   const [pedidoOffset, setPedidoOffset] = useState(0);
 
-  // Function to save user data to sessionStorage
-  const saveUserDataToSession = (userData) => {
-    sessionStorage.setItem("userData", JSON.stringify(userData));
+  // Guardar userData en sessionStorage
+  const saveUserDataToSession = (data) => {
+    try {
+      sessionStorage.setItem("userData", JSON.stringify(data));
+    } catch {}
   };
 
-  // Reset all state when logging out
   const resetState = () => {
     setPedidos([]);
     setDecodedInfo({});
@@ -129,25 +106,24 @@ function Perfil() {
     setPedidoOffset(0);
   };
 
-  // Load user data
+  // Carga datos del usuario
   const loadUserData = async (userId, authToken) => {
     try {
       const response = await getUsuarioById(userId, authToken);
+      // IMPORTANTE: si usuarioService ya no usa axios, response puede ser el objeto directo.
+      const data = response?.data ? response.data : response; // normaliza
       const userData = {
-        telefono: response.data.telefono || "",
-        direccion: response.data.direccion || "",
-        email: response.data.email || "",
-        nombre: response.data.nombre || "",
+        telefono: data?.telefono || "",
+        direccion: data?.direccion || "",
+        email: data?.email || "",
+        nombre: data?.nombre || ""
       };
-
       setTelefono(userData.telefono);
       setDireccion(userData.direccion);
       setEmail(userData.email);
       setNombre(userData.nombre);
-
-      localStorage.setItem("direccion", userData.direccion);
+      localStorage.setItem("direccion", userData.direccion || "");
       saveUserDataToSession(userData);
-
       return userData;
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -155,67 +131,77 @@ function Perfil() {
     }
   };
 
-  // Load user orders
+  // Carga pedidos del usuario (AHORA SIN response.data)
   const loadUserOrders = async (authToken) => {
     try {
-      const response = await getPedidosByUsuario(authToken);
-      setPedidos(response.data);
+      const resp = await getPedidosByUsuario(authToken);
+      // resp puede ser: array directo, { pedidos: [...] }, { data: [...] }, mensaje
+      let lista = [];
+      if (Array.isArray(resp)) lista = resp;
+      else if (Array.isArray(resp?.pedidos)) lista = resp.pedidos;
+      else if (Array.isArray(resp?.data)) lista = resp.data;
+      else if (resp && typeof resp === "object" && /no se encontraron/i.test(resp.message || "")) lista = [];
+      // Asegura array
+      setPedidos(lista);
     } catch (error) {
       console.error("Error fetching user orders:", error);
-      setPedidos([]);
+      setPedidos([]); // fallback a array vacío
     }
   };
 
-  // Main useEffect to handle authentication state
   useEffect(() => {
     const initializeProfile = async () => {
       setLoading(true);
       setContentReady(false);
 
-      // Check if user is logged in based on token
       const hasValidToken = !!token;
       setIsLoggedIn(hasValidToken);
 
       if (hasValidToken) {
         try {
           const decoded = jwtDecode(token);
-          setDecodedInfo(decoded);
+            setDecodedInfo(decoded);
 
           if (!isAdmin) {
-            // For regular users, load both orders and profile data
             await Promise.all([
               loadUserOrders(token),
-              loadUserData(decoded.id, token),
+              loadUserData(decoded.id, token)
             ]);
           }
 
-          // Set content as ready regardless of admin status
           setContentReady(true);
-          setLoading(false);
         } catch (error) {
           console.error("Error processing token:", error);
-          // If token is invalid, reset state
           resetState();
+        } finally {
           setLoading(false);
         }
       } else {
-        // Not logged in, reset state
         resetState();
         setLoading(false);
       }
     };
-
     initializeProfile();
   }, [token, isAdmin]);
 
-  // Cálculos para la paginación - moved here to avoid errors if pedidos changes
-  const pedidosOrdenados =
-    pedidos.length > 0 ? [...pedidos].sort((a, b) => b.id - a.id) : [];
+  // Memo para orden (defensivo)
+  const pedidosOrdenados = useMemo(() => {
+    if (!Array.isArray(pedidos) || pedidos.length === 0) return [];
+    return [...pedidos].sort((a, b) => {
+      if (a.fechaPedido && b.fechaPedido) {
+        return new Date(b.fechaPedido) - new Date(a.fechaPedido);
+      }
+      return (b.id || 0) - (a.id || 0);
+    });
+  }, [pedidos]);
+
+  // Paginación defensiva
   const endOffset = pedidoOffset + pedidosPorPagina;
   const currentPedidos = pedidosOrdenados.slice(pedidoOffset, endOffset);
   const pageCount = Math.ceil(pedidosOrdenados.length / pedidosPorPagina);
 
   const handlePageClick = (event) => {
+    if (pedidosOrdenados.length === 0) return;
     const newOffset =
       (event.selected * pedidosPorPagina) % pedidosOrdenados.length;
     setPedidoOffset(newOffset);
@@ -233,84 +219,53 @@ function Perfil() {
     e.preventDefault();
     setMsg("");
     setShowMsg(false);
-
     try {
-      await updateUsuario(
-        decodedInfo.id,
-        { nombre, telefono, direccion },
-        token
-      );
-
-      // Update sessionStorage with new data
-      const updatedUserData = {
-        telefono,
-        direccion,
-        email,
-        nombre,
-      };
+      await updateUsuario(decodedInfo.id, { nombre, telefono, direccion }, token);
+      const updatedUserData = { telefono, direccion, email, nombre };
       saveUserDataToSession(updatedUserData);
-
-      // Update localStorage for direccion
       localStorage.setItem("direccion", direccion || "");
-
       setMsg("Perfil actualizado correctamente.");
       setShowMsg(true);
       setEditMode(false);
-
-      // Hide message with fade effect after 2 seconds
-      setTimeout(() => {
-        setShowMsg(false);
-      }, 2000);
-    } catch (err) {
+      setTimeout(() => setShowMsg(false), 2000);
+    } catch {
       setMsg("Error al actualizar perfil.");
       setShowMsg(true);
     }
   };
 
-  // Show loading state
   if (loading && !contentReady) return <Loading />;
 
-  // Show login page if not authenticated
   if (!isLoggedIn && !isSigningUp) {
     return (
       <motion.div
         className="flex items-center justify-center min-h-[60vh]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
       >
         <Login
           setIsSigningUp={setIsSigningUp}
-          setIsLoggedIn={(value) => {
-            setIsLoggedIn(value);
-            // Don't set contentReady here - let the useEffect handle it
-          }}
+          setIsLoggedIn={(v) => setIsLoggedIn(v)}
         />
       </motion.div>
     );
   }
 
-  // Show signup page
   if (!isLoggedIn && isSigningUp) {
     return (
       <motion.div
         className="flex items-center justify-center min-h-[60vh]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
       >
         <SignUp
           setIsSigningUp={setIsSigningUp}
-          setIsLoggedIn={(value) => {
-            setIsLoggedIn(value);
-            // Don't set contentReady here - let the useEffect handle it
-          }}
+          setIsLoggedIn={(v) => setIsLoggedIn(v)}
         />
       </motion.div>
     );
   }
 
-  // Only render profile content when both logged in and content is ready
   if (!contentReady) return <Loading />;
 
   const accentColor = isAdmin ? "CA8A04" : "3F6212";
@@ -324,15 +279,13 @@ function Perfil() {
         onClick={handleLogout}
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        transition={{ duration: 0.4 }}
-        className="absolute top-9 right-6 z-10 cursor-pointer flex items-center gap-2 text-sm text-slate-500 hover:text-red-600 transition-colors duration-200"
+        className="absolute top-9 right-6 z-10 cursor-pointer flex items-center gap-2 text-sm text-slate-500 hover:text-red-600 transition-colors"
       >
         <LogOut size={25} strokeWidth={2} color="var(--color-primary)" />
       </motion.button>
 
       <motion.div
-        className=" min-h-screen"
+        className="min-h-screen"
         key="profile-page"
         initial="hidden"
         animate="visible"
@@ -340,7 +293,7 @@ function Perfil() {
         variants={pageTransition}
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
-          {/* Encabezado del perfil */}
+          {/* HEADER */}
           <motion.div
             className="bg-white shadow-sm p-6 rounded-xl mb-8 relative"
             variants={cardAnimation}
@@ -353,7 +306,6 @@ function Perfil() {
                 transition={{ type: "spring", stiffness: 300, delay: 0.2 }}
                 whileHover={{ scale: 1.05, transition: { duration: 0.3 } }}
               >
-                {/* Foto de perfil */}
                 {nombre && (
                   <img
                     src={avatarUrl}
@@ -389,7 +341,7 @@ function Perfil() {
               <motion.div className="ml-auto mt-4 " variants={itemAnimation}>
                 <Link
                   to="/admin"
-                  className="px-4 w-50  py-2 bg-[var(--color-dark-gray)] text-white rounded-lg transition-all block"
+                  className="px-4 w-50 py-2 bg-[var(--color-dark-gray)] text-white rounded-lg transition-all block"
                 >
                   <motion.span
                     className="inline-block w-full text-center"
@@ -401,9 +353,10 @@ function Perfil() {
                 </Link>
               </motion.div>
             )}
+
             <motion.button
               className="hidden sm:block sm:absolute top-4 right-4 hover:text-red-600 "
-              onClick={() => handleLogout()}
+              onClick={handleLogout}
             >
               <motion.span
                 className=" underline cursor-pointer text-red-600"
@@ -415,9 +368,9 @@ function Perfil() {
             </motion.button>
           </motion.div>
 
-          {/* Contenido principal */}
+          {/* MAIN GRID */}
           <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Columna de Información Personal */}
+            {/* ASIDE PERFIL */}
             <motion.aside className="lg:col-span-1" variants={cardAnimation}>
               <motion.div
                 className="bg-white shadow-sm p-6 rounded-xl h-full"
@@ -456,63 +409,33 @@ function Perfil() {
                     >
                       {[
                         { icon: Mail, label: "Email", value: email },
-                        {
-                          icon: Phone,
-                          label: "Teléfono",
-                          value: telefono,
-                          placeholder: "No ingresado",
-                        },
-                        {
-                          icon: User,
-                          label: "Nombre",
-                          value: nombre,
-                          placeholder: "No ingresado",
-                        },
-                        {
-                          icon: MapPin,
-                          label: "Dirección",
-                          value: direccion,
-                          placeholder: "No ingresada",
-                        },
-                      ].map(
-                        ({ icon: Icon, label, value, placeholder }, index) => (
-                          <motion.div
-                            key={label}
-                            className="flex items-start gap-4"
-                            variants={listItemAnimation}
-                            custom={index}
-                            initial="hidden"
-                            animate="visible"
-                            transition={{ delay: index * 0.1 }}
-                          >
-                            <motion.div
-                              initial={{ scale: 0.8, opacity: 0.5 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              transition={{ delay: 0.2 + index * 0.1 }}
+                        { icon: Phone, label: "Teléfono", value: telefono, placeholder: "No ingresado" },
+                        { icon: User, label: "Nombre", value: nombre, placeholder: "No ingresado" },
+                        { icon: MapPin, label: "Dirección", value: direccion, placeholder: "No ingresada" }
+                      ].map(({ icon: Icon, label, value, placeholder }, idx) => (
+                        <motion.div
+                          key={label}
+                          className="flex items-start gap-4"
+                          variants={listItemAnimation}
+                          custom={idx}
+                          initial="hidden"
+                          animate="visible"
+                          transition={{ delay: idx * 0.1 }}
+                        >
+                          <Icon className="w-5 h-5 text-slate-400 mt-0.5" strokeWidth={1.5} />
+                          <div>
+                            <p className="text-sm text-slate-500">{label}</p>
+                            <motion.p
+                              className="font-medium text-slate-700"
+                              initial={{ opacity: 0.5 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 0.3 + idx * 0.1 }}
                             >
-                              <Icon
-                                className="w-5 h-5 text-slate-400 mt-0.5"
-                                strokeWidth={1.5}
-                              />
-                            </motion.div>
-                            <div>
-                              <p className="text-sm text-slate-500">{label}</p>
-                              <motion.p
-                                className="font-medium text-slate-700"
-                                initial={{ opacity: 0.5 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.3 + index * 0.1 }}
-                              >
-                                {value || (
-                                  <span className="text-slate-400 italic">
-                                    {placeholder}
-                                  </span>
-                                )}
-                              </motion.p>
-                            </div>
-                          </motion.div>
-                        )
-                      )}
+                              {value || <span className="text-slate-400 italic">{placeholder}</span>}
+                            </motion.p>
+                          </div>
+                        </motion.div>
+                      ))}
                     </motion.div>
                   ) : (
                     <motion.form
@@ -522,76 +445,37 @@ function Perfil() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 25,
-                      }}
+                      transition={{ type: "spring", stiffness: 300, damping: 25 }}
                     >
                       {[
-                        {
-                          label: "Nombre",
-                          type: "text",
-                          value: nombre,
-                          onChange: setNombre,
-                          placeholder: "Ingresa tu nombre",
-                        },
-                        {
-                          label: "Teléfono",
-                          type: "tel",
-                          value: telefono,
-                          onChange: setTelefono,
-                          placeholder: "Ingresa tu teléfono",
-                        },
-                        {
-                          label: "Dirección",
-                          type: "text",
-                          value: direccion,
-                          onChange: setDireccion,
-                          placeholder: "Ingresa tu dirección",
-                        },
-                      ].map(
-                        (
-                          { label, type, value, onChange, placeholder },
-                          index
-                        ) => (
-                          <motion.div
-                            key={label}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{
-                              opacity: 1,
-                              y: 0,
-                              transition: { delay: index * 0.1 },
+                        { label: "Nombre", type: "text", value: nombre, onChange: setNombre, placeholder: "Ingresa tu nombre" },
+                        { label: "Teléfono", type: "tel", value: telefono, onChange: setTelefono, placeholder: "Ingresa tu teléfono" },
+                        { label: "Dirección", type: "text", value: direccion, onChange: setDireccion, placeholder: "Ingresa tu dirección" }
+                      ].map((field, idx) => (
+                        <motion.div
+                          key={field.label}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0, transition: { delay: idx * 0.1 } }}
+                        >
+                          <label className="block text-sm font-medium text-slate-700 mb-1">
+                            {field.label}
+                          </label>
+                          <motion.input
+                            type={field.type}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition"
+                            value={field.value}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            placeholder={field.placeholder}
+                            required
+                            whileFocus={{
+                              boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.3)",
+                              borderColor: "rgb(59,130,246)"
                             }}
-                          >
-                            <label className="block text-sm font-medium text-slate-700 mb-1">
-                              {label}
-                            </label>
-                            <motion.input
-                              type={type}
-                              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition"
-                              value={value}
-                              onChange={(e) => onChange(e.target.value)}
-                              placeholder={placeholder}
-                              required
-                              whileFocus={{
-                                boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.3)",
-                                borderColor: "rgb(59, 130, 246)",
-                              }}
-                            />
-                          </motion.div>
-                        )
-                      )}
+                          />
+                        </motion.div>
+                      ))}
 
-                      <motion.div
-                        className="flex gap-3 pt-2"
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{
-                          opacity: 1,
-                          y: 0,
-                          transition: { delay: 0.3 },
-                        }}
-                      >
+                      <motion.div className="flex gap-3 pt-2" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0, transition: { delay: 0.3 } }}>
                         <motion.button
                           type="submit"
                           className="cursor-pointer px-4 py-2 bg-[var(--color-olive-dark)] text-white rounded-lg hover:bg-[var(--color-olive-dark)] transition-colors w-full"
@@ -620,32 +504,12 @@ function Perfil() {
                       <motion.p
                         className="text-sm text-green-600 flex items-center gap-2"
                         initial={{ opacity: 0, y: -10, height: 0 }}
-                        animate={{
-                          opacity: 1,
-                          y: 0,
-                          height: "auto",
-                          transition: {
-                            type: "spring",
-                            stiffness: 500,
-                            damping: 30,
-                          },
-                        }}
-                        exit={{
-                          opacity: 0,
-                          y: -10,
-                          height: 0,
-                          transition: { duration: 0.2 },
-                        }}
+                        animate={{ opacity: 1, y: 0, height: "auto", transition: { type: "spring", stiffness: 500, damping: 30 } }}
+                        exit={{ opacity: 0, y: -10, height: 0, transition: { duration: 0.2 } }}
                       >
                         <motion.span
                           initial={{ scale: 0 }}
-                          animate={{
-                            scale: [0, 1.2, 1],
-                            transition: {
-                              times: [0, 0.6, 1],
-                              duration: 0.5,
-                            },
-                          }}
+                          animate={{ scale: [0, 1.2, 1], transition: { times: [0, 0.6, 1], duration: 0.5 } }}
                         >
                           <CheckCircle size={16} />
                         </motion.span>
@@ -657,22 +521,16 @@ function Perfil() {
               </motion.div>
             </motion.aside>
 
-            {/* Columna de Pedidos */}
+            {/* HISTORIAL DE PEDIDOS */}
             <motion.section className="lg:col-span-2" variants={cardAnimation}>
-              <motion.div
-                className="bg-white shadow-sm p-6 rounded-xl h-full"
-                variants={itemAnimation}
-              >
-                <motion.h2
-                  className="text-xl font-semibold text-slate-800 mb-4"
-                  variants={itemAnimation}
-                >
+              <motion.div className="bg-white shadow-sm p-6 rounded-xl h-full" variants={itemAnimation}>
+                <motion.h2 className="text-xl font-semibold text-slate-800 mb-4" variants={itemAnimation}>
                   Historial de Pedidos
                 </motion.h2>
 
                 {isAdmin ? (
                   <PedidosAdmin token={token} />
-                ) : pedidos.length > 0 ? (
+                ) : pedidosOrdenados.length > 0 ? (
                   <motion.div>
                     <motion.ul className="space-y-4">
                       <AnimatePresence>
@@ -685,10 +543,7 @@ function Perfil() {
                             animate="visible"
                             exit={{ opacity: 0, x: 20 }}
                             custom={index}
-                            whileHover={{
-                              scale: 1.01,
-                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
-                            }}
+                            whileHover={{ scale: 1.01, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
                             layout
                           >
                             <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
@@ -704,12 +559,10 @@ function Perfil() {
                                 <motion.span
                                   className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                     {
-                                      pendiente:
-                                        "bg-yellow-100 text-yellow-800",
+                                      pendiente: "bg-yellow-100 text-yellow-800",
                                       completado: "bg-green-100 text-green-800",
-                                      cancelado: "bg-red-100 text-red-800",
-                                    }[pedido.estado] ||
-                                    "bg-slate-100 text-slate-800"
+                                      cancelado: "bg-red-100 text-red-800"
+                                    }[pedido.estado] || "bg-slate-100 text-slate-800"
                                   }`}
                                   initial={{ opacity: 0, scale: 0.8 }}
                                   animate={{ opacity: 1, scale: 1 }}
@@ -734,21 +587,19 @@ function Perfil() {
                               animate={{ opacity: 1 }}
                               transition={{ delay: 0.4 + index * 0.1 }}
                             >
-                              {pedido.Items?.map((item, itemIndex) => (
+                              {(pedido.Items || pedido.items || []).map((item, itemIndex) => (
                                 <motion.li
-                                  key={item.id}
+                                  key={item.id || itemIndex}
                                   className="flex justify-between items-center text-sm"
                                   initial={{ opacity: 0, x: -5 }}
                                   animate={{ opacity: 1, x: 0 }}
-                                  transition={{
-                                    delay: 0.5 + index * 0.1 + itemIndex * 0.05,
-                                  }}
+                                  transition={{ delay: 0.5 + index * 0.1 + itemIndex * 0.05 }}
                                 >
                                   <span className="text-slate-600">
-                                    {item.nombre}
+                                    {item.nombre || item.name || `Item ${itemIndex + 1}`}
                                   </span>
                                   <span className="text-slate-500">
-                                    x{item.PedidoItem.cantidad}
+                                    x{item?.PedidoItem?.cantidad || item.cantidad || 1}
                                   </span>
                                 </motion.li>
                               ))}
@@ -762,11 +613,7 @@ function Perfil() {
                       <motion.div
                         className="mt-6"
                         initial={{ opacity: 0, y: 10 }}
-                        animate={{
-                          opacity: 1,
-                          y: 0,
-                          transition: { delay: 0.6, duration: 0.4 },
-                        }}
+                        animate={{ opacity: 1, y: 0, transition: { delay: 0.6, duration: 0.4 } }}
                       >
                         <ReactPaginate
                           breakLabel="..."
@@ -788,26 +635,14 @@ function Perfil() {
                   <motion.div
                     className="text-center py-12 border-2 border-dashed border-slate-200 rounded-lg"
                     initial={{ opacity: 0, y: 10 }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                      transition: { delay: 0.3, duration: 0.5 },
-                    }}
+                    animate={{ opacity: 1, y: 0, transition: { delay: 0.3, duration: 0.5 } }}
                   >
                     <motion.div
                       initial={{ scale: 0.5, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 260,
-                        damping: 20,
-                        delay: 0.5,
-                      }}
+                      transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.5 }}
                     >
-                      <ShoppingBag
-                        className="mx-auto h-12 w-12 text-slate-300 mb-4"
-                        strokeWidth={1}
-                      />
+                      <ShoppingBag className="mx-auto h-12 w-12 text-slate-300 mb-4" strokeWidth={1} />
                     </motion.div>
 
                     <motion.h3

@@ -35,6 +35,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             defaultValue: false
         },
+        verificado:{
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        }
     }, {
         tableName: 'usuarios',
         timestamps: true

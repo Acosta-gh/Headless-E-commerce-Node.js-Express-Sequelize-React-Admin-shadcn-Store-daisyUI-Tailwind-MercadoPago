@@ -1,45 +1,91 @@
-import axios from 'axios';
-
 const API_URL = 'http://localhost:3000/api/pedido';
 
-export const getAllPedidos = (token) => {
-  return axios.get(API_URL, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    }
-  });
-};
+// Activa logs detallados llamando enablePedidoDebug(true)
+let DEBUG_PEDIDOS = false;
+export function enablePedidoDebug(enable = true) {
+  DEBUG_PEDIDOS = enable;
+}
 
-export const getPedidoById = (pedidoId, token) => {
-  return axios.get(`${API_URL}/${pedidoId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    }
-  });
-};
+function log(...args) {
+  if (DEBUG_PEDIDOS) console.log('[pedidoService]', ...args);
+}
 
-export const updatePedido = (pedidoId, pedidoData, token) => {
-  return axios.put(`${API_URL}/${pedidoId}`, pedidoData, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    }
-  });
-};
+function buildHeaders(token, extra = {}) {
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...extra,
+  };
+}
 
-export const getPedidosByUsuario = (token) => {
-  return axios.get(`${API_URL}/usuario`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    }
-  });
-};
+async function handleResponse(res) {
+  let data = null;
+  const text = await res.text(); // leer primero como texto para evitar errores si no es JSON
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = text || null;
+  }
 
-export const createPedido = (pedidoData, token) => {
-  return axios.post(API_URL, pedidoData, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    }
+  if (!res.ok) {
+    const err = new Error(
+      data?.message ||
+      `Error HTTP ${res.status}${res.statusText ? ' - ' + res.statusText : ''}`
+    );
+    err.status = res.status;
+    err.data = data;
+    throw err;
+  }
+  return data;
+}
+
+export async function getAllPedidos(token) {
+  log('GET', API_URL);
+  const res = await fetch(API_URL, {
+    headers: buildHeaders(token, { 'Content-Type': undefined }),
   });
+  return handleResponse(res);
+}
+
+export async function getPedidoById(pedidoId, token) {
+  const url = `${API_URL}/${pedidoId}`;
+  log('GET', url);
+  const res = await fetch(url, {
+    headers: buildHeaders(token, { 'Content-Type': undefined }),
+  });
+  return handleResponse(res);
+}
+
+export async function getPedidosByUsuario(token) {
+  const url = `${API_URL}/usuario`;
+  log('GET', url);
+  const res = await fetch(url, {
+    headers: buildHeaders(token, { 'Content-Type': undefined }),
+  });
+  return handleResponse(res);
+}
+
+export async function createPedido(pedidoData, token) {
+  log('POST', API_URL, pedidoData);
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: buildHeaders(token),
+    body: JSON.stringify(pedidoData),
+  });
+  const data = await handleResponse(res);
+  log('POST OK', data);
+  return data;
+}
+
+export async function updatePedido(pedidoId, pedidoData, token) {
+  const url = `${API_URL}/${pedidoId}`;
+  log('PUT', url, pedidoData);
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: buildHeaders(token),
+    body: JSON.stringify(pedidoData),
+  });
+  const data = await handleResponse(res);
+  log('PUT OK', data);
+  return data;
 }

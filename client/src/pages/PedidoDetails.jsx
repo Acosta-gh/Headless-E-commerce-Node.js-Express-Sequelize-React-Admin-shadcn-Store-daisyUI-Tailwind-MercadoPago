@@ -38,16 +38,20 @@ function PedidoDetails() {
         // eslint-disable-next-line
     }, [id]);
 
-    const fetchPedido = () => {
+    const fetchPedido = async () => {
         setLoading(true);
-        getPedidoById(id, token)
-            .then(res => {
-                console.log("Pedido recibido:", res.data);
-                setPedido(res.data);
-                setNuevoEstado(res.data.estado);
-            })
-            .catch(() => setPedido(null))
-            .finally(() => setLoading(false));
+        try {
+            const res = await getPedidoById(id, token); 
+            console.log("Pedido recibido (raw):", res);
+            const pedidoData = res?.data ? res.data : res; 
+            setPedido(pedidoData);
+            setNuevoEstado(pedidoData?.estado || "");
+        } catch (e) {
+            console.error("Error obteniendo pedido:", e);
+            setPedido(null);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleEditarEstado = () => {
@@ -86,8 +90,8 @@ function PedidoDetails() {
                 <Package className="h-24 w-24 text-gray-300 mb-4" strokeWidth={1.5} />
                 <h2 className="text-2xl font-bold mb-2 text-gray-800">Pedido no encontrado</h2>
                 <p className="text-gray-500 text-lg mb-6">No se pudo encontrar el pedido solicitado</p>
-                <button 
-                    onClick={() => navigate(-1)} 
+                <button
+                    onClick={() => navigate(-1)}
                     className="bg-red-900 text-white px-6 py-3 rounded-full font-semibold shadow hover:bg-red-800 transition-colors duration-300"
                 >
                     Volver
@@ -96,16 +100,16 @@ function PedidoDetails() {
         );
     }
     console.log(pedido);
-   
+
     const cliente = pedido.Usuario || {};
     const direccion = pedido.direccionEntrega || "-";
-    const telefono = cliente.telefono || "-"; 
+    const telefono = cliente.telefono || "-";
     const email = cliente.email || "-";
     const nombre = cliente.nombre || cliente.id || "-";
 
     // Format date nicely
     const fechaPedido = pedido.fechaPedido ? new Date(pedido.fechaPedido) : null;
-    const fechaFormateada = fechaPedido ? 
+    const fechaFormateada = fechaPedido ?
         fechaPedido.toLocaleDateString('es-ES', {
             year: 'numeric',
             month: 'long',
@@ -279,9 +283,9 @@ function PedidoDetails() {
                                 >
                                     <div className="flex items-center gap-3">
                                         {item.imagenUrl && (
-                                            <img 
-                                                src={item.imagenUrl} 
-                                                alt={item.nombre} 
+                                            <img
+                                                src={item.imagenUrl}
+                                                alt={item.nombre}
                                                 className="w-12 h-12 object-cover rounded-md shadow-sm border border-gray-100"
                                             />
                                         )}

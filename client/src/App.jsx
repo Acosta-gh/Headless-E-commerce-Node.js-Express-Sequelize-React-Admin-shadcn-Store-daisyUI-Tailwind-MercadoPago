@@ -105,7 +105,7 @@ function App() {
 
       {/* Contenedor principal con animación de entrada */}
       <motion.div
-        className="mx-auto max-w-7xl  sm:px-6 sm:pt-3 lg:px-8"
+        className="mx-auto max-w-7xl sm:px-6 sm:pt-3 lg:px-8 pb-12"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}

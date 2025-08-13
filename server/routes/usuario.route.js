@@ -2,14 +2,16 @@ const express = require('express');
 const router = express.Router();
 const usuarioController = require('../controllers/usuario.controller');
 
+// Rutas "fijas" primero
+router.post('/register', usuarioController.createUsuario);
+router.post('/login', usuarioController.loginUsuario);
+router.get('/verify', usuarioController.verifyEmail);
+router.post('/resend-verification', usuarioController.resendVerification);
+
+// Rutas de colección / dinámicas después
 router.get('/', usuarioController.getAllUsuarios);
 router.get('/:id', usuarioController.getUsuarioById);
 router.put('/:id', usuarioController.updateUsuario);
 router.delete('/:id', usuarioController.deleteUsuario);
-
-// Ruta para iniciar sesión
-router.post('/login', usuarioController.loginUsuario);
-// Ruta para crear un nuevo usuario
-router.post('/', usuarioController.createUsuario);
 
 module.exports = router;

@@ -1,41 +1,51 @@
 import { useState } from "react";
 import { createUsuario } from "../../services/usuarioService";
-import { useAuth } from "../../context/AuthContext";
 import { motion } from "framer-motion";
 import { useAlert } from "../../context/AlertContext";
 
 function SignUp({ setIsSigningUp, setIsLoggedIn }) {
-  const [form, setForm] = useState({});
-  const { refreshAuth } = useAuth();
+  const [form, setForm] = useState({
+    nombre: "",
+    telefono: "",
+    email: "",
+    password: ""
+  });
+  const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert();
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm(f => ({ ...f, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    createUsuario(form)
-      .then((response) => {
-        console.log("Usuario creado:", response.data);
-        localStorage.setItem("token", response.data.token);
-        setIsLoggedIn(true);
-        refreshAuth();
-      })
-      .catch((error) => {
-        console.error("Error al crear usuario:", error);
-        showAlert(
-          error.response?.data?.message || "Error al crear usuario"
-        );
-        if (error.response) {
-          console.log("Respuesta del servidor:", error.response.data);
-          showAlert(
-            error.response?.data?.message || "Error al crear usuario"
-          );
-        } else if (error.request) {
-          console.log("No hubo respuesta del servidor:", error.request);
-          showAlert("No se pudo conectar con el servidor"); 
-        } else {
-          console.log("Error:", error.message);
-          showAlert("Error desconocido al crear usuario");
-        }
-      });
+    if (loading) return;
+    setLoading(true);
+    try {
+      const response = await createUsuario(form); // Asegúrate que este hit sea a /api/usuario/register
+      console.log("Usuario creado:", response.data || response);
+      // El backend NO manda token ahora
+      showAlert(
+        (response.data?.message || "Usuario creado. Revisa tu email para confirmar la cuenta."),
+        "success"
+      );
+      // Cambiar a pantalla de login para que luego pueda iniciar sesión tras verificar
+      setTimeout(() => {
+        setIsSigningUp(false);
+      }, 2500);
+    } catch (error) {
+      console.error("Error al crear usuario:", error);
+      if (error.response) {
+        showAlert(error.response.data?.message || "Error al crear usuario", "error");
+      } else if (error.request) {
+        showAlert("No se pudo conectar con el servidor", "error");
+      } else {
+        showAlert(error.message || "Error desconocido al crear usuario", "error");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -46,7 +56,7 @@ function SignUp({ setIsSigningUp, setIsLoggedIn }) {
       transition={{ duration: 0.3 }}
     >
       <motion.div
-        className="p-8 rounded-lg w-full max-w-md"
+        className="p-8 rounded-lg w-full max-w-md bg-white/70 backdrop-blur"
         initial={{ y: 20 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.4 }}
@@ -62,11 +72,11 @@ function SignUp({ setIsSigningUp, setIsLoggedIn }) {
               id="nombre"
               name="nombre"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={(e) =>
-                setForm({ ...form, [e.target.name]: e.target.value })
-              }
+              value={form.nombre}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
               whileFocus={{ scale: 1.01 }}
+              disabled={loading}
             />
           </div>
           <div className="mb-4">
@@ -78,11 +88,11 @@ function SignUp({ setIsSigningUp, setIsLoggedIn }) {
               id="telefono"
               name="telefono"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={(e) =>
-                setForm({ ...form, [e.target.name]: e.target.value })
-              }
+              value={form.telefono}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
               whileFocus={{ scale: 1.01 }}
+              disabled={loading}
             />
           </div>
           <div className="mb-4">
@@ -94,11 +104,11 @@ function SignUp({ setIsSigningUp, setIsLoggedIn }) {
               id="email"
               name="email"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={(e) =>
-                setForm({ ...form, [e.target.name]: e.target.value })
-              }
+              value={form.email}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
               whileFocus={{ scale: 1.01 }}
+              disabled={loading}
             />
           </div>
           <div className="mb-6">
@@ -110,20 +120,21 @@ function SignUp({ setIsSigningUp, setIsLoggedIn }) {
               id="password"
               name="password"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={(e) =>
-                setForm({ ...form, [e.target.name]: e.target.value })
-              }
+              value={form.password}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
               whileFocus={{ scale: 1.01 }}
+              disabled={loading}
             />
           </div>
           <motion.button
             type="submit"
-            className="w-full bg-[var(--color-primary)] text-white py-2 rounded cursor-pointer transition-colors"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+            disabled={loading}
+            className="w-full bg-[var(--color-primary)] text-white py-2 rounded cursor-pointer font-medium disabled:opacity-60 transition-colors"
+            whileHover={!loading ? { scale: 1.03 } : {}}
+            whileTap={!loading ? { scale: 0.97 } : {}}
           >
-            Registrarse
+            {loading ? "Enviando..." : "Registrarse"}
           </motion.button>
         </form>
         <p className="mt-4 text-center text-gray-600">
@@ -139,8 +150,9 @@ function SignUp({ setIsSigningUp, setIsLoggedIn }) {
               padding: 0,
             }}
             whileHover={{ scale: 1.05 }}
+            disabled={loading}
           >
-            Inicia Sesión
+            Inicia sesión
           </motion.button>
         </p>
       </motion.div>

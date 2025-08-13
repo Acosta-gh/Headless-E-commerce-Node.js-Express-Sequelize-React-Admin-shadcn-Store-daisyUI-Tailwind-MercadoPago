@@ -22,6 +22,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DECIMAL(10, 2),
             allowNull: false
         },
+        metodoPago: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: 'efectivo'
+        },
         fechaPedido: {
             type: DataTypes.DATE,
             allowNull: false,
