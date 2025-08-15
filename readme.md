@@ -49,14 +49,14 @@ Este proyecto es una **página web para un restaurante** desarrollada con **Reac
 ---
 
 ## Capturas de pantalla
-<img width="382" height="852" alt="Image" src="https://github.com/user-attachments/assets/7cdb2f0c-684e-485c-be93-b48eba8cd765" />
-<img width="379" height="853" alt="Image" src="https://github.com/user-attachments/assets/ddf4f9f8-4c65-4c70-8e0d-20f02998000d" />
-<img width="379" height="850" alt="Image" src="https://github.com/user-attachments/assets/21edd892-0885-4d47-8911-03c500df2fcb" />
-<img width="379" height="850" alt="Image" src="https://github.com/user-attachments/assets/5ed1e80f-9cbf-4db3-b84e-b9033df0f724" />
-<img width="379" height="850" alt="Image" src="https://github.com/user-attachments/assets/eb72cd66-b266-4b22-8f80-608ecc21d947" />
-<img width="1920" height="933" alt="Image" src="https://github.com/user-attachments/assets/8c968fa8-310b-4abf-b397-015b131259e8" />
-<img width="1920" height="933" alt="Image" src="https://github.com/user-attachments/assets/fdee9838-035d-4053-8e44-fcdc1c381f3e" />
-<img width="1920" height="933" alt="Image" src="https://github.com/user-attachments/assets/d8b754c9-35be-47e2-86cc-c633ecec5593" />
-<img width="1920" height="933" alt="Image" src="https://github.com/user-attachments/assets/2f01b446-ae15-4e66-9eab-2cbe3c29ed4d" />
-<img width="1920" height="933" alt="Image" src="https://github.com/user-attachments/assets/1b3c2d83-da43-4f45-952b-ad8b2a61aa4b" />
 <img width="1920" height="933" alt="Image" src="https://github.com/user-attachments/assets/1d02f46f-b9ae-44a2-9882-33dc64e396c6" />
+<img width="1920" height="933" alt="Image" src="https://github.com/user-attachments/assets/1b3c2d83-da43-4f45-952b-ad8b2a61aa4b" />
+<img width="1920" height="933" alt="Image" src="https://github.com/user-attachments/assets/2f01b446-ae15-4e66-9eab-2cbe3c29ed4d" />
+<img width="1920" height="933" alt="Image" src="https://github.com/user-attachments/assets/d8b754c9-35be-47e2-86cc-c633ecec5593" />
+<img width="1920" height="933" alt="Image" src="https://github.com/user-attachments/assets/fdee9838-035d-4053-8e44-fcdc1c381f3e" />
+<img width="1920" height="933" alt="Image" src="https://github.com/user-attachments/assets/8c968fa8-310b-4abf-b397-015b131259e8" />
+<img width="379" height="850" alt="Image" src="https://github.com/user-attachments/assets/eb72cd66-b266-4b22-8f80-608ecc21d947" />
+<img width="379" height="850" alt="Image" src="https://github.com/user-attachments/assets/5ed1e80f-9cbf-4db3-b84e-b9033df0f724" />
+<img width="379" height="850" alt="Image" src="https://github.com/user-attachments/assets/21edd892-0885-4d47-8911-03c500df2fcb" />
+<img width="379" height="853" alt="Image" src="https://github.com/user-attachments/assets/ddf4f9f8-4c65-4c70-8e0d-20f02998000d" />
+<img width="382" height="852" alt="Image" src="https://github.com/user-attachments/assets/7cdb2f0c-684e-485c-be93-b48eba8cd765" />
