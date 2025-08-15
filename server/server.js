@@ -23,7 +23,9 @@ async function startServer() {
                     email: adminEmail,
                     password: hashedPassword,
                     admin: true,
-                    repartidor: false
+                    repartidor: false,
+                    verificado: true
+
                 }); 
                 console.log(`✅ Usuario administrador creado: ${adminEmail}`);
             } else {

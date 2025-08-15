@@ -12,7 +12,7 @@ export default function Layout() {
     <div>
       <Header />
       <main
-        className={` min-h-screen bg-[var(--color-background)] ${!isRoot ? "sm:pt-35" : "sm:pt-19"}`}
+        className={` min-h-screen bg-[var(--color-background)] pb-24 sm:pb-0 ${!isRoot ? "sm:pt-35" : "sm:pt-19"}`}
       >
         <Outlet />
       </main>
