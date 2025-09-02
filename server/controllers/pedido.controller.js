@@ -1,4 +1,4 @@
-const { Pedido, PedidoItem, Item, Usuario } = require('../models');
+const { Pedido, PedidoItem, Item, Usuario } = require('../models'); 
 const { sendEmail } = require('../services/email.service');
 
 // Obtener todos los pedidos
@@ -54,13 +54,13 @@ exports.createPedido = async (req, res) => {
   const { usuarioId, direccionEntrega, total, estado, items, metodoPago } = req.body;
   const t = await Pedido.sequelize.transaction();
   try {
-    // 1. Crear el pedido (AHORA incluye metodoPago)
+    // 1. Crear el pedido 
     const nuevoPedido = await Pedido.create(
       { usuarioId, direccionEntrega, total, estado, metodoPago },
       { transaction: t }
     );
 
-    // 2. Asociar los items y reducir el stock (igual que antes)
+    // 2. Asociar los items y reducir el stock 
     if (Array.isArray(items) && items.length > 0) {
       for (const item of items) {
         const itemInstancia = await Item.findByPk(item.itemId, { transaction: t });

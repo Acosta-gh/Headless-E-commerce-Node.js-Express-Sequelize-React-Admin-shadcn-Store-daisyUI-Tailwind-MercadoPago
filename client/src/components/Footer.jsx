@@ -1,5 +1,15 @@
 import React from 'react';
 
+/**
+ * Componente Footer
+ *
+ * Renderiza el pie de página del sitio web del restaurante, mostrando el año actual,
+ * un correo de contacto y enlaces a redes sociales (Facebook e Instagram).
+ * Solo es visible en pantallas medianas o mayores (md y superiores).
+ *
+ * @component
+ * @returns {JSX.Element} El elemento JSX que representa el pie de página.
+ */
 function Footer() {
     return (
         <footer className="hidden md:block bg-[var(--color-secondary)] text-white py-8 text-center">

@@ -111,8 +111,10 @@ function Perfil() {
     try {
       const response = await getUsuarioById(userId, authToken);
       // IMPORTANTE: si usuarioService ya no usa axios, response puede ser el objeto directo.
-      const data = response?.data ? response.data : response; // normaliza
+      const data = response?.data ? response.data : response;
+      console.log("Datos del usuario:", data);
       const userData = {
+        id: data?.id || "",
         telefono: data?.telefono || "",
         direccion: data?.direccion || "",
         email: data?.email || "",

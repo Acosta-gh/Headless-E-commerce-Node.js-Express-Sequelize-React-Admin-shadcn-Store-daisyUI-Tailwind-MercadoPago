@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useCart } from "../context/CartContext";
-import { createPedido } from "../services/pedidoService";
 import { useAuth } from "../context/AuthContext.jsx";
-import { jwtDecode } from "jwt-decode";
+import { useValidacionPedido } from "../hooks/useValidacionPedido";
+import { usePedido } from "../hooks/usePedido";
+import MercadoPagoButton from "../components/MercadoPagoButton.jsx";
+import PayPalButton from "../components/PayPalButton.jsx";
 import {
   ShoppingCart,
   Plus,
@@ -12,7 +14,6 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import PayPalButton from "../components/PayPalButton.jsx";
 
 function Carrito() {
   const {
@@ -26,141 +27,141 @@ function Carrito() {
   const { token } = useAuth();
   const userData = JSON.parse(sessionStorage.getItem("userData"));
 
-  const [direccion, setDireccion] = useState(userData ? userData.direccion : "");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [pedidoExitoso, setPedidoExitoso] = useState(false);
+  const [direccion, setDireccion] = useState(
+    userData ? userData.direccion : ""
+  );
   const [totalKey, setTotalKey] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState("efectivo"); // 'efectivo' | 'paypal'
+  const [paymentMethod, setPaymentMethod] = useState("efectivo");
+
+  const validarPreCondiciones = useValidacionPedido({ cart, token, direccion });
+
+  const {
+    isSubmitting,
+    pedidoExitoso,
+    procesarPedido,
+    setIsSubmitting,
+    setPedidoExitoso,
+  } = usePedido({
+    cart,
+    direccion,
+    totalPrecio,
+    token,
+    vaciarCarrito,
+    validarPreCondiciones,
+  });
 
   useEffect(() => {
     setTotalKey((prev) => prev + 1);
   }, [totalPrecio]);
 
-  const validarPreCondiciones = () => {
-    if (cart.length === 0) {
-      alert("El carrito está vacío.");
-      return false;
-    }
-    if (!token) {
-      alert("Debes iniciar sesión.");
-      return false;
-    }
-    let usuarioId;
+  const handleCreateOrder = () => {
+    procesarPedido({ metodoPago: "efectivo", estado: "pendiente" });
+  };
+
+  // --- Lógica de PayPal Segura ---
+  const createPayPalOrder = useCallback(async () => {
     try {
-      usuarioId = jwtDecode(token).id;
-    } catch {
-      alert("Token inválido.");
-      return false;
+      const res = await fetch("http://localhost:3000/api/paypal/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currency: "USD",
+          items: cart.map((i) => ({ itemId: i.id, cantidad: i.cantidad })),
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        return data.id;
+      } else {
+        throw new Error(
+          data.message || "Error del servidor al crear la orden."
+        );
+      }
+    } catch (err) {
+      console.error("Error creating PayPal order:", err);
+      alert(`Error al iniciar el pago con PayPal: ${err.message}`);
+      throw err;
     }
-    if (!usuarioId) {
-      alert("Token inválido.");
-      return false;
-    }
-    if (!direccion) {
-      alert("Debes indicar una dirección de entrega.");
-      return false;
-    }
-    return true;
-  };
+  }, [cart]);
 
-  const construirPedidoData = (usuarioId, estadoForzado) => {
-    return {
-      direccionEntrega: direccion,
-      usuarioId,
-      total: totalPrecio,
-      fechaPedido: new Date().toISOString(),
-      estado:
-        estadoForzado ||
-        (paymentMethod === "paypal" ? "pagado" : "pendiente"),
-      metodoPago: paymentMethod, // NUEVO
-      items: cart.map((item) => ({
-        itemId: item.id,
-        cantidad: item.cantidad,
-        precio: item.precio,
-      })),
-    };
-  };
-
-  const crearPedidoBackend = async (pedidoData) => {
-    await createPedido(pedidoData, token);
-  };
-
-  const handleCreateOrder = async () => {
-    if (isSubmitting || pedidoExitoso) return;
-    if (!validarPreCondiciones()) return;
-
-    setIsSubmitting(true);
-    const usuarioId = jwtDecode(token).id;
-    const pedidoData = construirPedidoData(usuarioId);
-
-    try {
-      await crearPedidoBackend(pedidoData);
-      setPedidoExitoso(true);
-      setTimeout(() => {
-        vaciarCarrito();
-        setPedidoExitoso(false);
-      }, 1800);
-    } catch (error) {
-      console.error(error);
-      alert("Error al crear el pedido.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Llamado tras un pago PayPal exitoso
-  const handlePayPalSuccess = useCallback(
-    async (paypalDetails) => {
-      // paypalDetails contiene info del payer, id de transacción, etc.
-      if (!validarPreCondiciones()) return;
-      setIsSubmitting(true);
+  const onPayPalApprove = useCallback(
+    async (data) => {
       try {
-        
-        const usuarioId = jwtDecode(token).id;
-        const pedidoData = construirPedidoData(usuarioId, "pagado");
-        
-        await crearPedidoBackend(pedidoData);
-        setPedidoExitoso(true);
-        setTimeout(() => {
-          vaciarCarrito();
-          setPedidoExitoso(false);
-        }, 1800);
+        setIsSubmitting(true);
+        const res = await fetch(
+          `http://localhost:3000/api/paypal/capture-order/${data.orderID}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              usuarioId: userData?.id,
+              direccionEntrega: direccion,
+              items: cart.map((i) => ({ itemId: i.id, cantidad: i.cantidad })),
+            }),
+          }
+        );
+
+        const details = await res.json();
+        if (res.ok && details.status === "COMPLETED") {
+          setPedidoExitoso(true);
+          setTimeout(() => {
+            vaciarCarrito();
+            setPedidoExitoso(false);
+            setIsSubmitting(false);
+          }, 2500);
+        } else {
+          throw new Error(details.message || "El pago no pudo ser completado.");
+        }
       } catch (err) {
-        console.error(err);
-        alert("El pago se realizó pero hubo un error creando el pedido.");
-        console.log("Detalles del pago:", paypalDetails);
-      } finally {
+        console.error("Error capturing PayPal order:", err);
+        alert(`Error al finalizar el pago: ${err.message}`);
         setIsSubmitting(false);
+        throw err;
       }
     },
-    [cart, direccion, paymentMethod, token, totalPrecio]
+    [
+      userData,
+      direccion,
+      cart,
+      setIsSubmitting,
+      setPedidoExitoso,
+      vaciarCarrito,
+    ]
   );
+
+  const onPayPalError = useCallback(
+    (err) => {
+      alert(
+        "Ocurrió un error inesperado con PayPal. Por favor, intenta de nuevo."
+      );
+      console.error("PayPal Button Error:", err);
+      setIsSubmitting(false);
+    },
+    [setIsSubmitting]
+  );
+
+  const amountForPayPal = Number(totalPrecio || 0).toFixed(2);
+  const itemsParaMercadoPago = cart.map((item) => ({
+    id: item.id,
+    title: item.nombre,
+    description: `Producto ${item.nombre}`,
+    picture_url: item.imagenUrl,
+    quantity: item.cantidad,
+    currency_id: "ARS",
+    unit_price: item.precio,
+  }));
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
   };
-
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.4 },
-    },
-    exit: {
-      x: -50,
-      opacity: 0,
-      transition: { duration: 0.3 },
-    },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.4 } },
+    exit: { x: -50, opacity: 0, transition: { duration: 0.3 } },
   };
 
-  if (cart.length === 0) {
+  if (cart.length === 0 && !pedidoExitoso) {
     return (
       <motion.div
         className="flex flex-col items-center justify-center min-h-[60vh] p-8"
@@ -169,9 +170,7 @@ function Carrito() {
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="relative">
-          <ShoppingCart className="h-24 w-24 text-gray-300" strokeWidth={1.5} />
-        </div>
+        <ShoppingCart className="h-24 w-24 text-gray-300" strokeWidth={1.5} />
         <h2 className="text-2xl font-bold mb-2 text-gray-800">
           Tu carrito está vacío
         </h2>
@@ -182,14 +181,11 @@ function Carrito() {
           href="/"
           className="bg-[var(--color-primary)] text-white px-6 py-3 rounded-full font-semibold shadow hover:bg-[var(--color-primary-hover)] transition-colors duration-300 flex items-center gap-2"
         >
-          <ShoppingBag size={18} />
-          Ver productos
+          <ShoppingBag size={18} /> Ver productos
         </a>
       </motion.div>
     );
   }
-
-  const amountForPayPal = Number(totalPrecio || 0).toFixed(2);
 
   return (
     <motion.div
@@ -204,9 +200,7 @@ function Carrito() {
       >
         Carrito de compras
       </motion.h2>
-
       <motion.div className="overflow-x-auto mb-6" variants={itemVariants}>
-        {/* Desktop table */}
         <table className="min-w-full table-auto mb-4 hidden sm:table">
           <thead>
             <tr className="bg-gray-100 text-left">
@@ -240,7 +234,7 @@ function Carrito() {
                   } hover:bg-gray-100 transition-colors`}
                 >
                   <td className="px-4 py-3 flex items-center">
-                    <motion.img
+                    <img
                       src={item.imagenUrl}
                       alt={item.nombre}
                       className="w-14 h-14 object-cover mr-3 rounded-md shadow-sm border border-gray-100"
@@ -300,8 +294,6 @@ function Carrito() {
             </AnimatePresence>
           </tbody>
         </table>
-
-        {/* Mobile view */}
         <div className="sm:hidden flex flex-col gap-4">
           <AnimatePresence initial={false}>
             {cart.map((item) => (
@@ -315,7 +307,7 @@ function Carrito() {
                 className="rounded-lg p-4 flex flex-col gap-3 border border-gray-200 shadow-sm"
               >
                 <div className="flex items-start gap-3">
-                  <motion.img
+                  <img
                     src={item.imagenUrl}
                     alt={item.nombre}
                     className="w-20 h-20 object-cover rounded-md shadow-sm border border-gray-100"
@@ -378,7 +370,6 @@ function Carrito() {
           </AnimatePresence>
         </div>
       </motion.div>
-
       <motion.div
         className="mb-6 bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm"
         variants={itemVariants}
@@ -403,8 +394,6 @@ function Carrito() {
           </button>
         </div>
       </motion.div>
-
-      {/* Método de pago */}
       <motion.div className="mb-6" variants={itemVariants}>
         <h3 className="text-lg font-semibold text-gray-800 mb-2">
           Método de pago
@@ -421,7 +410,7 @@ function Carrito() {
             />
             <span>Efectivo / Contra entrega</span>
           </label>
-            <label className="flex items-center gap-2 cursor-pointer">
+          <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="radio"
               name="metodoPago"
@@ -432,9 +421,19 @@ function Carrito() {
             />
             <span>PayPal</span>
           </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="metodoPago"
+              value="mercadopago"
+              checked={paymentMethod === "mercadopago"}
+              onChange={() => setPaymentMethod("mercadopago")}
+              disabled={isSubmitting}
+            />
+            <span>Mercado Pago</span>
+          </label>
         </div>
       </motion.div>
-
       <motion.div className="mb-6" variants={itemVariants}>
         <label
           htmlFor="direccion"
@@ -447,12 +446,10 @@ function Carrito() {
           value={direccion}
           readOnly
           disabled
-          placeholder="Dirección de entrega"
+          placeholder="Dirección no disponible"
           className="border border-gray-300 px-4 py-3 rounded-md w-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-transparent transition"
         />
       </motion.div>
-
-      {/* Botón de crear pedido SOLO si es efectivo */}
       {paymentMethod === "efectivo" && (
         <motion.div className="flex justify-center" variants={itemVariants}>
           <motion.button
@@ -505,11 +502,9 @@ function Carrito() {
           </motion.button>
         </motion.div>
       )}
-
-      {/* Botón PayPal SOLO si se eligió PayPal */}
-      {paymentMethod === "paypal" &&  (
+      {paymentMethod === "paypal" && (
         <motion.div
-          className="mt-4 flex flex-col items-center gap-4"
+          className="mt-4 flex flex-col items-center gap-4 relative z-10"
           variants={itemVariants}
         >
           {pedidoExitoso && (
@@ -518,28 +513,37 @@ function Carrito() {
             </div>
           )}
           <PayPalButton
-            key={amountForPayPal} /* fuerza remount si cambia el total */
             amount={amountForPayPal}
             currency="USD"
-            disabled={isSubmitting || pedidoExitoso || cart.length === 0 || !token || !direccion}
-            onSuccess={handlePayPalSuccess}
-            onError={(err) =>
-              alert("Error en el pago PayPal: " + (err?.message || err))
-            }
-            // extraData opcional para tu backend PayPal
-            extraData={{
-              items: cart.map((i) => ({
-                name: i.nombre,
-                unit_amount: i.precio,
-                quantity: i.cantidad,
-              })),
-              direccionEntrega: direccion,
-            }}
+            createOrder={createPayPalOrder}
+            onApprove={onPayPalApprove}
+            onError={onPayPalError}
+            disabled={isSubmitting || pedidoExitoso || !validarPreCondiciones()}
           />
-          {isSubmitting && (
+          {isSubmitting && !pedidoExitoso && (
             <div className="text-sm text-gray-600">
               Registrando tu pedido...
             </div>
+          )}
+        </motion.div>
+      )}
+      {paymentMethod === "mercadopago" && (
+        <motion.div
+          className="mt-4 flex flex-col items-center gap-4 w-full"
+          variants={itemVariants}
+        >
+          {pedidoExitoso && (
+            <div className="flex items-center gap-2 text-green-700 font-semibold text-lg">
+              <CheckCircle size={22} /> ¡Pedido Registrado con Éxito!
+            </div>
+          )}
+
+          {!isSubmitting && !pedidoExitoso && validarPreCondiciones() && (
+            <MercadoPagoButton />
+          )}
+
+          {isSubmitting && !pedidoExitoso && (
+            <div className="text-sm text-gray-600">Procesando...</div>
           )}
         </motion.div>
       )}
