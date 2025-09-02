@@ -49,12 +49,12 @@ export default function Verificar() {
         </p>
         {estado.cargando && <div className="text-sm text-gray-500">Procesando...</div>}
         {!estado.cargando && estado.exito && (
-          <a href="/profile" className="inline-block bg-[var(--color-primary)] text-white px-4 py-2 rounded font-medium">
+          <a href="/perfil" className="inline-block bg-[var(--color-primary)] text-white px-4 py-2 rounded font-medium">
             Iniciar sesión
           </a>
         )}
         {!estado.cargando && !estado.exito && (
-          <a href="/profile" className="inline-block text-blue-600 underline">
+          <a href="/perfil" className="inline-block text-blue-600 underline">
             Volver al login
           </a>
         )}

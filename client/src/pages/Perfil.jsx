@@ -375,7 +375,7 @@ function Perfil() {
             {/* ASIDE PERFIL */}
             <motion.aside className="lg:col-span-1" variants={cardAnimation}>
               <motion.div
-                className="bg-white shadow-sm p-6 rounded-xl h-full"
+                className="bg-white shadow-sm p-6 rounded-xl h-full overflow-hidden"
                 variants={itemAnimation}
               >
                 <div className="flex items-center justify-between mb-6">

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useAlert } from "../context/AlertContext";
+
 import { useValidacionPedido } from "../hooks/useValidacionPedido";
 import { usePedido } from "../hooks/usePedido";
 import MercadoPagoButton from "../components/MercadoPagoButton.jsx";
@@ -26,6 +28,7 @@ function Carrito() {
   } = useCart();
   const { token } = useAuth();
   const userData = JSON.parse(sessionStorage.getItem("userData"));
+  const { showAlert } = useAlert();
 
   const [direccion, setDireccion] = useState(
     userData ? userData.direccion : ""
@@ -34,6 +37,7 @@ function Carrito() {
   const [paymentMethod, setPaymentMethod] = useState("efectivo");
 
   const validarPreCondiciones = useValidacionPedido({ cart, token, direccion });
+  const { esValido, mensaje } = validarPreCondiciones();
 
   const {
     isSubmitting,
@@ -55,11 +59,18 @@ function Carrito() {
   }, [totalPrecio]);
 
   const handleCreateOrder = () => {
+    if (!esValido) {
+      showAlert(mensaje);
+      return;
+    }
     procesarPedido({ metodoPago: "efectivo", estado: "pendiente" });
   };
 
   // --- Lógica de PayPal Segura ---
   const createPayPalOrder = useCallback(async () => {
+    if (!esValido) {
+      throw new Error(mensaje);
+    }
     try {
       const res = await fetch("http://localhost:3000/api/paypal/create-order", {
         method: "POST",
@@ -70,19 +81,14 @@ function Carrito() {
         }),
       });
       const data = await res.json();
-      if (res.ok) {
-        return data.id;
-      } else {
-        throw new Error(
-          data.message || "Error del servidor al crear la orden."
-        );
-      }
+      if (res.ok) return data.id;
+
+      throw new Error(data.message || "Error del servidor al crear la orden.");
     } catch (err) {
-      console.error("Error creating PayPal order:", err);
-      alert(`Error al iniciar el pago con PayPal: ${err.message}`);
+      showAlert(`Error al crear orden de PayPal: ${err.message}`);
       throw err;
     }
-  }, [cart]);
+  }, [esValido, mensaje, cart, showAlert]);
 
   const onPayPalApprove = useCallback(
     async (data) => {
@@ -114,7 +120,6 @@ function Carrito() {
         }
       } catch (err) {
         console.error("Error capturing PayPal order:", err);
-        alert(`Error al finalizar el pago: ${err.message}`);
         setIsSubmitting(false);
         throw err;
       }
@@ -131,13 +136,10 @@ function Carrito() {
 
   const onPayPalError = useCallback(
     (err) => {
-      alert(
-        "Ocurrió un error inesperado con PayPal. Por favor, intenta de nuevo."
-      );
-      console.error("PayPal Button Error:", err);
+      showAlert(`Error en el pago con PayPal: ${err.message}`);
       setIsSubmitting(false);
     },
-    [setIsSubmitting]
+    [setIsSubmitting, showAlert]
   );
 
   const amountForPayPal = Number(totalPrecio || 0).toFixed(2);
@@ -454,12 +456,21 @@ function Carrito() {
         <motion.div className="flex justify-center" variants={itemVariants}>
           <motion.button
             onClick={handleCreateOrder}
-            disabled={isSubmitting || pedidoExitoso}
-            className="cursor-pointer bg-[var(--color-primary)] text-white px-13 py-6 rounded-full font-semibold text-lg shadow-md w-full sm:w-auto relative overflow-hidden disabled:opacity-60"
+            className={`
+              px-13 py-6 rounded-full font-semibold text-lg shadow-md w-full sm:w-auto relative overflow-hidden
+              ${!esValido 
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-[var(--color-primary)] text-white cursor-pointer'
+              }
+            `}
             whileHover={
-              isSubmitting || pedidoExitoso ? {} : { scale: 1.03, y: -2 }
+              !esValido || isSubmitting || pedidoExitoso
+                ? {}
+                : { scale: 1.03, y: -2 }
             }
-            whileTap={isSubmitting || pedidoExitoso ? {} : { scale: 0.97 }}
+            whileTap={
+              !esValido || isSubmitting || pedidoExitoso ? {} : { scale: 0.97 }
+            }
             animate={
               isSubmitting || pedidoExitoso ? { opacity: 0.85 } : { opacity: 1 }
             }
@@ -518,7 +529,7 @@ function Carrito() {
             createOrder={createPayPalOrder}
             onApprove={onPayPalApprove}
             onError={onPayPalError}
-            disabled={isSubmitting || pedidoExitoso || !validarPreCondiciones()}
+            disabled={!esValido || isSubmitting || pedidoExitoso}
           />
           {isSubmitting && !pedidoExitoso && (
             <div className="text-sm text-gray-600">
@@ -532,19 +543,26 @@ function Carrito() {
           className="mt-4 flex flex-col items-center gap-4 w-full"
           variants={itemVariants}
         >
-          {pedidoExitoso && (
-            <div className="flex items-center gap-2 text-green-700 font-semibold text-lg">
-              <CheckCircle size={22} /> ¡Pedido Registrado con Éxito!
-            </div>
-          )}
-
-          {!isSubmitting && !pedidoExitoso && validarPreCondiciones() && (
+          {esValido && !isSubmitting && !pedidoExitoso ? (
             <MercadoPagoButton />
+          ) : (
+            <button
+              disabled
+              className="bg-gray-300 text-gray-500 px-6 py-3 rounded-md cursor-not-allowed"
+            >
+              Pagar con Mercado Pago
+            </button>
           )}
+        </motion.div>
+      )}
 
-          {isSubmitting && !pedidoExitoso && (
-            <div className="text-sm text-gray-600">Procesando...</div>
-          )}
+      {!esValido && !isSubmitting && !pedidoExitoso && (
+        <motion.div
+          className="text-center text-red-600 mt-4 font-medium"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          {mensaje}
         </motion.div>
       )}
     </motion.div>

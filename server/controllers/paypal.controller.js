@@ -157,7 +157,7 @@ exports.captureOrder = async (req, res) => {
           usuarioId,
           direccionEntrega,
           total: totalVerificacion, // Usar el total verificado
-          estado: "pagado",
+          estado: "pendiente",
           metodoPago: "paypal",
         },
         { transaction: t }
