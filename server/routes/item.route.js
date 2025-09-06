@@ -3,7 +3,6 @@ const router = express.Router();
 const itemController = require('../controllers/item.controller');
 
 const verificarToken = require('../middleware/verificarToken.middleware');
-const isUsuario = require('../middleware/isUsuario.middleware');
 const isAdmin = require('../middleware/isAdmin.middleware');
 
 router.get('/', itemController.getAllItems);

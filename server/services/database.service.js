@@ -1,5 +1,5 @@
-const { sequelize } = require("./models"); // Importa la instancia de Sequelize para manejar la base de datos
-const { Usuario } = require("./models"); // Importa el modelo de Usuario para crear un usuario administrador
+const { sequelize } = require("../models"); // Importa la instancia de Sequelize para manejar la base de datos
+const { Usuario } = require("../models"); // Importa el modelo de Usuario para crear un usuario administrador
 const bcrypt = require("bcrypt"); // Importa bcrypt para hashear contraseñas
 
 /**

@@ -22,6 +22,10 @@ app.use(express.urlencoded({ extended: true })); // 🔗 Analiza solicitudes con
 if (!fs.existsSync(uploadsDir)){
   fs.mkdirSync(uploadsDir);
 }
+// Ajustamos la política de recursos para permitir la carga desde otros orígenes.
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
 // Carpeta donde se guardan las imágenes, disponible para frontend
 app.use('/uploads', express.static('uploads'));

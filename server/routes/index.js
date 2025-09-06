@@ -6,7 +6,7 @@ router.use('/usuario', require('./usuario.route'));
 router.use('/pedido', require('./pedido.route'));
 router.use('/categoria', require('./categoria.route'));
 router.use('/upload', require('./upload.route'));
-router.use('/paypal', require('./paypal.route'));
+//router.use('/paypal', require('./paypal.route'));
 router.use('/mercadopago', require('./mercadopago.route')); 
 
 router.get('/', (req, res) => {

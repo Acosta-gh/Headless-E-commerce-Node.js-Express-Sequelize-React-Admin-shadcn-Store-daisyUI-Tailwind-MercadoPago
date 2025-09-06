@@ -230,7 +230,7 @@ function AdminPanel() {
                   value={catForm.nombre}
                   onChange={handleCatInputChange}
                   placeholder="Nombre de la categoría"
-                  requigray
+                  required
                   className="w-full border border-gray-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300 pl-4"
                 />
               </div>
@@ -268,7 +268,7 @@ function AdminPanel() {
                                   name="nombre"
                                   value={catEditForm.nombre}
                                   onChange={handleCatEditInputChange}
-                                  requigray
+                                  required
                                   className="w-full border border-gray-200 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300 pl-4"
                                 />
                               </div>
@@ -339,7 +339,7 @@ function AdminPanel() {
                   value={form.nombre} 
                   onChange={handleInputChange} 
                   placeholder="Nombre del producto" 
-                  requigray 
+                  required 
                   className="w-full border border-gray-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
               </div>
@@ -365,7 +365,7 @@ function AdminPanel() {
                   placeholder="Precio" 
                   type="number" 
                   step="0.01"
-                  requigray 
+                  required 
                   className="w-full border border-gray-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
               </div>
@@ -376,7 +376,7 @@ function AdminPanel() {
                   name="categoriaId"
                   value={form.categoriaId}
                   onChange={handleInputChange}
-                  requigray
+                  required
                   className="w-full border border-gray-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white"
                 >
                   <option value="">Selecciona una categoría</option>
@@ -394,7 +394,7 @@ function AdminPanel() {
                   onChange={handleInputChange} 
                   placeholder="Cantidad disponible" 
                   type="number" 
-                  requigray 
+                  required 
                   className="w-full border border-gray-200 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
               </div>

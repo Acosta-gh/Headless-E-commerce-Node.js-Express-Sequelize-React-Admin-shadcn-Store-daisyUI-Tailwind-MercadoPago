@@ -6,7 +6,7 @@ import { useAlert } from "../context/AlertContext";
 import { useValidacionPedido } from "../hooks/useValidacionPedido";
 import { usePedido } from "../hooks/usePedido";
 import MercadoPagoButton from "../components/MercadoPagoButton.jsx";
-import PayPalButton from "../components/PayPalButton.jsx";
+//import PayPalButton from "../components/PayPalButton.jsx";
 import {
   ShoppingCart,
   Plus,
