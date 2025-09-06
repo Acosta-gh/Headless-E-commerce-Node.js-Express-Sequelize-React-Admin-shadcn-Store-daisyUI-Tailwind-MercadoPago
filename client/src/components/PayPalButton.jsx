@@ -1,3 +1,4 @@
+/*
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 
 /**
@@ -15,7 +16,7 @@ import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
  * @param {boolean} props.disabled - Indica si el botón de PayPal debe estar deshabilitado.
  *
  * @returns {JSX.Element} El botón de PayPal y el resumen del total a pagar.
- */
+
 export default function PayPalButton({
   amount,
   currency,
@@ -46,3 +47,4 @@ export default function PayPalButton({
     </div>
   );
 }
+ */

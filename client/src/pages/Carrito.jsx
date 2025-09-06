@@ -90,6 +90,7 @@ function Carrito() {
     }
   }, [esValido, mensaje, cart, showAlert]);
 
+  /*
   const onPayPalApprove = useCallback(
     async (data) => {
       try {
@@ -141,8 +142,8 @@ function Carrito() {
     },
     [setIsSubmitting, showAlert]
   );
-
-  const amountForPayPal = Number(totalPrecio || 0).toFixed(2);
+*/
+  //const amountForPayPal = Number(totalPrecio || 0).toFixed(2);
   const itemsParaMercadoPago = cart.map((item) => ({
     id: item.id,
     title: item.nombre,
@@ -412,7 +413,8 @@ function Carrito() {
             />
             <span>Efectivo / Contra entrega</span>
           </label>
-          <label className="flex items-center gap-2 cursor-pointer">
+          {/*
+                  <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="radio"
               name="metodoPago"
@@ -423,6 +425,8 @@ function Carrito() {
             />
             <span>PayPal</span>
           </label>
+            */}
+
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="radio"
@@ -458,9 +462,10 @@ function Carrito() {
             onClick={handleCreateOrder}
             className={`
               px-13 py-6 rounded-full font-semibold text-lg shadow-md w-full sm:w-auto relative overflow-hidden
-              ${!esValido 
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-[var(--color-primary)] text-white cursor-pointer'
+              ${
+                !esValido
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-[var(--color-primary)] text-white cursor-pointer"
               }
             `}
             whileHover={
@@ -513,6 +518,7 @@ function Carrito() {
           </motion.button>
         </motion.div>
       )}
+      {/*  
       {paymentMethod === "paypal" && (
         <motion.div
           className="mt-4 flex flex-col items-center gap-4 relative z-10"
@@ -538,6 +544,7 @@ function Carrito() {
           )}
         </motion.div>
       )}
+      */}
       {paymentMethod === "mercadopago" && (
         <motion.div
           className="mt-4 flex flex-col items-center gap-4 w-full"

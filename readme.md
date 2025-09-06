@@ -1,8 +1,8 @@
-# Restaurante Online
+# E-commerce Genérico
 
-Este proyecto es una **página web para un restaurante** desarrollada con **React** (frontend), **Node.js** (backend) y **Sequelize** (ORM para base de datos). Permite a los clientes realizar pedidos en línea, elegir el método de pago (efectivo o PayPal) y recibir notificaciones por correo electrónico sobre el estado de sus pedidos.
+Este proyecto es una **plataforma web de e-commerce** desarrollada con **React** (frontend), **Node.js** (backend) y **Sequelize** (ORM para base de datos). Permite a los clientes explorar productos, realizar pedidos en línea, elegir el método de pago (MercadoPago o efectivo) y recibir notificaciones por correo electrónico sobre el estado de sus compras.
 
-> ⚠️ **La página está casi terminada. Faltan detalles en el frontend y se están mejorando aspectos de seguridad en el backend, especialmente en la gestión de pagos.**
+> ⚠️ **El proyecto está en desarrollo. Se están mejorando aspectos de seguridad en el backend y agregando detalles en el frontend.**
 
 ---
 
@@ -12,23 +12,23 @@ Este proyecto es una **página web para un restaurante** desarrollada con **Reac
 - **Backend:** Node.js (Express)  
 - **Base de datos:** Sequelize (MySQL, PostgreSQL, etc.)
 - **Autenticación:** Registro de usuarios con confirmación de cuenta por correo electrónico
-- **Pedidos en línea:** Selección de productos y gestión de pedidos
+- **Gestión de productos y pedidos:** Selección de productos y gestión de compras
 - **Notificaciones por correo electrónico:**  
   - Confirmación de cuenta  
-  - Cambios de estado del pedido (en preparación, en envío, cancelado, etc.)
-- **Métodos de pago:** Efectivo o PayPal
+  - Cambios de estado del pedido (en preparación, enviado, cancelado, etc.)
+- **Métodos de pago:** Efectivo o MercadoPago (fácil integración, solo agrega tus credenciales)
 - **Modo de uso flexible:**  
-  - El usuario puede navegar, armar el pedido y revisar el carrito **sin registrarse**.  
+  - El usuario puede navegar, armar el carrito y revisar productos **sin registrarse**.  
   - **Solo al momento de pagar**, se solicita iniciar sesión o registrarse.
 
 ---
 
 ## Flujo básico de usuario
 
-1. **Exploración y armado de pedido**  
-    - El usuario puede navegar por el menú y armar su pedido **sin necesidad de estar registrado**.
+1. **Exploración y armado de carrito**  
+    - El usuario puede navegar por los productos y armar su carrito **sin necesidad de estar registrado**.
 2. **Pago del pedido**  
-    - Al proceder al pago (efectivo o PayPal), se solicita iniciar sesión o crear una cuenta.  
+    - Al proceder al pago (efectivo o MercadoPago), se solicita iniciar sesión o crear una cuenta.  
     - El usuario recibe un correo de confirmación de cuenta al registrarse.
 3. **Seguimiento del pedido**  
     - Por cada cambio de estado del pedido, el usuario recibe un correo notificando la actualización.
@@ -39,12 +39,12 @@ Este proyecto es una **página web para un restaurante** desarrollada con **Reac
 
 - [x] Backend funcional con Node.js y Sequelize
 - [x] Sistema de autenticación y confirmación por email
-- [x] Gestión de pedidos y notificaciones por email
-- [x] Integración básica con PayPal y opción de pago en efectivo
-- [x] Navegación y armado de pedidos sin registro
+- [x] Gestión de productos, pedidos y notificaciones por email
+- [x] Integración básica con MercadoPago
+- [x] Navegación y armado de carrito sin registro
 - [ ] Mejoras de seguridad en pagos
 - [ ] Detalles y mejoras en frontend (experiencia de usuario y diseño)
-- [ ] Instrucciones de despliegue
+- [ ] Instrucciones de despliegue y configuración de MercadoPago
 
 ---
 

@@ -1,41 +1,23 @@
-//require('dotenv').config();
-require('@dotenvx/dotenvx').config()
+require('@dotenvx/dotenvx').config() // 🌱
 
-const app = require('./app');
-const { sequelize } = require('./models');
-
-const { Usuario } = require('./models');
-const bcrypt = require('bcrypt');
+const { createDatabase } = require('./services/database.service'); // 🗄️ Importa la función para crear y conectar la base de datos
+const app = require('./app'); // 🚦 Importa la configuración de la aplicación Express
 
 const PORT = process.env.PORT || 3001;
-async function startServer() {
-    try {
-        await sequelize.sync({ force: false }); // Esto recrea todas las tablas
-        // Crear un usuario administrador por defecto
-        const adminEmail = process.env.ADMIN_EMAIL
-        const adminPassword = process.env.ADMIN_PASSWORD;
-        if (adminEmail && adminPassword) {
-            const existingAdmin = await Usuario.findOne({ where: { email: adminEmail } });
-            if (!existingAdmin) {
-                const hashedPassword = await bcrypt.hash(adminPassword, 10);
-                await Usuario.create({
-                    nombre: 'Administrador',
-                    email: adminEmail,
-                    password: hashedPassword,
-                    admin: true,
-                    repartidor: false,
-                    verificado: true
 
-                }); 
-                console.log(`✅ Usuario administrador creado: ${adminEmail}`);
-            } else {
-                console.log(`⚠️  Usuario administrador ya existe: ${adminEmail}`);
-            }
-        } else {
-            console.error('❌ Variables de entorno ADMIN_EMAIL y ADMIN_PASSWORD no están definidas');
-        }
-        await sequelize.authenticate();
-        console.log('✅ Conexión a la base de datos exitosa');
+/**
+ * 🚀 Inicia el servidor de la aplicación.
+ * 
+ * Esta función crea y conecta la base de datos antes de iniciar el servidor en el puerto especificado.
+ * Si ocurre un error al conectar la base de datos, se muestra un mensaje de error en la consola. ⚠️
+ * 
+ * @async
+ * @function
+ * @returns {Promise<void>} No retorna ningún valor, pero inicia el servidor si la base de datos se conecta correctamente.
+ */
+async function startServer() { // 🏁 Función para iniciar el servidor
+    try {
+        await createDatabase(); // 🗄️ Crea y conecta la base de datos
         app.listen(PORT, () => {
             console.log(`🚀 Servidor escuchando en puerto ${PORT}`);
         });
@@ -44,4 +26,4 @@ async function startServer() {
     }
 }
 
-startServer();
+startServer(); // 🏁 Inicia el servidor

@@ -1,3 +1,4 @@
+/*
 const PAYPAL_API = "https://api-m.sandbox.paypal.com";
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 const { Pedido, PedidoItem, Item, Usuario } = require("../models");
@@ -202,3 +203,4 @@ exports.captureOrder = async (req, res) => {
     });
   }
 };
+*/
