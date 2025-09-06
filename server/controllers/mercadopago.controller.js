@@ -73,7 +73,7 @@ exports.create_preference = async (req, res) => {
     const result = await preference.create({ body: preferenceBody });
 
     await t.commit();
-    
+      
     res.json({ id: result.id });
 
   } catch (error) {
