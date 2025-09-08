@@ -296,7 +296,7 @@ export default function PedidosAdmin({ token }) {
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap">
                           <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                            {pedido.metodoPago === "paypal" ? "PayPal" : "Efectivo"}
+                            {pedido.metodoPago}
                           </span>
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap">

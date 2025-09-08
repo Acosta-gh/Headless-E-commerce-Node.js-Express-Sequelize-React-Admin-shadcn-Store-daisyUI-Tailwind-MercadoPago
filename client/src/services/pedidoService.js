@@ -1,7 +1,7 @@
 const API_URL = `${import.meta.env.VITE_API_URL}/pedido`;
 
 // Activa logs detallados llamando enablePedidoDebug(true)
-let DEBUG_PEDIDOS = false;
+let DEBUG_PEDIDOS = true;
 export function enablePedidoDebug(enable = true) {
   DEBUG_PEDIDOS = enable;
 }
@@ -41,7 +41,8 @@ async function handleResponse(res) {
 
 export async function getAllPedidos(token) {
   log('GET', API_URL);
-  const res = await fetch(API_URL, {
+  const url = `${API_URL}/admin/all`;
+  const res = await fetch(url, {
     headers: buildHeaders(token, { 'Content-Type': undefined }),
   });
   return handleResponse(res);
@@ -57,7 +58,7 @@ export async function getPedidoById(pedidoId, token) {
 }
 
 export async function getPedidosByUsuario(token) {
-  const url = `${API_URL}/usuario`;
+  const url = `${API_URL}`;
   log('GET', url);
   const res = await fetch(url, {
     headers: buildHeaders(token, { 'Content-Type': undefined }),
