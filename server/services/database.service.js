@@ -1,49 +1,74 @@
-const { sequelize } = require("../models"); // Importa la instancia de Sequelize para manejar la base de datos
-const { Usuario } = require("../models"); // Importa el modelo de Usuario para crear un usuario administrador
-const bcrypt = require("bcrypt"); // Importa bcrypt para hashear contraseñas
+const { sequelize, Usuario } = require('../models'); // Importa sequelize y modelos necesarios
+const bcrypt = require('bcrypt');
 
 /**
- * Sincroniza el modelo de la base de datos y crea un usuario administrador si no existe.
- * 
- * - Verifica que las variables de entorno ADMIN_EMAIL y ADMIN_PASSWORD estén definidas.
- * - Si el usuario administrador no existe, lo crea con los datos proporcionados y contraseña encriptada.
- * - Si el usuario ya existe, muestra una advertencia.
- * - Autentica la conexión con la base de datos y muestra el estado de la conexión.
- * 
- * @async
- * @returns {Promise<void>} No retorna ningún valor.
+ * Crea el usuario administrador a partir de las variables de entorno si no existe.
+ * Esta es una operación de "seeding" (siembra de datos).
  */
-async function createDatabase() {
-  await sequelize.sync({ force: false });
+async function seedAdminUser() {
   const adminEmail = process.env.ADMIN_EMAIL;
   const adminPassword = process.env.ADMIN_PASSWORD;
-  if (!adminEmail || !adminPassword) { // Verifica que las variables de entorno estén definidas
-    console.error(
-      "❌ Variables de entorno ADMIN_EMAIL y ADMIN_PASSWORD no están definidas"
-    );
+
+  // Verifica que las variables de entorno estén definidas
+  if (!adminEmail || !adminPassword) {
+    console.warn("⚠️  No se creará usuario admin. Faltan variables de entorno ADMIN_EMAIL o ADMIN_PASSWORD.");
     return;
   }
-  try { // Verifica si el usuario administrador ya existe
-    const existingAdmin = await Usuario.findOne({where: { email: adminEmail },});
-    if (!existingAdmin) {
-      const hashedPassword = await bcrypt.hash(adminPassword, 10);
-      await Usuario.create({ // Crea el usuario administrador
-        nombre: "Administrador",
-        email: adminEmail,
-        password: hashedPassword,
-        admin: true,
-        repartidor: false,
-        verificado: true,
-      });
-      console.log(`✅ Usuario administrador creado: ${adminEmail}`);
-    } else {
-      console.log(`⚠️  Usuario administrador ya existe: ${adminEmail}`);
+
+  try {
+    // Verificar si el usuario admin ya existe
+    const existingAdmin = await Usuario.findOne({ where: { email: adminEmail } });
+    if (existingAdmin) {
+      console.log(`ℹ️  Usuario administrador ya existe: ${adminEmail}`);
+      return;
     }
+    // Hashear la contraseña antes de guardar
+    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 10;
+    const hashedPassword = await bcrypt.hash(adminPassword, saltRounds);
+
+    // Crear el usuario administrador
+    await Usuario.create({
+      nombre: "Administrador",
+      email: adminEmail,
+      password: hashedPassword,
+      admin: true,
+      repartidor: false,
+      verificado: true,
+    });
+    console.log(`✅ Usuario administrador creado con éxito: ${adminEmail}`);
+
   } catch (error) {
-    console.error("❌ Error al crear el usuario administrador:", error);
+    console.error("❌ Error crítico al intentar crear el usuario administrador:", error);
+    // En un caso real, podrías querer detener el arranque si el admin es esencial
+    throw error;
   }
-  await sequelize.authenticate(); // Verifica la conexión con la base de datos
-  console.log("✅ Conexión a la base de datos exitosa");
 }
 
-module.exports = { createDatabase };
+/**
+ * Conecta y sincroniza la base de datos usando Sequelize.
+ * @returns {Promise<object>} La instancia de sequelize conectada.
+ */
+async function connectToDatabase() {
+  try {
+    // sync() también conecta. Authenticate es una buena verificación explícita.
+    await sequelize.authenticate();
+    console.log("✅ Conexión a la base de datos establecida con éxito.");
+
+    // Sincroniza los modelos. Ideal para desarrollo.
+    // Para producción, considera usar migraciones.
+    await sequelize.sync({ force: false });
+    console.log("🔄 Modelos de Sequelize sincronizados.");
+
+    // Una vez conectado, ejecuta la siembra de datos.
+    await seedAdminUser();
+
+    return sequelize; // Devuelve la instancia para poder cerrarla después
+
+  } catch (error) {
+    console.error("❌ No se pudo conectar a la base de datos:", error);
+    // Relanza el error para que el `startServer` en server.js lo atrape y detenga el proceso.
+    throw error;
+  }
+}
+
+module.exports = { connectToDatabase };

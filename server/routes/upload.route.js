@@ -5,7 +5,21 @@ const verificarToken = require('../middleware/verificarToken.middleware');
 const isAdmin = require('../middleware/isAdmin.middleware');
 const upload = require('../middleware/multer.middleware');
 
-router.post('/', verificarToken, isAdmin, upload.single('image'), uploadController.uploadImage);
-router.delete('/', verificarToken, isAdmin, uploadController.deleteImage);
+const adminAuth = [verificarToken, isAdmin];
+
+/**
+ * @route   POST /api/v1/upload
+ * @desc    Admin: Sube una nueva imagen al servidor.
+ *          Espera un campo 'image' en un FormData.
+ * @access  Admin
+ */
+router.post('/', adminAuth, upload.single('image'), uploadController.uploadImage);
+
+/**
+ * @route   DELETE /api/v1/upload/:filename
+ * @desc    Admin: Elimina una imagen del servidor usando su nombre de archivo.
+ * @access  Admin
+ */
+router.delete('/:filename', adminAuth, uploadController.deleteImage);
 
 module.exports = router;
