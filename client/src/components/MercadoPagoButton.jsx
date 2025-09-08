@@ -10,7 +10,9 @@ const publicKey = import.meta.env.VITE_MP_PUBLIC_KEY;
 if (publicKey) {
   initMercadoPago(publicKey);
 } else {
-  console.error("Error: VITE_MP_PUBLIC_KEY no está configurada en el archivo .env del frontend.");
+  console.error(
+    "Error: VITE_MP_PUBLIC_KEY no está configurada en el archivo .env del frontend."
+  );
 }
 
 // URL base de la API del backend
@@ -56,7 +58,7 @@ export default function MercadoPagoButton() {
         setIsLoading(false);
         return;
       }
-      
+
       // Marcamos el inicio de la operación.
       isCreatingRef.current = true;
       setIsLoading(true);
@@ -66,32 +68,51 @@ export default function MercadoPagoButton() {
         // Obtenemos los datos del usuario guardados en la sesión.
         const userData = JSON.parse(sessionStorage.getItem("userData"));
         if (!userData || !userData.id || !userData.direccion) {
-          throw new Error("No se encontraron datos de usuario o dirección. Por favor, inicia sesión de nuevo.");
+          throw new Error(
+            "No se encontraron datos de usuario o dirección. Por favor, inicia sesión de nuevo."
+          );
         }
 
         // Mapeamos el carrito para enviar solo los datos necesarios al backend.
-        const itemsParaBackend = cart.map(item => ({
+        const itemsParaBackend = cart.map((item) => ({
           itemId: item.id,
           cantidad: item.cantidad,
         }));
 
+
+        const token = localStorage.getItem("token"); // o localStorage.getItem("authToken")
+
+
         // Petición al backend para crear el pedido y la preferencia de pago.
-        const response = await axios.post(`${apiUrl}mercadopago/create_preference`, {
-          items: itemsParaBackend,
-          usuarioId: userData.id,
-          direccionEntrega: userData.direccion,
-        });
-        
+        const response = await axios.post(
+          `${apiUrl}/mercadopago/create_preference`,
+          {
+            items: itemsParaBackend,
+            usuarioId: userData.id,
+            direccionEntrega: userData.direccion,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
         const { id } = response.data;
         if (id) {
           setPreferenceId(id);
         } else {
-          throw new Error("El servidor no devolvió un ID de preferencia válido.");
+          throw new Error(
+            "El servidor no devolvió un ID de preferencia válido."
+          );
         }
       } catch (err) {
         console.error("Error al crear la preferencia:", err);
         // Mostramos un mensaje de error genérico y amigable al usuario.
-        setError(err.response?.data?.message || "No se pudo generar el link de pago. Intenta de nuevo.");
+        setError(
+          err.response?.data?.message ||
+            "No se pudo generar el link de pago. Intenta de nuevo."
+        );
       } finally {
         // Marcamos el final de la operación, haya tenido éxito o no.
         isCreatingRef.current = false;
@@ -103,7 +124,11 @@ export default function MercadoPagoButton() {
   }, [cart]); // El efecto se re-ejecuta si el carrito cambia.
 
   if (isLoading) {
-    return <p className="text-gray-600 mt-2 text-sm">Iniciando pago seguro con Mercado Pago...</p>;
+    return (
+      <p className="text-gray-600 mt-2 text-sm">
+        Iniciando pago seguro con Mercado Pago...
+      </p>
+    );
   }
 
   if (error) {
@@ -113,9 +138,9 @@ export default function MercadoPagoButton() {
   return (
     <div className="w-full max-w-sm mt-4">
       {preferenceId && (
-        <Wallet 
-          initialization={{ preferenceId }} 
-          customization={{ texts: { valueProp: 'smart_option' } }} 
+        <Wallet
+          initialization={{ preferenceId }}
+          customization={{ texts: { valueProp: "smart_option" } }}
         />
       )}
     </div>

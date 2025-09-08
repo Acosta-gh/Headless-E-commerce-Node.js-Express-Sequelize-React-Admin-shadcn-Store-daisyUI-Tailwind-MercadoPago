@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/api/categoria';
+const API_URL = `${import.meta.env.VITE_API_URL}/categoria`;
 
 export const getAllCategorias = () => axios.get(API_URL);
 

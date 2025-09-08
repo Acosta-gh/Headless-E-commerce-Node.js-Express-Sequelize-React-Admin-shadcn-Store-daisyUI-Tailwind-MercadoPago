@@ -1,44 +1,6 @@
-import { useEffect, useState } from 'react';
-
+import useVerificarMail from '../hooks/useVerificarMail';
 export default function Verificar() {
-  const [estado, setEstado] = useState({
-    cargando: true,
-    mensaje: 'Verificando...',
-    exito: false
-  });
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    let token = params.get('token');
-
-    if (!token) {
-      setEstado({ cargando: false, mensaje: 'Falta el token en la URL.', exito: false });
-      return;
-    }
-
-    token = token.replace(/\?+$/, '');
-
-    fetch(`http://localhost:3000/api/usuario/verify?token=${encodeURIComponent(token)}`)
-      .then(async r => {
-        const data = await r.json().catch(() => ({}));
-        if (!r.ok) {
-          setEstado({
-            cargando: false,
-            mensaje: data.message || 'Error verificando token.',
-            exito: false
-          });
-          return;
-        }
-        setEstado({
-          cargando: false,
-          mensaje: data.message || 'Cuenta verificada.',
-          exito: true
-        });
-      })
-      .catch(() => {
-        setEstado({ cargando: false, mensaje: 'Error de red verificando token.', exito: false });
-      });
-  }, []);
+  const estado = useVerificarMail();
 
   return (
     <div className="min-h-[50vh] flex items-center justify-center p-6">

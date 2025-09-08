@@ -9,6 +9,8 @@ async function seedAdminUser() {
   const adminEmail = process.env.ADMIN_EMAIL;
   const adminPassword = process.env.ADMIN_PASSWORD;
 
+   console.log(`[SEEDER] Creando admin con password: '${adminPassword}'`);
+
   // Verifica que las variables de entorno estén definidas
   if (!adminEmail || !adminPassword) {
     console.warn("⚠️  No se creará usuario admin. Faltan variables de entorno ADMIN_EMAIL o ADMIN_PASSWORD.");
@@ -22,15 +24,12 @@ async function seedAdminUser() {
       console.log(`ℹ️  Usuario administrador ya existe: ${adminEmail}`);
       return;
     }
-    // Hashear la contraseña antes de guardar
-    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 10;
-    const hashedPassword = await bcrypt.hash(adminPassword, saltRounds);
-
+  
     // Crear el usuario administrador
     await Usuario.create({
       nombre: "Administrador",
       email: adminEmail,
-      password: hashedPassword,
+      password: adminPassword, // Se hasheará automáticamente por el hook antes de guardar
       admin: true,
       repartidor: false,
       verificado: true,

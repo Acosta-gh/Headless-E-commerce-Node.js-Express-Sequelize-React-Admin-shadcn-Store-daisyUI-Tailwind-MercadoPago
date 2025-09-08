@@ -6,6 +6,8 @@ const verificarToken = require('../middleware/verificarToken.middleware');
 const isUsuario = require('../middleware/isUsuario.middleware');
 const isAdmin = require('../middleware/isAdmin.middleware');
 
+
+
 // --- Rutas para Administradores (Gestión de TODOS los pedidos) ---
 
 /**
@@ -20,7 +22,7 @@ router.get('/admin/all', verificarToken, isAdmin, pedidoController.getAllPedidos
  * @desc    Admin: Actualiza el estado de cualquier pedido (ej. 'confirmado', 'en_camino').
  * @access  Admin
  */
-router.put('/admin/status/:id', verificarToken, isAdmin, pedidoController.updatePedidoStatusByAdmin);
+router.put('/admin/status/:id', verificarToken, isAdmin, pedidoController.updatePedido);
 
 
 // --- Rutas para Usuarios Autenticados (Gestión de SUS PROPIOS pedidos) ---
@@ -56,7 +58,7 @@ router.get('/:id', verificarToken, pedidoController.getPedidoById);
  *          El controlador debe verificar la propiedad y si el pedido aún es cancelable.
  * @access  Usuario
  */
-router.patch('/cancel/:id', userAuth, pedidoController.cancelPedidoByUser);
+//router.patch('/cancel/:id', userAuth, pedidoController.cancelPedidoByUser);
 
 
 module.exports = router;

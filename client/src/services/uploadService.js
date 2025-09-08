@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/api/upload';
+const API_URL = `${import.meta.env.VITE_API_URL}/upload`;
 
 export function uploadImage(formData, token) {
   return axios.post(API_URL, formData, {

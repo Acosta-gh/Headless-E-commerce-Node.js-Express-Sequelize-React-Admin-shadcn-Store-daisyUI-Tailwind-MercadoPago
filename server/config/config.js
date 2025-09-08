@@ -8,7 +8,7 @@ module.exports = {
         database: process.env.DB_NAME || 'restaurant_db',
         host: process.env.DB_HOST || 'localhost',
         dialect: process.env.DB_DIALECT || 'sqlite',
-        storage: './db/restaurant.sqlite' 
+        storage: './db/ecommerce.sqlite' 
     },
     test: {
         username: process.env.DB_USER || 'test_user',
@@ -16,7 +16,7 @@ module.exports = {
         database: process.env.DB_NAME_TEST || 'test_db',
         host: process.env.DB_HOST || 'localhost',
         dialect: process.env.DB_DIALECT || 'sqlite',
-        storage: './db/restaurant.sqlite' 
+        storage: './db/ecommerce.sqlite' 
     },
     production: {
         username: process.env.DB_USER,

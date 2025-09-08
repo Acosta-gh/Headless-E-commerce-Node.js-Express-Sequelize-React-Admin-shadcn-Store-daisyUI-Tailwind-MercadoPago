@@ -17,7 +17,7 @@ const app = express();
 app.use(helmet({  crossOriginResourcePolicy: { policy: "cross-origin" } })); // 🛡️ Mejora la seguridad de la aplicación configurando cabeceras HTTP
 
 // --- Configuración de CORS ---
-const whiteList = [process.env.FRONTEND_URL, 'http://localhost:3000']; // 🌐 Lista blanca de orígenes permitidos para CORS
+const whiteList = [process.env.FRONTEND_URL, 'http://localhost:5173']; // 🌐 Lista blanca de orígenes permitidos para CORS
 const corsOptions = { // 🌐 Habilita CORS para permitir solicitudes desde diferentes orígenes
   origin: function (origin, callback) {
     if (whiteList.includes(origin) || !origin) { // Permitir solicitudes sin origen (como Postman)

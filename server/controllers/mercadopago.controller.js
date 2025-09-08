@@ -61,8 +61,8 @@ exports.create_preference = async (req, res) => {
       external_reference: nuevoPedido.id.toString(),
       notification_url: `${process.env.BACKEND_URL}/api/mercadopago/webhook`,
       back_urls: {
-        success: `https://localhost:5173/perfil`,
-        failure: `https://localhost:5173/perfil`,
+        success: `https://tu-dominio.com/confirmacion?pedidoId=${nuevoPedido.id}`,
+        failure: `https://tu-dominio.com/confirmacion?pedidoId=${nuevoPedido.id}`,
       },
       auto_return: "approved",
     };
@@ -125,12 +125,12 @@ exports.receive_webhook = async (req, res) => {
         console.warn(`Webhook: Pedido con ID ${payment.external_reference} no encontrado.`);
         return;
       }
-      
-      if (payment.status === 'approved' && pedido.estado === 'pendiente') {
+
+      if (payment.status === 'approved' && pedido.pagado === false) {
         const t = await Pedido.sequelize.transaction();
         try {
           console.log(`Actualizando pedido ${pedido.id} a 'en preparación'.`);
-          pedido.estado = 'en preparación';
+          pedido.pagado = true;
           await pedido.save({ transaction: t });
 
           const itemsDelPedido = await pedido.getItems({ transaction: t });
@@ -151,7 +151,7 @@ exports.receive_webhook = async (req, res) => {
           console.error(`[Error Crítico] Fallo al procesar la DB para el pedido ${pedido.id} post-pago:`, dbError);
         }
       } else {
-        console.log(`Webhook ignorado: Pago ${paymentId} no aprobado o pedido ${pedido.id} ya no está pendiente (estado actual: ${pedido.estado}).`);
+        console.log(`Webhook ignorado: Pago ${paymentId} no aprobado o pedido ${pedido.id} ya no está pendiente (estado de pago actual: ${pedido.pagado}).`);
       }
     } catch (mpError) {
       console.error(`Error al obtener información del pago ${paymentId} desde Mercado Pago:`, mpError);

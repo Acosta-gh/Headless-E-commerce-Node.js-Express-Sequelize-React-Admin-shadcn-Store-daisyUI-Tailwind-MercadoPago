@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api/pedido';
+const API_URL = `${import.meta.env.VITE_API_URL}/pedido`;
 
 // Activa logs detallados llamando enablePedidoDebug(true)
 let DEBUG_PEDIDOS = false;

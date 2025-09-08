@@ -83,10 +83,11 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true,
     paranoid: true, 
     
-    // --- Hooks (Gancho de Ciclo de Vida) ---
+    // --- Hooks ---
     hooks: {
       // Este hook se ejecuta automáticamente ANTES de crear o actualizar un usuario.
       beforeSave: async (usuario, options) => {
+        console.log('Hook ejecutado')
         // Solo hashea la contraseña si ha sido modificada (o es nueva).
         if (usuario.changed('password')) {
           const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 10;
