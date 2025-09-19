@@ -10,6 +10,7 @@ v1Router.use('/pedido', require('./pedido.route'));
 v1Router.use('/categoria', require('./categoria.route'));
 v1Router.use('/upload', require('./upload.route'));
 v1Router.use('/mercadopago', require('./mercadopago.route')); 
+v1Router.use('/imagen', require('./imagen.route')); 
 
 v1Router.get('/', (req, res) => {
   res.json({ message: 'API v1 funcionando 🚀' });

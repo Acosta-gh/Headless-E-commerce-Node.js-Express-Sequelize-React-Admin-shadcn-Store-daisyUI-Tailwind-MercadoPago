@@ -8,7 +8,7 @@ const LOGIN_EXP = process.env.JWT_EXPIRATION || "1h";
 
 const EMAIL_VERIFY_SECRET = process.env.EMAIL_VERIFY_SECRET || LOGIN_SECRET;
 const EMAIL_VERIFY_EXP = process.env.EMAIL_VERIFY_EXP || "24h";
-const APP_URL = process.env.APP_URL || "http://localhost:5173";
+const APP_URL = process.env.FRONTEND_URL || "http://localhost:5174";
 
 // Utilidad para quitar campos sensibles
 function toPublicUser(usuarioInstance) {
@@ -77,7 +77,7 @@ exports.createUsuario = async (req, res) => {
       { expiresIn: EMAIL_VERIFY_EXP }
     );
 
-    const verifyLink = `${APP_URL}/verificar?token=${verificationToken}`;
+    const verifyLink = `${APP_URL}/verify?token=${verificationToken}`;
     console.log("[createUsuario] verifyLink =", verifyLink);
 
     const subject = "Confirma tu cuenta";
@@ -129,6 +129,7 @@ exports.verifyEmail = async (req, res) => {
     }
 
     const usuario = await Usuario.findByPk(payload.sub);
+    console.log("[verifyEmail] usuario =", usuario);
     if (!usuario) {
       console.log("[verifyEmail] Usuario no existe id =", payload.sub);
       return res.status(404).json({ message: "Usuario no encontrado" });
@@ -169,7 +170,7 @@ exports.resendVerification = async (req, res) => {
       { expiresIn: EMAIL_VERIFY_EXP }
     );
 
-    const verifyLink = `${APP_URL}/verificar?token=${verificationToken}`;
+    const verifyLink = `${APP_URL}/verify?token=${verificationToken}`;
     console.log("[resendVerification] verifyLink =", verifyLink);
 
     const subject = "Nuevo enlace de verificación";

@@ -9,7 +9,7 @@ async function seedAdminUser() {
   const adminEmail = process.env.ADMIN_EMAIL;
   const adminPassword = process.env.ADMIN_PASSWORD;
 
-   console.log(`[SEEDER] Creando admin con password: '${adminPassword}'`);
+   console.log(`[SEEDER] Creando admin ${adminEmail}`);
 
   // Verifica que las variables de entorno estén definidas
   if (!adminEmail || !adminPassword) {

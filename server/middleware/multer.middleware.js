@@ -20,7 +20,7 @@ const imageFileFilter = (req, file, cb) => {
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        // La creación del directorio ya la manejamos en app.js, pero es bueno tenerla aquí como respaldo.
+        // La creación del directorio ya la manejamos en app.js, pero es bueno tenerla como respaldo.
         if (!fs.existsSync(uploadsDir)) {
             fs.mkdirSync(uploadsDir, { recursive: true });
         }

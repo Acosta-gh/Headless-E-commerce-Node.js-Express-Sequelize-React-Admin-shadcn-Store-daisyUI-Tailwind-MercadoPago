@@ -23,6 +23,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true // BNno deberían existir dos categorías con el mismo nombre.
+    },
+    descripcion: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    color: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   }, {
     // --- Opciones del Modelo ---

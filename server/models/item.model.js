@@ -20,6 +20,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'itemId',
         otherKey: 'pedidoId'
       });
+
+      Item.hasMany(models.Imagen, {
+        foreignKey: 'itemId',
+        as: 'imagenes',
+        onDelete: 'CASCADE' // Si se borra un ítem, borrar sus imágenes también
+      });
     }
   }
 
@@ -37,6 +43,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false
     },
+    color: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    tamano: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     categoriaId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -49,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: true
     },
-    imagenUrl: {
+    imagenUrl: { // Imagen principal del producto
       type: DataTypes.STRING,
       allowNull: true
     },

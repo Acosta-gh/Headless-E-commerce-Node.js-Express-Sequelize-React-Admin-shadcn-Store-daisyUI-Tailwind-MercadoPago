@@ -3,17 +3,18 @@ const router = express.Router();
 const itemController = require('../controllers/item.controller');
 const verificarToken = require('../middleware/verificarToken.middleware');
 const isAdmin = require('../middleware/isAdmin.middleware');
+const upload = require('../middleware/multer.middleware'); 
 
 // --- Rutas Públicas ---
 router.get('/', itemController.getAllItems);
 
 // --- Rutas de Creación ---
-router.post('/', verificarToken, isAdmin, itemController.createItem);
+router.post('/', verificarToken, isAdmin, upload.single('image'), itemController.createItem); 
 
 // --- Rutas que operan sobre un ID específico (`/items/:id`) ---
 router.route('/:id')
   .get(itemController.getItemById)
-  .put(verificarToken, isAdmin, itemController.updateItem)
+  .put(verificarToken, isAdmin, upload.single('image'), itemController.updateItem) 
   .delete(verificarToken, isAdmin, itemController.deleteItem);
 
 module.exports = router;
