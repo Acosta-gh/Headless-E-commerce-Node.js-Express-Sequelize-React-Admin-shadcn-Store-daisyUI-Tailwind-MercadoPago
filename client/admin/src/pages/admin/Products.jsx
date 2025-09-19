@@ -1,5 +1,7 @@
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button"
+
 import { PlusCircle } from "lucide-react";
 import useProducts from "@/hooks/useProducts";
 import useCategories from "@/hooks/useCategories";
@@ -24,7 +26,7 @@ const initialForm = {
 export default function Products() {
   const {
     products,
-    setProducts, // <- exportaste esto en el hook, ahora lo usamos
+    setProducts, 
     open,
     setOpen,
     editing,
@@ -40,8 +42,6 @@ export default function Products() {
   } = useProducts([]);
   const { categories, error: catError, loading: catLoading } = useCategories();
 
-  // Desestructura también loading/error para la subida de imagen
-  // ahora obtenemos también deleteImagen para eliminar imágenes desde el padre
   const {
     imagen,
     createImagen,
@@ -67,13 +67,12 @@ export default function Products() {
                   categories={categories}
                   handleEdit={handleEdit}
                   handleDelete={handleDelete}
-                  // <- PASAMOS aquí la función y estados de imagen
                   createImagen={createImagen}
                   deleteImagen={deleteImagen}
                   imagen={imagen}
                   uploadLoading={imagenLoading}
                   uploadError={imagenError}
-                  setProducts={setProducts} // <- importante
+                  setProducts={setProducts} 
                 />
               </div>
 
@@ -88,23 +87,22 @@ export default function Products() {
                   imagen={imagen}
                   uploadLoading={imagenLoading}
                   uploadError={imagenError}
-                  setProducts={setProducts} // <- importante
+                  setProducts={setProducts} 
                 />
               </div>
             </>
           )}
 
           <div className="flex justify-start mt-6">
-            <button
+            <Button
               onClick={() => {
                 setOpen(true);
                 setEditing(null);
                 setForm(initialForm);
               }}
-              className="inline-flex items-center gap-2 rounded bg-slate-700 text-white px-3 py-2"
             >
               <PlusCircle size={18} /> Nuevo
-            </button>
+            </Button>
           </div>
         </CardContent>
       </Card>

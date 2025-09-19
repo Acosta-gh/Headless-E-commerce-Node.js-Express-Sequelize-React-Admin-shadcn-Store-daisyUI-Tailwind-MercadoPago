@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function ImageUploadForm({
   product,
@@ -9,7 +12,7 @@ export default function ImageUploadForm({
   error,
   initialItemId = "",
   onSuccess = () => {},
-  setProducts, 
+  setProducts,
 }) {
   const [file, setFile] = useState(null);
   const [itemId, setItemId] = useState(initialItemId);
@@ -87,80 +90,59 @@ export default function ImageUploadForm({
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit} className="mt-4 space-y-2">
+    <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm">Archivo</label>
-          <input
+          <label className="block text-sm font-medium mb-1">Archivo</label>
+          <Input
             type="file"
             accept="image/*"
             onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-            className="mt-1"
           />
         </div>
 
         <div>
-          <label className="block text-sm">Producto (ID)</label>
-          <input
+          <Input
             type="text"
             value={itemId}
             onChange={(e) => setItemId(e.target.value)}
             placeholder="Item ID"
-            className="border rounded px-2 py-1 w-full"
+            hidden={!!initialItemId}
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="submit"
-            disabled={loading || !file || !itemId}
-            className="px-3 py-1 bg-slate-700 text-white rounded disabled:opacity-60"
-          >
-            Subir Imagen
-          </button>
-        </div>
+        <Button
+          type="submit"
+          disabled={loading || !file || !itemId}
+          className="w-full"
+        >
+          Subir Imagen
+        </Button>
 
-        {error && <p className="text-red-600">{error}</p>}
-
-        {imagen && imagen.url && (
-          <img
-            src={imagen.url}
-            alt="subida"
-            className="mt-2 w-32 h-32 object-cover rounded"
-          />
-        )}
-
-        {file && (
-          <div className="mt-2">
-            <p className="text-sm">Preview:</p>
-            <img
-              src={URL.createObjectURL(file)}
-              alt="preview"
-              className="mt-1 w-32 h-32 object-cover rounded"
-            />
-          </div>
-        )}
+        {error && <p className="text-red-600 text-sm">{error}</p>}
+        
       </form>
+
       {product?.imagenes?.length > 0 && (
-        <ul>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
           {product.imagenes.map((img) => (
-            <li key={img.id} className="flex items-center gap-2">
+            <Card key={img.id} className="flex flex-col items-center p-2">
               <img
                 src={img.url}
                 alt={`Imagen ${img.id}`}
-                style={{ width: "100px" }}
+                className="w-full h-32 object-cover rounded mb-2"
               />
-              <button
+              <Button
+                variant="destructive"
+                size="sm"
                 onClick={() => handleDeleteImage(img.id)}
-                className="text-red-500 hover:underline"
               >
                 Eliminar
-              </button>
-            </li>
+              </Button>
+            </Card>
           ))}
-        </ul>
+        </div>
       )}
-      
     </div>
   );
 }

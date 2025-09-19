@@ -20,7 +20,7 @@ export default function ProductTable({
   imagen,
   uploadLoading,
   uploadError,
-  setProducts, // recibido desde Products
+  setProducts, 
 }) {
   return (
     <Table>
@@ -69,7 +69,7 @@ export default function ProductTable({
                 imagen={imagen}
                 uploadLoading={uploadLoading}
                 uploadError={uploadError}
-                setProducts={setProducts} // <- pasar setProducts hacia el componente de upload
+                setProducts={setProducts} 
               />
             </TableCell>
           </TableRow>

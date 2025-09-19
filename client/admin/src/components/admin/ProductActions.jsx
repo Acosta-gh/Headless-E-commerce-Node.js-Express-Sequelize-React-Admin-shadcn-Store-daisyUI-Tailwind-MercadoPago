@@ -24,7 +24,7 @@ export default function ProductActions({
   imagen,
   uploadLoading,
   uploadError,
-  setProducts, // recibido de ProductTable/ProductCardList
+  setProducts, 
 }) {
   const [openUpload, setOpenUpload] = useState(false);
 
@@ -34,15 +34,18 @@ export default function ProductActions({
     <>
       <Button size="sm" variant="outline" onClick={() => handleEdit(product)}>
         <Pencil size={16} />
+        Editar
       </Button>
 
-      <Button size="sm" variant="ghost" onClick={() => setOpenUpload(true)}>
+      <Button size="sm" variant="outline" onClick={() => setOpenUpload(true)}>
         <ImageIcon size={16} />
+        Imagenes
       </Button>
 
       <AlertDialog>
         <AlertDialogTrigger>
           <Button variant="destructive" size="sm">
+            <Trash2></Trash2>
             Borrar
           </Button>
         </AlertDialogTrigger>
