@@ -15,7 +15,6 @@ export default function AppRoutes() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/purchases" element={<Products />} />
           <Route path="/profile" element={<Profile />} />
           {/* Rutas protegidas */}
           <Route path="/admin" element={<ProtectedRoute />}>

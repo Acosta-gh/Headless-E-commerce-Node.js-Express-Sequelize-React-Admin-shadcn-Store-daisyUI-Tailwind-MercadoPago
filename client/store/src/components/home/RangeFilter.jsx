@@ -1,24 +1,42 @@
-function roundUpToNearest(value, nearest = 1000) {
+function chooseNearestStep(range) {
+  if (range < 100) return 10;
+  if (range < 1000) return 50;
+  if (range < 10000) return 100;
+  if (range < 50000) return 500;
+  return 1000;
+}
+
+function roundUpToNearest(value, nearest) {
   return Math.ceil(value / nearest) * nearest;
 }
 
-// Función para abreviar precios grandes
 function formatPrice(value) {
   if (value >= 1000000) {
-    return `$${(value / 1000000).toFixed(1)}M`; // Ej: 2.3M
+    return `$${(value / 1000000).toFixed(1)}M`;
   }
   if (value >= 1000) {
-    return `$${(value / 1000).toFixed(0)}mil`; // Ej: 389mil
+    return `$${(value / 1000).toFixed(0)}mil`;
   }
   return `$${value.toLocaleString("es-AR")}`;
 }
 
 function RangeFilter({ min, max, value, setValue }) {
-  const steps = [0.25, 0.5, 0.75, 1].map((p) =>
-    roundUpToNearest(min + (max - min) * p, 1000)
-  );
+  const range = max - min;
+  const nearest = chooseNearestStep(range);
 
-  const currentStep = steps.findIndex((v) => value <= v);
+  // Primer step es exactamente "min", los demás son redondeados
+  const steps = [
+    min,
+    roundUpToNearest(min + range * 0.25, nearest),
+    roundUpToNearest(min + range * 0.5, nearest),
+    roundUpToNearest(min + range * 0.75, nearest),
+    roundUpToNearest(max, nearest),
+  ];
+
+  const uniqueSteps = [...new Set(steps)];
+
+  const currentStep = uniqueSteps.findIndex((v) => value <= v);
+  const sliderValue = currentStep === -1 ? uniqueSteps.length - 1 : currentStep;
 
   return (
     <div className="menu bg-base-200 rounded-box w-full p-2">
@@ -26,19 +44,19 @@ function RangeFilter({ min, max, value, setValue }) {
       <input
         type="range"
         min={0}
-        max={steps.length - 1}
+        max={uniqueSteps.length - 1}
         step={1}
-        value={currentStep === -1 ? steps.length - 1 : currentStep}
+        value={sliderValue}
         className="range range-xs"
-        onChange={(e) => setValue(steps[Number(e.target.value)])}
+        onChange={(e) => setValue(uniqueSteps[Number(e.target.value)])}
       />
       <div className="flex justify-between px-2.5 mt-2 text-xs">
-        {steps.map((_, i) => (
+        {uniqueSteps.map((_, i) => (
           <span key={i}>|</span>
         ))}
       </div>
       <div className="flex justify-between px-2.5 mt-2 text-xs">
-        {steps.map((v, i) => (
+        {uniqueSteps.map((v, i) => (
           <span key={i} className="whitespace-nowrap font-semibold">
             {formatPrice(v)}
           </span>

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import productsService from "@/services/productsService";
-import categoriesService from "@/services/categoriesService";
+//import categoriesService from "@/services/categoriesService";
 import { useAlert } from "@/context/AlertContext";
 
+/*
 const initialForm = {
   nombre: "",
   descripcion: "",
@@ -14,16 +15,17 @@ const initialForm = {
   imagenFile: null,
   imagenUrl: "",
 };
+*/
 
 export default function useProducts() {
   const [products, setProducts] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState(initialForm);
+  //const [open, setOpen] = useState(false);
+  //const [editing, setEditing] = useState(null);
+  //const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [categories, setCategories] = useState([]);
-  const { showAlert } = useAlert();
+ // const [categories, setCategories] = useState([]);
+ // const { showAlert } = useAlert();
 
   // Cargar productos al montar
   useEffect(() => {
@@ -36,13 +38,15 @@ export default function useProducts() {
   }, []);
 
   // Cargar categorías usando el service
+  /*
   useEffect(() => {
     categoriesService
       .getAll()
       .then((cats) => setCategories(cats))
       .catch(() => setError("Error al cargar categorías"));
   }, []);
-
+*/
+  /*
   // Maneja cambios en el formulario
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -132,20 +136,21 @@ export default function useProducts() {
     setForm(initialForm);
   };
 
+  */
   return {
     products,
-    open,
-    setOpen,
-    editing,
-    form,
+    //open,
+    //setOpen,
+    //editing,
+    //form,
     loading,
     error,
-    handleChange,
-    handleSave,
-    handleEdit,
-    handleDelete,
-    categories,
-    setForm,
-    setEditing,
+    //handleChange,
+    //handleSave,
+    //handleEdit,
+    //handleDelete,
+    //categories,
+    //setForm,
+    //setEditing,
   };
 }

@@ -13,7 +13,7 @@ const Cart = lazy(() => import("@/pages/Cart"));
 const Register = lazy(() => import("@/pages/Register"));
 const Verify = lazy(() => import("@/pages/Verify"));
 const Checkout = lazy(() => import("@/pages/Checkout"));
-
+const Product = lazy(() => import("@/pages/Product"));
 export default function AppRoutes() {
   return (
     <Suspense fallback={<Loading />}>
@@ -28,6 +28,7 @@ export default function AppRoutes() {
           <Route path="register" element={<Register />} />
           <Route path="verify" element={<Verify />} />
           <Route path="checkout" element={<Checkout />} />
+          <Route path="/product/:id" element={<Product />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

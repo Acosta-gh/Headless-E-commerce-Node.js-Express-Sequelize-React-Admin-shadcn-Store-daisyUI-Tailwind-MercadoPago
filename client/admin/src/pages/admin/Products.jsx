@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 import { PlusCircle } from "lucide-react";
 import useProducts from "@/hooks/useProducts";
@@ -11,22 +11,12 @@ import ProductTable from "@/components/admin/ProductTable";
 import ProductCardList from "@/components/admin/ProductCardList";
 import ProductDialog from "@/components/admin/ProductDialog";
 
-const initialForm = {
-  nombre: "",
-  descripcion: "",
-  color: "",
-  tamano: "",
-  precio: "",
-  stock: "",
-  categoriaId: "",
-  imagenFile: null,
-  imagenUrl: "",
-};
-
 export default function Products() {
+
+  // Usar el hook personalizado para manejar productos
   const {
     products,
-    setProducts, 
+    setProducts,
     open,
     setOpen,
     editing,
@@ -40,8 +30,15 @@ export default function Products() {
     setForm,
     setEditing,
   } = useProducts([]);
-  const { categories, error: catError, loading: catLoading } = useCategories();
 
+  // Usar el hook personalizado para manejar categorías
+  const {
+    categories,
+    error: catError,
+    loading: catLoading,
+  } = useCategories();
+
+  // Usar el hook personalizado para manejar imágenes
   const {
     imagen,
     createImagen,
@@ -72,7 +69,7 @@ export default function Products() {
                   imagen={imagen}
                   uploadLoading={imagenLoading}
                   uploadError={imagenError}
-                  setProducts={setProducts} 
+                  setProducts={setProducts}
                 />
               </div>
 
@@ -87,7 +84,7 @@ export default function Products() {
                   imagen={imagen}
                   uploadLoading={imagenLoading}
                   uploadError={imagenError}
-                  setProducts={setProducts} 
+                  setProducts={setProducts}
                 />
               </div>
             </>
@@ -117,7 +114,6 @@ export default function Products() {
         categories={categories}
         catLoading={catLoading}
       />
-
     </div>
   );
 }

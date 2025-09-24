@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import productsService from "../services/productsService";
-import categoriesService from "../services/categoriesService";
+
+import productsService from "@/services/productsService";
+
 import { useAlert } from "@/context/AlertContext";
+// import useCategories from "@/hooks/useCategories";
 
 const initialForm = {
   nombre: "",
@@ -24,7 +26,13 @@ export default function useProducts() {
   const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [categories, setCategories] = useState([]);
+  /*
+  const {
+    categories,
+    loading: categoriesLoading,
+    error: categoriesError,
+  } = useCategories(); 
+*/
   const { showAlert } = useAlert();
 
   // Cargar productos al montar
@@ -35,14 +43,6 @@ export default function useProducts() {
       .then((res) => setProducts(res))
       .catch(() => setError("Error al cargar productos"))
       .finally(() => setLoading(false));
-  }, []);
-
-  // Cargar categorías usando el service
-  useEffect(() => {
-    categoriesService
-      .getAll()
-      .then((cats) => setCategories(cats))
-      .catch(() => setError("Error al cargar categorías"));
   }, []);
 
   // Maneja cambios en el formulario
@@ -176,8 +176,8 @@ export default function useProducts() {
     handleAddImages,
     handleRemoveNewImage,
     handleDeleteImage,
-    resetForm,  
-    categories,
+    resetForm,
+    //categories,
     setForm,
     setEditing,
   };

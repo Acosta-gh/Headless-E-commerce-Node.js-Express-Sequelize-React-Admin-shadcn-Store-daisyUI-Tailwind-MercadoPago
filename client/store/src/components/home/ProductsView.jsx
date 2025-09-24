@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { ShoppingCart, Check } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function ProductsView({ products }) {
   const { cart, agregarAlCarrito } = useCart();
@@ -22,16 +23,18 @@ function ProductsView({ products }) {
         const cantidadEnCarrito = enCarrito ? enCarrito.cantidad : 0;
         const agotado = cantidadEnCarrito >= prod.stock;
 
-        return (
+        return (  
           <li key={prod.id}>
-            <ProductCard
-              prod={prod}
-              // Solo deshabilita cuando está agotado y NO se está mostrando el agregado
-              disabled={agotado && !agregado[prod.id]}
-              agotado={agotado}
-              showAgregado={!!agregado[prod.id]}
-              onAgregar={() => handleAgregar(prod)}
-            />
+            <Link to={`/product/${prod.id}`}>
+              <ProductCard
+                prod={prod}
+                // Solo deshabilita cuando está agotado y NO se está mostrando el agregado
+                disabled={agotado && !agregado[prod.id]}
+                agotado={agotado}
+                showAgregado={!!agregado[prod.id]}
+                onAgregar={() => handleAgregar(prod)}
+              />
+            </Link>
           </li>
         );
       })}
@@ -95,4 +98,4 @@ function ProductCard({ prod, agotado, showAgregado, disabled, onAgregar }) {
   );
 }
 
-export default ProductsView;    
+export default ProductsView;
