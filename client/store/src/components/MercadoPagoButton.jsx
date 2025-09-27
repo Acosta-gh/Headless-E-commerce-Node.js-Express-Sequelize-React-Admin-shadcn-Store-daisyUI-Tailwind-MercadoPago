@@ -47,95 +47,102 @@ export default function MercadoPagoButton() {
   // 'useRef' para controlar que la petición de creación de preferencia se ejecute solo una vez.
   // Esto es crucial en React 18+ con StrictMode, que ejecuta los useEffect dos veces en desarrollo.
   const isCreatingRef = useRef(false);
+  const debounceRef = useRef();
 
   useEffect(() => {
     if (loading) {
       return;
     }
 
-    const createPreference = async () => {
-      // Si ya hay una petición en curso, la evitamos para no duplicarla.
-      if (isCreatingRef.current) {
-        return;
-      }
-
-      // Validaciones previas antes de contactar al backend.
-      if (!cart || cart.length === 0) {
-        setError("El carrito está vacío.");
-        setIsLoading(false);
-        return;
-      }
-
-      // Marcamos el inicio de la operación.
-      isCreatingRef.current = true;
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        // Obtenemos los datos del usuario guardados en la sesión.
-
-        if (!userData || !userData.id || !userData.direccion) {
-          throw new Error(
-            "No se encontraron datos de usuario o dirección. Por favor, inicia sesión de nuevo."
-          );
+    debounceRef.current = setTimeout(() => {
+      const createPreference = async () => {
+        // Si ya hay una petición en curso, la evitamos para no duplicarla.
+        if (isCreatingRef.current) {
+          return;
         }
 
-        // Mapeamos el carrito para enviar solo los datos necesarios al backend.
-        const itemsParaBackend = cart.map((item) => ({
-          itemId: item.id,
-          cantidad: item.cantidad,
-        }));
+        // Validaciones previas antes de contactar al backend.
+        if (!cart || cart.length === 0) {
+          setError("El carrito está vacío.");
+          setIsLoading(false);
+          return;
+        }
 
-        const token = localStorage.getItem("token"); // o localStorage.getItem("authToken")
+        // Marcamos el inicio de la operación.
+        isCreatingRef.current = true;
+        setIsLoading(true);
+        setError(null);
 
-        // Petición al backend para crear el pedido y la preferencia de pago.
-        const response = await axios.post(
-          `${apiUrl}/mercadopago/create_preference`,
-          {
-            items: itemsParaBackend,
-            usuarioId: userData.id,
-            direccionEntrega: userData.direccion,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        try {
+          // Obtenemos los datos del usuario guardados en la sesión.
+
+          if (!userData || !userData.id || !userData.direccion) {
+            throw new Error(
+              "No se encontraron datos de usuario o dirección. Por favor, inicia sesión de nuevo."
+            );
           }
-        );
 
-        const { id } = response.data;
-        if (id) {
-          setPreferenceId(id);
-        } else {
-          throw new Error(
-            "El servidor no devolvió un ID de preferencia válido."
+          // Mapeamos el carrito para enviar solo los datos necesarios al backend.
+          const itemsParaBackend = cart.map((item) => ({
+            itemId: item.id,
+            cantidad: item.cantidad,
+          }));
+
+          const token = localStorage.getItem("token"); // o localStorage.getItem("authToken")
+
+          // Petición al backend para crear el pedido y la preferencia de pago.
+          const response = await axios.post(
+            `${apiUrl}/mercadopago/create_preference`,
+            {
+              items: itemsParaBackend,
+              usuarioId: userData.id,
+              direccionEntrega: userData.direccion,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
           );
-        }
-      } catch (err) {
-        console.error("Error al crear la preferencia:", err);
-        // Mostramos un mensaje de error genérico y amigable al usuario.
-        setError(
-          err.response?.data?.message ||
-            "No se pudo generar el link de pago. Intenta de nuevo."
-        );
-      } finally {
-        // Marcamos el final de la operación, haya tenido éxito o no.
-        isCreatingRef.current = false;
-        setIsLoading(false);
-      }
-    };
 
-    createPreference();
-  }, [cart, userData, loading]); // El efecto se re-ejecuta si el carrito cambia.
+          const { id } = response.data;
+          if (id) {
+            setPreferenceId(id);
+          } else {
+            throw new Error(
+              "El servidor no devolvió un ID de preferencia válido."
+            );
+          }
+        } catch (err) {
+          console.error("Error al crear la preferencia:", err);
+          // Mostramos un mensaje de error genérico y amigable al usuario.
+          setError(
+            err.response?.data?.message ||
+              "No se pudo generar el link de pago. Intenta de nuevo."
+          );
+        } finally {
+          // Marcamos el final de la operación, haya tenido éxito o no.
+          isCreatingRef.current = false;
+          setIsLoading(false);
+        }
+      };
+
+      createPreference();
+    }, 600); // Espera 600ms antes de ejecutar la función para evitar múltiples llamadas rápidas
+
+    return () => clearTimeout(debounceRef.current);
+  }, [cart, userData, loading]);
 
   if (isLoading) {
     return (
-      <p className="text-gray-600 mt-2 text-sm">
-        Iniciando pago seguro con Mercado Pago...
-      </p>
+      <div className="flex justify-center my-6">
+        <span className="loading loading-spinner loading-lg text-neutral"></span>
+        <span className="ml-4 text-neutral font-medium self-center">
+          Iniciando pago seguro con Mercado Pago...
+        </span>
+      </div>
     );
   }
-
   if (error) {
     return <p className="text-red-500 mt-2 text-sm">{error}</p>;
   }
