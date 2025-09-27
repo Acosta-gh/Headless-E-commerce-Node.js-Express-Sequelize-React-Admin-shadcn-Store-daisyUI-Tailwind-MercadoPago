@@ -9,7 +9,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function ProductDialog({
   open,
@@ -21,6 +28,7 @@ export default function ProductDialog({
   categories,
   catLoading,
 }) {
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-lg w-full">
@@ -43,11 +51,12 @@ export default function ProductDialog({
 
           <div className="space-y-1">
             <Label>Descripción</Label>
-            <Input
+            <Textarea
               name="descripcion"
               value={form.descripcion}
               onChange={handleChange}
               placeholder="Descripción del producto"
+              rows={3}
             />
           </div>
 

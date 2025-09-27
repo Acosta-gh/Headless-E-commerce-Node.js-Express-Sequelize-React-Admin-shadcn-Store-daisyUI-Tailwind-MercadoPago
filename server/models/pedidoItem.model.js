@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
           model: "items", // Nombre de la tabla
           key: "id",
         },
-        onDelete: "RESTRICT", // No permitir borrar un ítem si está en algún pedido.
+        onDelete: "CASCADE", // No permitir borrar un ítem si está en algún pedido.
       },
       cantidad: {
         type: DataTypes.INTEGER,
@@ -48,6 +48,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
+      paranoid: true, // Habilita borrado lógico (soft delete)
       modelName: "PedidoItem",
       tableName: "pedido_items",
       timestamps: false, // Correcto para una tabla de unión simple.

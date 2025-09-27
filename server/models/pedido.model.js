@@ -78,6 +78,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       // --- Opciones del Modelo ---
       sequelize,
+      paranoid: true, // Habilita borrado lógico (soft delete)  
       modelName: "Pedido",
       tableName: "pedidos",
       timestamps: true, // createdAt y updatedAt

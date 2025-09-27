@@ -59,10 +59,10 @@ exports.create_preference = async (req, res) => {
     const preferenceBody = {
       items: itemsParaMP,
       external_reference: nuevoPedido.id.toString(),
-      notification_url: `${process.env.BACKEND_URL}/api/mercadopago/webhook`,
+      notification_url: `${process.env.BACKEND_URL}/api/v1/mercadopago/webhook`,
       back_urls: {
-        success: `https://tu-dominio.com/confirmacion?pedidoId=${nuevoPedido.id}`,
-        failure: `https://tu-dominio.com/confirmacion?pedidoId=${nuevoPedido.id}`,
+        success: `https://www.google.com/confirmacion?pedidoId=${nuevoPedido.id}`,
+        failure: `https://www.google.com/confirmacion?pedidoId=${nuevoPedido.id}`,
       },
       auto_return: "approved",
     };

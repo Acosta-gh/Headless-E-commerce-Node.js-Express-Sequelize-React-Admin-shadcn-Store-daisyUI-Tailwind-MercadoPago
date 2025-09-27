@@ -107,7 +107,12 @@ export default function CartDropdown() {
                         <div>
                           <p className="font-medium text-sm">{item.nombre}</p>
                           <p className="text-xs text-gray-500">
-                            x{item.cantidad} (${item.precio * item.cantidad})
+                            x{item.cantidad} (
+                            {(item.precio * item.cantidad).toLocaleString(
+                              "es-AR",
+                              { style: "currency", currency: "ARS" }
+                            )}
+                            )
                           </p>
                         </div>
                       </div>
@@ -151,8 +156,14 @@ export default function CartDropdown() {
                   ))}
                 </ul>
 
-                <span className="text-secondary font-semibold mt-2 block">
-                  Subtotal: $<span className="">{totalPrecio}</span>
+                <span className="text-neutral font-semibold mt-2 block">
+                  Subtotal:{" "}
+                  <span className="">
+                    {totalPrecio.toLocaleString("es-AR", {
+                      style: "currency",
+                      currency: "ARS",
+                    })}
+                  </span>
                 </span>
 
                 <div className="card-actions flex-col gap-2 mt-2">

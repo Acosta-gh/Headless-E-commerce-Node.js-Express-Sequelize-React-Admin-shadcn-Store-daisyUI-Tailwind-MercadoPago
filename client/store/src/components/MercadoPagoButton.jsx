@@ -49,7 +49,6 @@ export default function MercadoPagoButton() {
   const isCreatingRef = useRef(false);
 
   useEffect(() => {
-    
     if (loading) {
       return;
     }
@@ -127,7 +126,7 @@ export default function MercadoPagoButton() {
     };
 
     createPreference();
-  }, [cart,userData,loading]); // El efecto se re-ejecuta si el carrito cambia.
+  }, [cart, userData, loading]); // El efecto se re-ejecuta si el carrito cambia.
 
   if (isLoading) {
     return (
@@ -146,7 +145,18 @@ export default function MercadoPagoButton() {
       {preferenceId && (
         <Wallet
           initialization={{ preferenceId }}
-          customization={{ texts: { valueProp: "smart_option" } }}
+          customization={{
+            theme: "dark", // o "default"
+            valueProp: "smart_option", // "pay_button" o "smart_option"
+            customStyle: {
+              valuePropColor: "black", // "blue", "white" o "black" según el theme
+              buttonHeight: "56px",
+              borderRadius: "14px",
+              verticalPadding: "14px",
+              horizontalPadding: "24px",
+              // hideValueProp: true, // Descomenta para ocultar la propuesta de valor
+            },
+          }}
         />
       )}
     </div>

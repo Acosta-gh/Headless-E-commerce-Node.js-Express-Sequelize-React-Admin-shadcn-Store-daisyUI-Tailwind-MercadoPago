@@ -116,17 +116,18 @@ exports.updateItem = async (req, res) => {
   }
 };
 
-// Eliminar un item
+// Eliminar un item y sus imágenes asociadas
 exports.deleteItem = async (req, res) => {
   try {
     console.debug("Intentando eliminar item con ID:", req.params.id);
-    const item = await Item.findByPk(req.params.id);
+    const item = await Item.findByPk(req.params.id, { include: ["imagenes"] });
+
     if (!item) {
       console.warn("Item no encontrado para eliminar:", req.params.id);
       return res.status(404).json({ message: "Item no encontrado" });
     }
 
-    // Borra la imagen principal del producto si existe
+    // 1. Borra la imagen principal del producto si existe (archivo)
     if (item.imagenUrl && item.imagenUrl.includes("/uploads/")) {
       const filename = item.imagenUrl.split("/uploads/")[1].split("?")[0];
       const filepath = path.join(__dirname, "..", "uploads", filename);
@@ -140,11 +141,33 @@ exports.deleteItem = async (req, res) => {
       }
     }
 
+    // 2. Borra archivos de imágenes adicionales asociadas
+    if (item.imagenes && item.imagenes.length > 0) {
+      for (const imagen of item.imagenes) {
+        if (imagen.url && imagen.url.includes("/uploads/")) {
+          const filename = imagen.url.split("/uploads/")[1].split("?")[0];
+          const filepath = path.join(__dirname, "..", "uploads", filename);
+          try {
+            await fs.unlink(filepath);
+            console.log("Imagen adicional borrada:", filename);
+          } catch (err) {
+            if (err.code !== "ENOENT") {
+              console.warn("No se pudo borrar imagen adicional:", err);
+            }
+          }
+        }
+      }
+      // 3. Borra los registros en la base de datos de las imágenes
+      await Imagen.destroy({ where: { itemId: item.id } });
+    }
+
+    // 4. Borra el propio item (ahora sí, sin conflicto de FK)
     await item.destroy();
+
     console.info("Item eliminado correctamente:", req.params.id);
-    res.json({ message: "Item eliminado correctamente" });
+    res.json({ message: "Item y sus imágenes eliminados correctamente" });
   } catch (error) {
     console.error("Error al eliminar el item:", error);
-    res.status(500).json({ message: "Error al eliminar el item", error });
+    res.status(500).json({ message: "Error al eliminar el item", error: error.message });
   }
 };

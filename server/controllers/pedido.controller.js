@@ -213,7 +213,7 @@ exports.getAllPedidos = async (req, res) => {
     const pedidos = await Pedido.findAll({
       include: [
         { model: Usuario, attributes: ["id", "nombre", "email", "telefono"] },
-        { model: Item, through: { attributes: ["cantidad"] } },
+        { model: Item, through: { attributes: ["cantidad"] }, paranoid: false },
       ],
     });
     res.json(pedidos);
@@ -229,7 +229,7 @@ exports.getPedidosByUsuario = async (req, res) => {
       where: { usuarioId: req.usuario.id },
       include: [
         { model: Usuario, attributes: ["id", "nombre", "email"] },
-        { model: Item, through: { attributes: ["cantidad"] } },
+        { model: Item, through: { attributes: ["cantidad"] }, paranoid: false },
       ],
     });
     if (pedidos.length === 0)

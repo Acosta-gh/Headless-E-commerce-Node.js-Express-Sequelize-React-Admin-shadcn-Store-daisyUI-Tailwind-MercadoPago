@@ -7,7 +7,7 @@ const uploadsDir = path.join(__dirname, '..', 'uploads');
 // Función para filtrar y permitir solo ciertos tipos de archivos (imágenes)
 const imageFileFilter = (req, file, cb) => {
     // Whitelist de tipos de archivo permitidos
-    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/svg+xml'];
 
     if (allowedMimeTypes.includes(file.mimetype)) {
         // Aceptar el archivo

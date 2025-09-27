@@ -11,6 +11,10 @@ function getAuthHeader() {
   }
 }
 
+function getNgrokHeader() {
+  return { "ngrok-skip-browser-warning": "69420" };
+}
+
 function handleAxiosError(error, fallbackMessage = "Error en la petición de productos") {
   console.error("[productsService] error:", error.response || error);
   throw new Error(error.response?.data?.message || fallbackMessage);    
@@ -22,6 +26,7 @@ export async function getAll() {
       headers: {
         Accept: "application/json",
         ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
     console.log(res.data);
@@ -37,6 +42,7 @@ export async function getById(id) {
       headers: {
         Accept: "application/json",
         ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
     return res.data;
@@ -51,6 +57,7 @@ export async function createProduct(payload) {
     const res = await axios.post(`${API_URL}/`, payload, {
       headers: {
         ...getAuthHeader(),
+        ...getNgrokHeader(),
         ...(isFormData ? {} : { "Content-Type": "application/json" }),
       },
     });
@@ -66,6 +73,7 @@ export async function updateProduct(id, payload) {
     const res = await axios.put(`${API_URL}/${id}`, payload, {
       headers: {
         ...getAuthHeader(),
+        ...getNgrokHeader(),
         ...(isFormData ? {} : { "Content-Type": "application/json" }),
       },
     });
@@ -81,6 +89,7 @@ export async function deleteProduct(id) {
     const res = await axios.delete(`${API_URL}/${id}`, {
       headers: {
         ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
     return res.data;

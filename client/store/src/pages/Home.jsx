@@ -90,7 +90,7 @@ function Home() {
             </Fade>
           )}
           <div className="mb-4 mt-6">
-            {minPrice !== maxPrice && (
+            {(!loadingCat && minPrice !== maxPrice) && (
               <Fade triggerOnce>
                 <RangeFilter
                   min={minPrice}

@@ -13,6 +13,11 @@ function getAuthHeader() {
   }
 }
 
+function getNgrokHeader() {
+  return { "ngrok-skip-browser-warning": "69420" };
+}
+
+
 /** Manejo genérico de errores de Axios */
 function handleAxiosError(error, fallbackMessage = "Error en la petición de usuarios") {
   console.error("[userService] error:", error.response || error);
@@ -24,7 +29,7 @@ function handleAxiosError(error, fallbackMessage = "Error en la petición de usu
 export async function getAllUsuarios() {
   try {
     const res = await axios.get(`${API_URL}/`, {
-      headers: { Accept: "application/json", ...getAuthHeader() },
+      headers: { Accept: "application/json", ...getAuthHeader() ,...getNgrokHeader() },
     });
     return res.data;
   } catch (error) {
@@ -35,7 +40,7 @@ export async function getAllUsuarios() {
 export async function getUsuarioById(id) {
   try {
     const res = await axios.get(`${API_URL}/${id}`, {
-      headers: { Accept: "application/json", ...getAuthHeader() },
+      headers: { Accept: "application/json", ...getAuthHeader() ,...getNgrokHeader() },
     });
     return res.data;
   } catch (error) {
@@ -68,7 +73,7 @@ export async function loginUsuario(payload) {
 export async function updateUsuario(id, payload) {
   try {
     const res = await axios.put(`${API_URL}/${id}`, payload, {
-      headers: { "Content-Type": "application/json", ...getAuthHeader() },
+      headers: { "Content-Type": "application/json", ...getAuthHeader() ,...getNgrokHeader() },
     });
     return res.data;
   } catch (error) {

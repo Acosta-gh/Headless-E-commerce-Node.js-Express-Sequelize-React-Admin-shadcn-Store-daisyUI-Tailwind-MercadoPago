@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       Categoria.hasMany(models.Item, {
         foreignKey: 'categoriaId',
         as: 'items',
-        onDelete: 'RESTRICT' // No permitir borrar una categoría si tiene ítems asociados.
+        onDelete: 'SET NULL' // Si se borra la categoría, poner en null
       });
     }
   }
@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Categoria',
     tableName: 'categorias',
-    timestamps: true
+    timestamps: true,
   });
 
   return Categoria;

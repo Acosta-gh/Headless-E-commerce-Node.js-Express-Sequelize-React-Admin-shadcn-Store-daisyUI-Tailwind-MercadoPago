@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       Item.belongsTo(models.Categoria, {
         foreignKey: 'categoriaId',
         as: 'categoria',
+        onDelete: 'SET NULL', // Si se borra la categoría, poner en null
       });
 
       // Un Item puede estar en muchos Pedidos, a través de la tabla PedidoItem.
@@ -53,11 +54,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     categoriaId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'Categorias', // Nombre de la tabla
         key: 'id'
-      }
+      },
+      onDelete: 'SET NULL', // Si se borra la categoría, poner en null
     },
     disponible: {
       type: DataTypes.BOOLEAN,
@@ -85,7 +87,7 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Item',
     tableName: 'items', 
     timestamps: true,   // createdAt y updatedAt
-    // paranoid: true, // Descomenta esta línea si quieres borrado suave para este modelo
+    paranoid: true      // Habilita borrado lógico (soft delete)
   });
 
   return Item;

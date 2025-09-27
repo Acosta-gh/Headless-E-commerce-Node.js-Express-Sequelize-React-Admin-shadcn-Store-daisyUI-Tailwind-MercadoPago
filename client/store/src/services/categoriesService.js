@@ -11,6 +11,10 @@ function getAuthHeader() {
   }
 }
 
+function getNgrokHeader() {
+  return { "ngrok-skip-browser-warning": "69420" };
+}
+
 function handleAxiosError(error, fallbackMessage = "Error en la petición de categorías") {
   console.error("[categoriesService] error:", error.response || error);
   throw new Error(error.response?.data?.message || fallbackMessage);
@@ -22,6 +26,7 @@ export async function getAll() {
       headers: {
         Accept: "application/json",
         ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
     return res.data;
@@ -36,6 +41,7 @@ export async function getById(id) {
       headers: {
         Accept: "application/json",
         ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
     return res.data;
@@ -50,6 +56,7 @@ export async function createCategory(payload) {
       headers: {
         "Content-Type": "application/json",
         ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
     return res.data;
@@ -63,6 +70,7 @@ export async function updateCategory(id, payload) {
     const res = await axios.put(`${API_URL}/${id}`, payload, {
       headers: {
         ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
     return res.data;
@@ -77,6 +85,7 @@ export async function deleteCategory(id) {
     const res = await axios.delete(`${API_URL}/${id}`, {
       headers: {
         ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
     return res.data;
