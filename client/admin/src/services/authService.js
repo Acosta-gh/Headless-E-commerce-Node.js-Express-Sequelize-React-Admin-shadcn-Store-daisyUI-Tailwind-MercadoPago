@@ -1,13 +1,38 @@
 import axios from "axios";
 
 const API_URL = `${import.meta.env.VITE_API_URL}/usuario`;
+
+/** Devuelve headers con Authorization si hay token */
+function getAuthHeader() {
+  try {
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+/** Header para saltar el warning de ngrok */
+function getNgrokHeader() {
+  return { "ngrok-skip-browser-warning": "69420" };
+}
+
+/** Manejo genérico de errores de Axios */
+function handleAxiosError(error, fallbackMessage = "Error en autenticación") {
+  console.error("[authService] error:", error.response || error);
+  throw new Error(error.response?.data?.message || fallbackMessage);
+}
+
 export async function login(credentials) {
   try {
     console.log("[authService] login payload:", credentials);
 
     const res = await axios.post(`${API_URL}/login`, credentials, {
       headers: {
-        "Content-Type": "application/json",
+        Accept: "application/json",
+        ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
 
@@ -23,15 +48,18 @@ export async function login(credentials) {
     }
     return { user, token };
   } catch (error) {
-    console.error("[authService] login error:", error.response || error);
-    throw new Error(error.response?.data?.message || "Error al iniciar sesión");
+    handleAxiosError(error, "Error al iniciar sesión");
   }
 }
 
 export async function register(data) {
   try {
     const res = await axios.post(`${API_URL}/register`, data, {
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        Accept: "application/json",
+        ...getAuthHeader(),
+        ...getNgrokHeader(),
+      },
     });
     const { token, user } = res.data;
     try {
@@ -42,8 +70,7 @@ export async function register(data) {
     }
     return { user, token };
   } catch (error) {
-    console.error("[authService] register error:", error.response || error);
-    throw new Error(error.response?.data?.message || "Error al registrar usuario");
+    handleAxiosError(error, "Error al registrar usuario");
   }
 }
 

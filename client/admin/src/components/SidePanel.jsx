@@ -7,9 +7,14 @@ import { Box, List, ShoppingCart, Users, User, Menu, X } from "lucide-react";
 
 const items = [
   { key: "productos", label: "Productos", to: "/admin/products", icon: Box },
-  { key: "categorias", label: "Categorías", to: "/admin/categories", icon: List },
+  {
+    key: "categorias",
+    label: "Categorías",
+    to: "/admin/categories",
+    icon: List,
+  },
   { key: "compras", label: "Compras", to: "/purchases", icon: ShoppingCart },
-  { key: "usuarios", label: "Usuarios", to: "/users", icon: Users },
+  { key: "usuarios", label: "Usuarios", to: "/admin/users", icon: Users },
   { key: "perfil", label: "Perfil", to: "/profile", icon: User },
 ];
 
@@ -61,7 +66,9 @@ export default function SidePanel() {
           <SheetContent side="left" className="w-72">
             <div className="flex items-center justify-between p-4 border-b">
               <div className="flex items-center gap-2">
-                <div className="text-2xl font-bold">{import.meta.env.VITE_NOMBRE_ECOMMERCE}</div>
+                <div className="text-2xl font-bold">
+                  {import.meta.env.VITE_NOMBRE_ECOMMERCE}
+                </div>
               </div>
             </div>
 
@@ -81,7 +88,11 @@ export default function SidePanel() {
             </ScrollArea>
 
             <div className="p-4 border-t">
-              <Link to="/profile" className="flex items-center gap-3" onClick={handleNavClick}>
+              <Link
+                to="/profile"
+                className="flex items-center gap-3"
+                onClick={handleNavClick}
+              >
                 <User className="w-5 h-5 text-slate-600" />
                 <span className="text-sm text-slate-700">Ver perfil</span>
               </Link>
@@ -93,7 +104,9 @@ export default function SidePanel() {
       {/* DESKTOP: Sidebar */}
       <aside className="hidden md:flex md:flex-col md:w-64 md:min-h-screen md:sticky md:top-0 bg-white border-r">
         <div className="p-4 flex items-center gap-3 border-b">
-          <div className="text-2xl font-bold">{import.meta.env.VITE_NOMBRE_ECOMMERCE}</div>
+          <div className="text-2xl font-bold">
+            {import.meta.env.VITE_NOMBRE_ECOMMERCE}
+          </div>
         </div>
 
         <ScrollArea className="p-4 flex-1">

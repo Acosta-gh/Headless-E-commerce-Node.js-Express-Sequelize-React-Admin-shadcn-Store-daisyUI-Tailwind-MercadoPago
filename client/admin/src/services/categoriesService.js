@@ -2,19 +2,28 @@ import axios from "axios";
 
 const API_URL = `${import.meta.env.VITE_API_URL}/categoria`; 
 
+/** Devuelve headers con Authorization si hay token */
 function getAuthHeader() {
   try {
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
     return token ? { Authorization: `Bearer ${token}` } : {};
   } catch (e) {
     return {};
   }
 }
 
-function handleAxiosError(error, fallbackMessage = "Error en la petición de categorías") {
-  console.error("[categoriesService] error:", error.response || error);
+/** Header para saltar el warning de ngrok */
+function getNgrokHeader() {
+  return { "ngrok-skip-browser-warning": "69420" };
+}
+
+/** Manejo genérico de errores de Axios */
+function handleAxiosError(error, fallbackMessage = "Error en autenticación") {
+  console.error("[authService] error:", error.response || error);
   throw new Error(error.response?.data?.message || fallbackMessage);
 }
+
 
 export async function getAll() {
   try {
@@ -22,6 +31,7 @@ export async function getAll() {
       headers: {
         Accept: "application/json",
         ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
     return res.data;
@@ -36,6 +46,7 @@ export async function getById(id) {
       headers: {
         Accept: "application/json",
         ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
     return res.data;
@@ -50,6 +61,7 @@ export async function createCategory(payload) {
       headers: {
         "Content-Type": "application/json",
         ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
     return res.data;
@@ -63,6 +75,7 @@ export async function updateCategory(id, payload) {
     const res = await axios.put(`${API_URL}/${id}`, payload, {
       headers: {
         ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
     return res.data;
@@ -77,6 +90,7 @@ export async function deleteCategory(id) {
     const res = await axios.delete(`${API_URL}/${id}`, {
       headers: {
         ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
     return res.data;

@@ -11,6 +11,10 @@ function getAuthHeader() {
   }
 }
 
+function getNgrokHeader() {
+  return { "ngrok-skip-browser-warning": "69420" };
+}
+
 function handleAxiosError(error, fallbackMessage = "Error en la petición de imagenes") {
   console.error("[productsService] error:", error.response || error);
   throw new Error(error.response?.data?.message || fallbackMessage);    
@@ -22,6 +26,7 @@ export async function getById(id) {
       headers: {
         Accept: "application/json",
         ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
     return res.data;
@@ -36,6 +41,7 @@ export async function createImagen(payload) {
     const res = await axios.post(`${API_URL}`, payload, {
       headers: {
         ...getAuthHeader(),
+        ...getNgrokHeader(),
         ...(isFormData ? {} : { "Content-Type": "application/json" }),
       },
     });
@@ -50,6 +56,7 @@ export async function deleteImagen(id) {
     const res = await axios.delete(`${API_URL}/${id}`, {
       headers: {
         ...getAuthHeader(),
+        ...getNgrokHeader(),
       },
     });
     return res.data;
