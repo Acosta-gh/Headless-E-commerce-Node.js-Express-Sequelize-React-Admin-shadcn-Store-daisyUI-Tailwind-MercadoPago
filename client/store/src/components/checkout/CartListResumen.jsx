@@ -30,20 +30,20 @@ function CartListResumen({ cart }) {
                 )}
                 <div>
                   <div className="font-semibold">{item.nombre}</div>
-                  <div className="text-gray-500 text-sm">
-                    Cantidad: {item.cantidad} &mdash; ${item.precio} c/u
+                  <div className="text-sm">
+                    Cantidad: {item.cantidad} &mdash; {item.precio.toLocaleString("es-AR", { style: "currency", currency: "ARS" })} c/u
                   </div>
                 </div>
               </div>
               <div className="font-bold text-right ml-4">
-                ${item.precio * item.cantidad}
+                {(item.precio * item.cantidad).toLocaleString("es-AR", { style: "currency", currency: "ARS" })}
               </div>
             </li>
             {index < cart.length - 1 && <div className="divider my-0"></div>}
           </React.Fragment>
         ))}
       </ul>
-      <div className="text-right mt-6 text-xl font-bold">Total: ${total}</div>
+      <div className="text-right mt-6 text-xl font-bold">Total:{total.toLocaleString("es-AR", { style: "currency", currency: "ARS" })}</div>
     </div>
   );
 }

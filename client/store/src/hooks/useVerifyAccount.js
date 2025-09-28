@@ -22,6 +22,7 @@ export default function useVerifyAccount(token) {
         if (!mounted) return;
         setStatus("success");
         setMessage(res.message);
+        console.log("Cuenta verificada con éxito, redirigiendo a perfil...", res);
         setTimeout(() => navigate("/profile"), 2000);
       })
       .catch((err) => {

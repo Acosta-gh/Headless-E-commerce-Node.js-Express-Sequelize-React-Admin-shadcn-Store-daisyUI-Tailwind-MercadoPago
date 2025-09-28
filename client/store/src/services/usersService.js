@@ -6,7 +6,8 @@ const API_URL = `${import.meta.env.VITE_API_URL}/usuario`;
 /** Devuelve headers con Authorization si hay token */
 function getAuthHeader() {
   try {
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
     return token ? { Authorization: `Bearer ${token}` } : {};
   } catch (e) {
     return {};
@@ -17,9 +18,11 @@ function getNgrokHeader() {
   return { "ngrok-skip-browser-warning": "69420" };
 }
 
-
 /** Manejo genérico de errores de Axios */
-function handleAxiosError(error, fallbackMessage = "Error en la petición de usuarios") {
+function handleAxiosError(
+  error,
+  fallbackMessage = "Error en la petición de usuarios"
+) {
   console.error("[userService] error:", error.response || error);
   throw new Error(error.response?.data?.message || fallbackMessage);
 }
@@ -29,7 +32,11 @@ function handleAxiosError(error, fallbackMessage = "Error en la petición de usu
 export async function getAllUsuarios() {
   try {
     const res = await axios.get(`${API_URL}/`, {
-      headers: { Accept: "application/json", ...getAuthHeader() ,...getNgrokHeader() },
+      headers: {
+        Accept: "application/json",
+        ...getAuthHeader(),
+        ...getNgrokHeader(),
+      },
     });
     return res.data;
   } catch (error) {
@@ -40,7 +47,11 @@ export async function getAllUsuarios() {
 export async function getUsuarioById(id) {
   try {
     const res = await axios.get(`${API_URL}/${id}`, {
-      headers: { Accept: "application/json", ...getAuthHeader() ,...getNgrokHeader() },
+      headers: {
+        Accept: "application/json",
+        ...getAuthHeader(),
+        ...getNgrokHeader(),
+      },
     });
     return res.data;
   } catch (error) {
@@ -73,7 +84,11 @@ export async function loginUsuario(payload) {
 export async function updateUsuario(id, payload) {
   try {
     const res = await axios.put(`${API_URL}/${id}`, payload, {
-      headers: { "Content-Type": "application/json", ...getAuthHeader() ,...getNgrokHeader() },
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+        ...getNgrokHeader(),
+      },
     });
     return res.data;
   } catch (error) {
@@ -91,11 +106,12 @@ export async function deleteUsuario(id) {
     handleAxiosError(error, "Error al eliminar usuario");
   }
 }
-
+{
+  /* 
 export async function resendVerification(email) {
   try {
     const res = await axios.post(`${API_URL}/resend-verification`, { email }, {
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...getNgrokHeader() },
     });
     return res.data;
   } catch (error) {
@@ -106,14 +122,15 @@ export async function resendVerification(email) {
 export async function verifyEmail(token) {
   try {
     const res = await axios.get(`${API_URL}/verify?token=${token}`, {
-      headers: { Accept: "application/json" },
+      headers: { Accept: "application/json", ...getAuthHeader(), ...getNgrokHeader() },
     });
     return res.data;
   } catch (error) {
     handleAxiosError(error, "Error al verificar email");
   }
 }
-
+ */
+}
 export default {
   getAllUsuarios,
   getUsuarioById,
@@ -121,6 +138,6 @@ export default {
   loginUsuario,
   updateUsuario,
   deleteUsuario,
-  resendVerification,
-  verifyEmail,
+  // resendVerification,
+  // verifyEmail,
 };

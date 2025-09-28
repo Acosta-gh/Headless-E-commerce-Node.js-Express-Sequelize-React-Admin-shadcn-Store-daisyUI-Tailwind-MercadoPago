@@ -58,7 +58,7 @@ function Cart() {
                   <div>
                     <div className="font-semibold">{item.nombre}</div>
                     <div className="text-gray-500 text-sm">
-                      Cantidad: {item.cantidad} &mdash; ${item.precio} c/u
+                      Cantidad: {item.cantidad} &mdash; {(item.precio).toLocaleString("es-AR", { style: "currency", currency: "ARS" })} c/u
                     </div>
                   </div>
                 </div>
@@ -94,15 +94,15 @@ function Cart() {
                 </div>
 
                 <div className="font-bold text-right ml-4">
-                  ${item.precio * item.cantidad}
+                  {(item.precio * item.cantidad).toLocaleString("es-AR", { style: "currency", currency: "ARS" })}
                 </div>
               </li>
               {index < cart.length - 1 && <div className="divider my-0"></div>}
             </React.Fragment>
           ))}
-        </ul>
+        </ul> 
 
-        <div className="text-right mt-6 text-xl font-bold">Total: ${total}</div>
+        <div className="text-right mt-6 text-xl font-bold">Total: {total.toLocaleString("es-AR", { style: "currency", currency: "ARS" })}</div> 
 
         <div className="mt-6 flex gap-4 justify-end">
           <button

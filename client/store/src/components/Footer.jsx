@@ -4,35 +4,39 @@ function Footer() {
   return (
    <footer className="footer sm:footer-horizontal bg-base-200 text-base-content p-10">
   <nav>
-    <h6 className="footer-title">Services</h6>
-    <a className="link link-hover">Branding</a>
-    <a className="link link-hover">Design</a>
+    <h6 className="footer-title">Servicios</h6>
+    <a className="link link-hover">Identidad de marca</a>
+    <a className="link link-hover">Diseño</a>
     <a className="link link-hover">Marketing</a>
-    <a className="link link-hover">Advertisement</a>
+    <a className="link link-hover">Publicidad</a>
   </nav>
   <nav>
-    <h6 className="footer-title">Company</h6>
-    <a className="link link-hover">About us</a>
-    <a className="link link-hover">Contact</a>
-    <a className="link link-hover">Jobs</a>
-    <a className="link link-hover">Press kit</a>
+    <h6 className="footer-title">Empresa</h6>
+    <a className="link link-hover">Sobre nosotros</a>
+    <a className="link link-hover">Contacto</a>
+    <a className="link link-hover">Empleos</a>
+    <a className="link link-hover">Prensa</a>
   </nav>
   <nav>
     <h6 className="footer-title">Legal</h6>
-    <a className="link link-hover">Terms of use</a>
-    <a className="link link-hover">Privacy policy</a>
-    <a className="link link-hover">Cookie policy</a>
+    <a className="link link-hover">Términos y condiciones</a>
+    <a className="link link-hover">Política de privacidad</a>
+    <a className="link link-hover">Política de cookies</a>
+    <a className="link link-hover">Defensa del consumidor</a>
+    <a className="link link-hover" href="https://autogestion.produccion.gob.ar/consumidores" target="_blank" rel="noopener noreferrer">
+      Dirección Nacional de Defensa del Consumidor
+    </a>
   </nav>
   <form>
     <h6 className="footer-title">Newsletter</h6>
     <fieldset className="w-80">
-      <label>Enter your email address</label>
+      <label>Ingresá tu correo electrónico</label>
       <div className="join">
         <input
-          type="text"
-          placeholder="username@site.com"
+          type="email"
+          placeholder="usuario@ejemplo.com"
           className="input input-bordered join-item" />
-        <button className="btn btn-primary join-item">Subscribe</button>
+        <button className="btn btn-primary join-item">Suscribirse</button>
       </div>
     </fieldset>
   </form>

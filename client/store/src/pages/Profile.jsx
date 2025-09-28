@@ -16,7 +16,16 @@ function Profile() {
     nombre: "",
   });
 
-  const { purchases } = usePurchases();
+  const { purchases = [], loading: loadingPurchases } = usePurchases();
+
+  // --- Paginación de compras ---
+  const comprasPorPagina = 5;
+  const [paginaActual, setPaginaActual] = useState(1);
+
+  const totalPaginas = Math.ceil(purchases.length / comprasPorPagina);
+  const startIndex = (paginaActual - 1) * comprasPorPagina;
+  const endIndex = startIndex + comprasPorPagina;
+  const comprasPaginadas = purchases.slice(startIndex, endIndex);
 
   useEffect(() => {
     setShowModal(!user);
@@ -64,14 +73,15 @@ function Profile() {
   if (loading || !userData) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <p className="text-gray-500">Cargando perfil...</p>
+        <span className="loading loading-spinner loading-xl"></span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-base-200 py-30 px-2 sm:px-0">
-      <div className="card w-full max-w-md bg-base-100 shadow-xl mb-12">
+    <div className="flex flex-col items-center min-h-screen bg-base-200 py-25 px-2 sm:px-0">
+      {/* Card perfil */}
+      <div className="card w-full max-w-md bg-base-100 shadow-xl mb-10">
         <div className="card-body items-center text-center">
           {/* Avatar */}
           <div className="avatar">
@@ -125,7 +135,8 @@ function Profile() {
           {/* Datos editables */}
           <div className="mt-4 w-full text-left space-y-2">
             <p>
-              <strong>Email:</strong> <span className="break-all">{userData.email}</span>
+              <strong>Email:</strong>{" "}
+              <span className="break-all">{userData.email}</span>
             </p>
             {isEditing ? (
               <>
@@ -171,8 +182,11 @@ function Profile() {
           {/* Acciones */}
           <div className="card-actions mt-4 flex flex-col sm:flex-row gap-2 w-full">
             {isEditing ? (
-              <>
-                <button className="btn btn-success w-full sm:w-auto" onClick={handleSave}>
+              <div className="flex gap-2 w-full sm:justify-center flex-col sm:flex-row">
+                <button
+                  className="btn btn-success w-full sm:w-auto"
+                  onClick={handleSave}
+                >
                   Guardar
                 </button>
                 <button
@@ -181,10 +195,10 @@ function Profile() {
                 >
                   Cancelar
                 </button>
-              </>
+              </div>
             ) : (
               <button
-                className="btn btn-primary w-full sm:w-auto"
+                className="btn btn-primary m-auto"
                 onClick={() => setIsEditing(true)}
               >
                 Editar perfil
@@ -193,13 +207,118 @@ function Profile() {
           </div>
         </div>
       </div>
+
+      {/* Compras */}
       <div className="w-full px-2 sm:px-12">
-        {!purchases || purchases.length === 0 ? (
-          <p className="text-gray-500 text-center">No hay compras.</p>
+        {loadingPurchases ? (
+          <div className="flex justify-center items-center min-h-[200px]">
+            <span className="loading loading-spinner loading-sm"></span>
+          </div>
+        ) : purchases.length === 0 ? (
+          <div className="flex flex-col items-center justify-center min-h-[200px]">
+            <p className="text-gray-500">No se encontraron compras.</p>
+          </div>
         ) : (
-          purchases.map((compra) => (
-            <PurchaseTable key={compra.id} compra={compra} />
-          ))
+          <>
+            {comprasPaginadas.map((compra) => (
+              <PurchaseTable key={compra.id} compra={compra} />
+            ))}
+
+            {/* Controles de paginación  */}
+            {totalPaginas > 1 && (
+              <div className="join flex justify-center mt-6 flex-wrap">
+                {/* Botón anterior */}
+                <button
+                  className="join-item btn btn-sm"
+                  disabled={paginaActual === 1}
+                  onClick={() => setPaginaActual((p) => Math.max(p - 1, 1))}
+                >
+                  «
+                </button>
+
+                {/* Si hay menos de 5 páginas, muestro todas */}
+                {totalPaginas <= 5 ? (
+                  Array.from({ length: totalPaginas }, (_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setPaginaActual(i + 1)}
+                      className={`join-item btn btn-sm ${
+                        paginaActual === i + 1 ? "btn-primary" : ""
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))
+                ) : (
+                  <>
+                    {/* Primera página */}
+                    <button
+                      onClick={() => setPaginaActual(1)}
+                      className={`join-item btn btn-sm ${
+                        paginaActual === 1 ? "btn-primary" : ""
+                      }`}
+                    >
+                      1
+                    </button>
+
+                    {/* Mostrar ... si estoy lejos de la primera */}
+                    {paginaActual > 3 && (
+                      <button className="join-item btn btn-sm btn-disabled">
+                        ...
+                      </button>
+                    )}
+
+                    {/* Páginas cercanas a la actual */}
+                    {Array.from({ length: 3 }, (_, i) => {
+                      const page = paginaActual - 1 + i;
+                      if (page > 1 && page < totalPaginas) {
+                        return (
+                          <button
+                            key={page}
+                            onClick={() => setPaginaActual(page)}
+                            className={`join-item btn btn-sm ${
+                              paginaActual === page ? "btn-primary" : ""
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        );
+                      }
+                      return null;
+                    })}
+
+                    {/* Mostrar ... si estoy lejos del final */}
+                    {paginaActual < totalPaginas - 2 && (
+                      <button className="join-item btn btn-sm btn-disabled">
+                        ...
+                      </button>
+                    )}
+
+                    {/* Última página */}
+                    <button
+                      onClick={() => setPaginaActual(totalPaginas)}
+                      className={`join-item btn btn-sm ${
+                        paginaActual === totalPaginas ? "btn-primary" : ""
+                      }`}
+                    >
+                      {totalPaginas}
+                    </button>
+                  </>
+                )}
+
+                {/* Botón siguiente */}
+                <button
+                  className="join-item btn btn-sm"
+                  disabled={paginaActual === totalPaginas}
+                  onClick={() =>
+                    setPaginaActual((p) => Math.min(p + 1, totalPaginas))
+                  }
+                >
+                  »
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

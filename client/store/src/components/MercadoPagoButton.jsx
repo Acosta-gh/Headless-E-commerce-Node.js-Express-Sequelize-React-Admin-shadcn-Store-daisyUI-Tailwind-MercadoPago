@@ -4,6 +4,10 @@ import axios from "axios";
 import { useCart } from "@/context/CartContext";
 import useUsers from "@/hooks/useUsers";
 
+// Determina el color del botón según el tema actual (light u oscuro)
+const LIGHT_THEME = import.meta.env.VITE_DAISYIU_LIGHT_THEME || "light";
+const valuePropColor = theme === LIGHT_THEME ? "black" : "white";
+
 // --- Configuración Inicial ---
 
 // Clave pública de Mercado Pago (obtenida de variables de entorno de Vite)
@@ -42,7 +46,10 @@ export default function MercadoPagoButton() {
   const [error, setError] = useState(null);
   const { cart } = useCart();
   const { userData, loading } = useUsers();
+  const [theme] = useState(() => localStorage.getItem("theme") || "light");
+
   console.log(userData);
+  console.log(theme);
 
   // 'useRef' para controlar que la petición de creación de preferencia se ejecute solo una vez.
   // Esto es crucial en React 18+ con StrictMode, que ejecuta los useEffect dos veces en desarrollo.
@@ -136,15 +143,21 @@ export default function MercadoPagoButton() {
   if (isLoading) {
     return (
       <div className="flex justify-center my-6">
-        <span className="loading loading-spinner loading-lg text-neutral"></span>
-        <span className="ml-4 text-neutral font-medium self-center">
+        <span className="loading loading-spinner loading-lg "></span>
+        <span className="ml-4  font-medium self-center">
           Iniciando pago seguro con Mercado Pago...
         </span>
       </div>
     );
   }
   if (error) {
-    return <p className="text-red-500 mt-2 text-sm">{error}</p>;
+    return (
+      <div className="flex justify-center my-4">
+        <h1 className="text-red-500 text-sm font-medium text-center">
+          {/* {error} */}
+        </h1>
+      </div>
+    );
   }
 
   return (
@@ -153,10 +166,10 @@ export default function MercadoPagoButton() {
         <Wallet
           initialization={{ preferenceId }}
           customization={{
-            theme: "dark", // o "default"
+            theme: theme === LIGHT_THEME ? "dark" : "default", // Tema del botón según el tema actual
             valueProp: "smart_option", // "pay_button" o "smart_option"
             customStyle: {
-              valuePropColor: "black", // "blue", "white" o "black" según el theme
+              valuePropColor, // Color del texto según el tema
               buttonHeight: "56px",
               borderRadius: "14px",
               verticalPadding: "14px",

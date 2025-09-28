@@ -58,6 +58,7 @@ function ProductCard({ prod, agotado, showAgregado, disabled, onAgregar }) {
               duration-300
               group-hover:scale-105
               rounded-lg
+              bg-white
             "
             style={{ minHeight: "120px", minWidth: "120px" }}
             loading="lazy"

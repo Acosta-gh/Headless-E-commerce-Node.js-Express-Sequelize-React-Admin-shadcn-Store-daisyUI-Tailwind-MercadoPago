@@ -2,6 +2,7 @@ const { Usuario } = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { sendEmail } = require("../services/email.service");
+const { renderTemplate } = require("../services/emailtemplate.service");
 
 const LOGIN_SECRET = process.env.JWT_SECRET;
 const LOGIN_EXP = process.env.JWT_EXPIRATION || "1h";
@@ -81,12 +82,11 @@ exports.createUsuario = async (req, res) => {
     console.log("[createUsuario] verifyLink =", verifyLink);
 
     const subject = "Confirma tu cuenta";
-    const html = `
-      <p>Hola <b>${usuario.nombre}</b>, gracias por registrarte.</p>
-      <p>Confirma tu cuenta (expira en ${EMAIL_VERIFY_EXP}):</p>
-      <p><a href="${verifyLink}" target="_blank" rel="noopener noreferrer">Confirmar cuenta</a></p>
-      <p>Si no solicitaste esta cuenta, ignora este correo.</p>
-    `;
+    const html = renderTemplate("verify-email", {
+      nombre: usuario.nombre,
+      verifyLink,
+      exp: EMAIL_VERIFY_EXP,
+    });
 
     sendEmail(email, subject, html)
       .then(() => console.log("[Email] Verificación enviado a", email))

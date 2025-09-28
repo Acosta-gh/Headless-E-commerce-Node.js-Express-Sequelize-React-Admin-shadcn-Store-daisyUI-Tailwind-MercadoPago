@@ -24,7 +24,6 @@ function RangeFilter({ min, max, value, setValue }) {
   const range = max - min;
   const nearest = chooseNearestStep(range);
 
-  // Primer step es exactamente "min", los demás son redondeados
   const steps = [
     min,
     roundUpToNearest(min + range * 0.25, nearest),
@@ -34,7 +33,6 @@ function RangeFilter({ min, max, value, setValue }) {
   ];
 
   const uniqueSteps = [...new Set(steps)];
-
   const currentStep = uniqueSteps.findIndex((v) => value <= v);
   const sliderValue = currentStep === -1 ? uniqueSteps.length - 1 : currentStep;
 
@@ -56,11 +54,33 @@ function RangeFilter({ min, max, value, setValue }) {
         ))}
       </div>
       <div className="flex justify-between px-2.5 mt-2 text-xs">
-        {uniqueSteps.map((v, i) => (
-          <span key={i} className="whitespace-nowrap font-semibold">
-            {formatPrice(v)}
-          </span>
-        ))}
+        {uniqueSteps.map((v, i) => {
+          // Mostrar solo el primero, el último y el seleccionado
+          //const isEdge = i === 0 || i === uniqueSteps.length - 1;
+          const isEdge = i === 0;
+          const isSelected = sliderValue === i;
+          return (
+            <span
+              key={i}
+              className={
+                "whitespace-nowrap font-semibold transition-all " +
+                (isEdge || isSelected
+                  ? isSelected
+                    ? "text-primary scale-110"
+                    : ""
+                  : "opacity-0 select-none")
+              }
+              style={{
+                minWidth: 40,
+                textAlign: "center",
+                pointerEvents: "none",
+                userSelect: "none",
+              }}
+            >
+              {(isEdge || isSelected) && formatPrice(v)}
+            </span>
+          );
+        })}
       </div>
     </div>
   );

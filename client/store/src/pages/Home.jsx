@@ -70,7 +70,7 @@ function Home() {
     <div>
       <Hero />
       <div className="flex flex-row gap-10 p-6 max-w-8xl mx-auto">
-        <section>
+        <section className="w-64 flex-shrink-0">
           <div className="mb-4">
             <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
           </div>

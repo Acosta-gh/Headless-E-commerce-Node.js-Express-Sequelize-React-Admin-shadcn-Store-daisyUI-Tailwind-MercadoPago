@@ -1,4 +1,4 @@
-const { Pedido, PedidoItem, Item, Usuario } = require("../models");
+const { Pedido, PedidoItem, Item, Usuario, Categoria } = require("../models");
 const { sendPedidoStatusEmail } = require("../services/notification.service");
 
 /**
@@ -229,8 +229,15 @@ exports.getPedidosByUsuario = async (req, res) => {
       where: { usuarioId: req.usuario.id },
       include: [
         { model: Usuario, attributes: ["id", "nombre", "email"] },
-        { model: Item, through: { attributes: ["cantidad"] }, paranoid: false },
+        {
+          model: Item,
+          through: { attributes: ["cantidad"] },
+          paranoid: false,
+          include: [{ model: Categoria, as: "categoria" }],
+        },
       ],
+      order: [["fechaPedido", "DESC"]], // Ordenar por fecha de pedido descendente
+      limit: 50, // Limitar a los 20 pedidos más recientes
     });
     if (pedidos.length === 0)
       return res

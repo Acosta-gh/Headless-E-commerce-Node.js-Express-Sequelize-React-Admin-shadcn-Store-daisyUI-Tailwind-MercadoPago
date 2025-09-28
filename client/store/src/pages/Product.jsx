@@ -122,7 +122,7 @@ function Product() {
 
             {/* Selector de cantidad y botón agregar */}
             <div className="flex items-center gap-2 w-full justify-center mt-2">
-              <div className="flex items-center border rounded-lg px-2 py-1 bg-base-200">
+              <div className="flex items-center border rounded-lg px-3 py-[0.4rem] bg-base-200">
                 <button
                   type="button"
                   className="btn btn-xs btn-circle btn-ghost"
@@ -144,14 +144,12 @@ function Product() {
                 </button>
               </div>
 
-              {/* BOTÓN CON ANIMACIÓN */}
               <button
                 className="btn btn-primary btn-wide text-base relative overflow-hidden flex items-center justify-center gap-2"
                 disabled={
                   !product.disponible ||
                   product.stock < 1 ||
-                  cart.find((item) => item.id === product.id)?.cantidad >=
-                    product.stock
+                  cart.find((item) => item.id === product.id)?.cantidad >= product.stock
                 }
                 onClick={agregado ? null : handleAgregarAlCarrito}
               >
@@ -172,15 +170,16 @@ function Product() {
                   }`}
                 >
                   <ShoppingCart className="w-4 h-4" />
-                  Agregar al carrito
+                  <span>{product.stock < 1 ? "Sin stock" : "Agregar al carrito"}</span>
                 </span>
+               
               </button>
             </div>
 
             {/* Descripción */}
             {product.descripcion && (
               <div className="w-full mt-4">
-                <p className="text-gray-700 text-base text-left whitespace-pre-line break-words">
+                <p className="text-base text-left whitespace-pre-line break-words">
                   {product.descripcion}
                 </p>
               </div>
